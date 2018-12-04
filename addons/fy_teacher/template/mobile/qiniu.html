@@ -1,0 +1,400 @@
+<!--
+ * 七牛云对象存储管理
+ * ============================================================================
+ * 版权所有 2015-2018 微课堂团队，并保留所有权利。
+ * 网站地址: http://wx.haoshu888.com
+ * ----------------------------------------------------------------------------
+ * 这不是一个自由软件！不允许对程序代码以任何形式任何目的的再发布，作者将保留
+ * 追究法律责任的权力和最终解释权。
+ * ============================================================================
+-->
+{template '_header'}
+
+{if $op=='display'}
+<script type="text/javascript" src="{MODULE_URL}template/mobile/ZeroClipboard/ZeroClipboard.js"></script>
+<div class="panel admin-panel">
+    <div class="panel-head"><strong class="icon-reorder"> 视频管理</strong></div>
+    <div class="padding border-bottom">
+		<form action="./index.php" method="get">
+			<input type="hidden" name="i" value="{$uniacid}">
+            <input type="hidden" name="c" value="entry">
+            <input type="hidden" name="m" value="fy_teacher">
+            <input type="hidden" name="do" value="qiniu">
+            <input type="hidden" name="op" value="display">
+            <ul class="search" style="padding-left:10px;">
+                <li> <a class="button border-green icon-plus-square-o" href="{php echo $this->createMobileUrl('qiniu', array('op'=>'upload'));}"> 上传视频</a> </li>
+				<li>
+                    <input type="text" placeholder="文件名称" name="keyword" class="input" style="width:200px; line-height:17px; display:inline-block; margin-left:20px;" value="{$_GPC['keyword']}">
+                </li>
+				<button type="submit" class="button border-main icon-search"> 搜 索 </button>
+            </ul>
+        </form>
+    </div>
+    <table class="table table-hover text-center">
+        <tr>
+            <th style="width:15%;">预览</th>
+            <th style="width:20%;">文件名称</th>       
+            <th style="width:10%;">文件大小</th>
+            <th style="width:10%;">状态</th>
+            <th style="width:15%;">上传时间</th>
+            <th style="width:30%;">文件链接</th>       
+        </tr>
+		{loop $list $key $item}
+		<tr>
+			<td>
+				<a href="{php echo $this->createMobileUrl('qiniu', array('op'=>'preview','id'=>$item['id']));}"><img src="{MODULE_URL}template/mobile/images/videoCover.png?v=1" width="180"/></a>
+			</td>
+			<td>{$item['name']}</td>
+			<td>{php echo round(($item['size']/1024)/1024,2)?round(($item['size']/1024)/1024,2):0.01;} MB</td>
+			<td>
+				<span class="label-box label-box-success">上传完毕</span>
+			</td>         
+			<td>{php echo date('Y-m-d H:i', $item['addtime']);}</td>
+			<td>
+				<textarea class="input" id="content{$key}" style="overflow-y:auto;">{$item['qiniu_url']}</textarea>
+				<button id="copyId{$key}" onclick="copy(this.id)" class="copy-button" data-clipboard-target="content{$key}">复制链接</button>
+				&nbsp;&nbsp;&nbsp;&nbsp;
+				<button onclick="delFile({$item['id']})" class="copy-button" style="border-color:#ff0505;">删除文件</button>
+			</td>
+		</tr>
+		<script type="text/javascript">
+		var clip = new ZeroClipboard(document.getElementById("copyId{$key}"), {
+			moviePath: "{MODULE_URL}template/mobile/ZeroClipboard/ZeroClipboard.swf"
+		});
+		clip.on('complete', function(client, args) {
+			alert("复制成功");
+		});
+		</script>
+		{/loop}
+        <tr>
+            <td colspan="8">
+               {$pager}
+			</td>
+        </tr>
+    </table>
+</div>
+<script type="text/javascript">
+document.body.onselectstart=document.body.oncontextmenu=function(){return false;}
+function videoContro(obj, type){
+	var myvideo = document.getElementById(obj.id);
+	if(document.getElementById(obj.id).paused){
+		document.getElementById(obj.id).play();
+	}else{
+		document.getElementById(obj.id).pause();
+	}
+}
+function delFile(id){
+	if(!confirm('该操作不可恢复，确定删除该文件?')){
+		return false;
+	}
+	location.href="{php echo $this->createMobileUrl('qiniu', array('op'=>'delFile'));}" + "&id=" + id;
+}
+</script>
+
+{elseif $op=='upload'}
+<style type="text/css">
+.logo{margin-top:-8px;}
+.logo img{margin-top:-6px;}
+h1{border:none !important; margin-top:24px !important; font-size:24px !important; font-weight:normal !important;}
+.table th{text-align:left;}
+</style>
+<link rel="stylesheet" href="{MODULE_URL}template/mobile/Qiniu/bootstrap.css?v={$versions}">
+<link rel="stylesheet" href="{MODULE_URL}template/mobile/Qiniu/main.css">
+<link rel="stylesheet" href="{MODULE_URL}template/mobile/Qiniu/highlight.css">
+
+<div class="tab-content">
+    <div role="tabpanel" class="tab-pane fade in active" id="demo" aria-labelledby="demo-tab">
+        <div class="row" style="margin-top: 20px;">
+            <input type="hidden" id="domain" value="{$qiniu['url']}">
+            <input type="hidden" id="uptoken_url" value="uptoken">
+            <div class="col-md-12">
+                <div id="container" style="position: relative;">
+					<input type="file" id="pickfiles" class="input" name="video">
+					注意：当前系统上传单个文件限制为{$config['upload_max']}MB，音频请上传mp3格式文件，视频请上传mp4格式文件
+                </div>
+            </div>
+            <div style="display:none" id="success" class="col-md-12">
+                <div class="alert-success">
+                    队列全部文件处理完毕
+                </div>
+            </div>
+            <div class="col-md-12 ">
+                <table class="table table-striped table-hover text-left" style="margin-top:40px;display:none">
+                    <thead>
+                        <tr>
+                            <th class="col-md-4">文件名称</th>
+                            <th class="col-md-2">文件大小</th>
+                            <th class="col-md-6">上传详情</th>
+                        </tr>
+                    </thead>
+                    <tbody id="fsUploadProgress">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div role="tabpanel" class="tab-pane fade" id="code" aria-labelledby="code-tab">
+    </div>
+</div>
+
+<script type="text/javascript" src="{MODULE_URL}template/mobile/Qiniu/bootstrap.min.js"></script>
+<script type="text/javascript" src="{MODULE_URL}template/mobile/Qiniu/moxie.js"></script>
+<script type="text/javascript" src="{MODULE_URL}template/mobile/Qiniu/plupload.full.min.js"></script>
+<script type="text/javascript" src="{MODULE_URL}template/mobile/Qiniu/zh_CN.js"></script>
+<script type="text/javascript" src="{MODULE_URL}template/mobile/Qiniu/ui.js"></script>
+{if $qiniu['qiniu_area']==1}
+<script type="text/javascript" src="{MODULE_URL}template/mobile/Qiniu/qiniu_huadong.js"></script>
+{elseif $qiniu['qiniu_area']==2}
+<script type="text/javascript" src="{MODULE_URL}template/mobile/Qiniu/qiniu_huabei.js"></script>
+{elseif $qiniu['qiniu_area']==3}
+<script type="text/javascript" src="{MODULE_URL}template/mobile/Qiniu/qiniu_huanan.js"></script>
+{elseif $qiniu['qiniu_area']==4}
+<script type="text/javascript" src="{MODULE_URL}template/mobile/Qiniu/qiniu_beimei.js"></script>
+{/if}
+<script type="text/javascript" src="{MODULE_URL}template/mobile/Qiniu/highlight.js"></script>
+<script type="text/javascript">hljs.initHighlightingOnLoad();</script>
+<script type="text/javascript">
+$(function() {
+    var uploader = Qiniu.uploader({
+        runtimes: 'html5,flash,html4',
+        browse_button: 'pickfiles',
+        container: 'container',
+        drop_element: 'container',
+        flash_swf_url: 'bower_components/plupload/js/Moxie.swf',
+        dragdrop: true,
+        chunk_size: '4mb',
+		uptoken: "<?php echo $token; ?>",
+        multi_selection: !(mOxie.Env.OS.toLowerCase()==="ios"),
+        filters : {
+            max_file_size : "<?php echo $config['upload_max']; ?>mb",
+            prevent_duplicates: true,
+            mime_types: [
+                {title : "Audio files", extensions : "mp3"},
+                {title : "Video files", extensions : "{php echo $config['video_type']?$config['video_type']:'mp4';}"},
+			]
+        },
+        domain: $('#domain').val(),
+        get_new_uptoken: false,
+        auto_start: true,
+        log_level: 5,
+        init: {
+            'FilesAdded': function(up, files) {
+                $('table').show();
+                $('#success').hide();
+                plupload.each(files, function(file) {
+                    var progress = new FileProgress(file, 'fsUploadProgress');
+                    progress.setStatus("等待...");
+                    progress.bindUploadCancel(up);
+                });
+            },
+            'BeforeUpload': function(up, file) {
+                var progress = new FileProgress(file, 'fsUploadProgress');
+                var chunk_size = plupload.parseSize(this.getOption('chunk_size'));
+                if (up.runtime === 'html5' && chunk_size) {
+                    progress.setChunkProgess(chunk_size);
+                }
+            },
+            'UploadProgress': function(up, file) {
+                var progress = new FileProgress(file, 'fsUploadProgress');
+                var chunk_size = plupload.parseSize(this.getOption('chunk_size'));
+                progress.setProgress(file.percent + "%", file.speed, chunk_size);
+            },
+            'UploadComplete': function() {
+                $('#success').show();
+            },
+            'FileUploaded': function(up, file, info) {
+                var progress = new FileProgress(file, 'fsUploadProgress');
+                progress.setComplete(up, info);
+				
+            },
+			'Key': function(up, file) {
+				var key = "<?php echo $teacher['id']; ?>/"+file.name;
+
+				$.ajax({
+					url:"<?php echo $this->createMobileUrl('qiniu', array('op'=>'saveFileUrl')); ?>",
+					data:{name:file.name, com_name:key, size:file.size},
+					type:'post',
+					dataType:'json',
+					success:function(msg){
+					}
+					 
+				});
+
+				return key;
+			},
+            'Error': function(up, err, errTip) {
+                $('table').show();
+                var progress = new FileProgress(err.file, 'fsUploadProgress');
+                progress.setError();
+                progress.setStatus(errTip);
+            }
+        }
+    });
+
+    uploader.bind('FileUploaded', function() {
+    });
+    $('#container').on(
+        'dragenter',
+        function(e) {
+            e.preventDefault();
+            $('#container').addClass('draging');
+            e.stopPropagation();
+        }
+    ).on('drop', function(e) {
+        e.preventDefault();
+        $('#container').removeClass('draging');
+        e.stopPropagation();
+    }).on('dragleave', function(e) {
+        e.preventDefault();
+        $('#container').removeClass('draging');
+        e.stopPropagation();
+    }).on('dragover', function(e) {
+        e.preventDefault();
+        $('#container').addClass('draging');
+        e.stopPropagation();
+    });
+
+
+
+    $('#show_code').on('click', function() {
+        $('#myModal-code').modal();
+        $('pre code').each(function(i, e) {
+            hljs.highlightBlock(e);
+        });
+    });
+
+
+    $('body').on('click', 'table button.btn', function() {
+        $(this).parents('tr').next().toggle();
+    });
+
+
+    var getRotate = function(url) {
+        if (!url) {
+            return 0;
+        }
+        var arr = url.split('/');
+        for (var i = 0, len = arr.length; i < len; i++) {
+            if (arr[i] === 'rotate') {
+                return parseInt(arr[i + 1], 10);
+            }
+        }
+        return 0;
+    };
+
+    $('#myModal-img .modal-body-footer').find('a').on('click', function() {
+        var img = $('#myModal-img').find('.modal-body img');
+        var key = img.data('key');
+        var oldUrl = img.attr('src');
+        var originHeight = parseInt(img.data('h'), 10);
+        var fopArr = [];
+        var rotate = getRotate(oldUrl);
+        if (!$(this).hasClass('no-disable-click')) {
+            $(this).addClass('disabled').siblings().removeClass('disabled');
+            if ($(this).data('imagemogr') !== 'no-rotate') {
+                fopArr.push({
+                    'fop': 'imageMogr2',
+                    'auto-orient': true,
+                    'strip': true,
+                    'rotate': rotate,
+                    'format': 'png'
+                });
+            }
+        } else {
+            $(this).siblings().removeClass('disabled');
+            var imageMogr = $(this).data('imagemogr');
+            if (imageMogr === 'left') {
+                rotate = rotate - 90 < 0 ? rotate + 270 : rotate - 90;
+            } else if (imageMogr === 'right') {
+                rotate = rotate + 90 > 360 ? rotate - 270 : rotate + 90;
+            }
+            fopArr.push({
+                'fop': 'imageMogr2',
+                'auto-orient': true,
+                'strip': true,
+                'rotate': rotate,
+                'format': 'png'
+            });
+        }
+
+        $('#myModal-img .modal-body-footer').find('a.disabled').each(function() {
+
+            var watermark = $(this).data('watermark');
+            var imageView = $(this).data('imageview');
+            var imageMogr = $(this).data('imagemogr');
+
+            if (watermark) {
+                fopArr.push({
+                    fop: 'watermark',
+                    mode: 1,
+                    image: 'http://www.b1.qiniudn.com/images/logo-2.png',
+                    dissolve: 100,
+                    gravity: watermark,
+                    dx: 100,
+                    dy: 100
+                });
+            }
+
+            if (imageView) {
+                var height;
+                switch (imageView) {
+                    case 'large':
+                        height = originHeight;
+                        break;
+                    case 'middle':
+                        height = originHeight * 0.5;
+                        break;
+                    case 'small':
+                        height = originHeight * 0.1;
+                        break;
+                    default:
+                        height = originHeight;
+                        break;
+                }
+                fopArr.push({
+                    fop: 'imageView2',
+                    mode: 3,
+                    h: parseInt(height, 10),
+                    q: 100,
+                    format: 'png'
+                });
+            }
+
+            if (imageMogr === 'no-rotate') {
+                fopArr.push({
+                    'fop': 'imageMogr2',
+                    'auto-orient': true,
+                    'strip': true,
+                    'rotate': 0,
+                    'format': 'png'
+                });
+            }
+        });
+
+        var newUrl = Qiniu.pipeline(fopArr, key);
+
+        var newImg = new Image();
+        img.attr('src', '../addons/fy_teacher/template/mobile/images/loading.gif');
+        newImg.onload = function() {
+            img.attr('src', newUrl);
+            img.parent('a').attr('href', newUrl);
+        };
+        newImg.src = newUrl;
+        return false;
+    });
+
+});
+</script>
+
+{elseif $op=='preview'}
+<div class="panel admin-panel">
+    <div class="panel-head"><strong><span class="icon-pencil-square-o"></span> 预览视频</strong></div>
+    <div class="body-content" style="text-align: center;">
+		<video src="{$playurl}" controls="controls" width="640" height="360"></video>
+    </div>
+</div>
+
+{/if}
+
+
+{template '_footer'}

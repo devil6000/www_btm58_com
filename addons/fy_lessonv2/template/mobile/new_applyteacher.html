@@ -1,0 +1,127 @@
+<!-- 
+ * 申请讲师
+ * ============================================================================
+ * 版权所有 2015-2018 微课堂团队，并保留所有权利。
+ * 网站地址: https://wx.haoshu888.com
+ * ----------------------------------------------------------------------------
+ * 这不是一个自由软件！不允许对程序代码以任何形式任何目的的再发布，作者将保留
+ * 追究法律责任的权力和最终解释权。
+-->
+{template '_headerv2'}
+<link href="{MODULE_URL}template/mobile/style/cssv2/new_applyteacher.css?v={$versions}" rel="stylesheet" />
+<style type="text/css">
+.tabbar_wrap {
+	-webkit-overflow-scrolling: unset;
+}
+</style>
+{if $op=='display'}
+<div class="header-2 cbox">
+	<a href="javascript:history.go(-1);" class="ico go-back"></a>
+	<div class="flex title">{$title}</div>
+</div>
+
+<article class="info">
+	<div class="welcome">
+		<p>尊敬的<span class="title">{$lessonmember['mnickname']}</span>:</p>
+		<p class="descript">欢迎申请成为讲师，认真属实填写以下各项信息有利于审核通过哦~</p>
+	</div>
+
+	<ul>
+		<li>
+			<div class="left">
+				讲师名称:
+			</div>
+			<div class="right">
+				<input type="text" name="teacher" id="teacher" placeholder="讲师名称" value="{$teacherlog['teacher']} {if !empty($teacherlog['teacher']) && $teacherlog['status']==1}[不可修改]{/if}" {if !empty($teacherlog['teacher']) && $teacherlog['status']==1}readonly{/if} placeholder="请输入讲师名称" />
+			</div>
+			<div class="clear"></div>
+		</li>
+		<li>
+			<div class="left">
+				讲师QQ:
+			</div>
+			<div class="right">
+				<input type="text" name="qq" id="qq" placeholder="联系QQ" value="{$teacherlog['qq']} {if !empty($teacherlog['qq']) && $teacherlog['status']==1}[不可修改]{/if}" {if !empty($teacherlog['qq']) && $teacherlog['status']==1}readonly{/if} placeholder="没有可不用填写" />
+			</div>
+			<div class="clear"></div>
+		</li>
+		<li>
+			<div class="left">
+				QQ交流群:
+			</div>
+			<div class="right">
+				<input type="text" name="qqgroup" id="qqgroup" placeholder="QQ交流群" value="{$teacherlog['qqgroup']} {if !empty($teacherlog['qqgroup']) && $teacherlog['status']==1}[不可修改]{/if}" {if !empty($teacherlog['qqgroup']) && $teacherlog['status']==1}readonly{/if} placeholder="没有可不用填写"/>
+			</div>
+			<div class="clear"></div>
+		</li>
+		<li>
+			<div class="left">
+				讲师介绍:
+			</div>
+			<div class="right">
+				<textarea name="teacherdes" id="teacherdes" placeholder="">{$teacherlog['teacherdes']}</textarea>
+			</div>
+			<div class="clear"></div>
+		</li>
+	</ul>
+</article>
+
+<section class="logo-license">
+	<div class="half">
+		<a class="logo" id="logox">
+			<img id="bgl" src="{MODULE_URL}template/mobile/images/applyteacher-avatar.png"/>
+		</a>
+		<p>上传讲师头像</p>
+	</div>
+	<div class="half">
+		<div class="uploader blue">
+			<input type="text" class="filename" readonly value="微信二维码"/>
+			<a class="license">
+				<img id="img-1" src="{MODULE_URL}template/mobile/images/applyteacher-qrcode.png"/>
+			</a>
+			<input id="file0" class="file-3" type="file" size="30" onchange="javascript:setImagePreview();" accept="image/*" capture="camera" />
+		</div>
+	</div>
+	<div class="clear"></div>
+</section>
+
+<article class="htmleaf-container">
+	<div id="clipArea"></div>
+	<div class="foot-use">
+		<div class="uploader1 blue">
+			<input type="button" name="file" class="button" value="打开"/>
+			<input id="file" type="file" onchange="javascript:setImagePreview();" accept="image/*" multiple  />
+		</div>
+		<button id="clipBtn">截取</button>
+	</div>
+	<div id="view"></div>
+</article>
+
+<article class="btn-1">
+	<button>提交申请</button>
+</article>
+
+<footer>
+    <a href="{php echo $this->createMobileUrl('index', array('t'=>1));}">{$setting['copyright']}</a>
+</footer>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{/if}
+
+{template '_footerv2'}

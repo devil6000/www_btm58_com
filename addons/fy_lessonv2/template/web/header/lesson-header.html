@@ -1,0 +1,22 @@
+<ul class="nav nav-tabs">
+    <li {if $op=='display'}class="active"{/if}><a href="{php echo $this->createWebUrl('lesson');}">课程列表</a></li>
+	<li {if $op=='postlesson'}class="active"{/if}><a href="{php echo $this->createWebUrl('lesson', array('op'=>'postlesson','id'=>$_GPC['pid']));}">{if $_GPC['id']>0}编辑{else}添加{/if}课程</a></li>
+	{if $op=='postsection'}
+	<li class="active"><a href="{php echo $this->createWebUrl('lesson', array('op'=>'postsection','pid'=>$_GPC['pid'],'id'=>$_GPC['id']));}">{if $_GPC['id']>0}编辑{else}添加{/if}章节</a></li>
+	{/if}
+	{if $op=='viewsection'}
+	<li class="active"><a href="{php echo $this->createWebUrl('lesson', array('op'=>'viewsection', 'pid'=>$_GPC['pid']));}">章节列表</a></li>
+	{/if}
+	{if $op=='previewVideo'}
+	<li class="active"><a href="javascript:;">预览章节视频</a></li>
+	{/if}
+	{if $op=='praxis'}
+	<li class="active"><a href="{php echo $this->createWebUrl('lesson', array('op'=>'praxis', 'pid'=>$_GPC['pid'], 'cid'=>$_GPC['cid']));}">习题列表</a></li>
+	{/if}
+	{if $op == 'postpraxis'}
+	<li class="active"><a href="{php echo $this->createWebUrl('lesson', array('op'=>'postpraxis','pid'=>$_GPC['pid'],'cid'=>$_GPC['cid'], 'id' => $_GPC['id']));}">{if $_GPC['id']>0}编辑{else}添加{/if}习题</a></li>
+	{/if}
+	<li {if $op=='record'}class="active"{/if}><a href="{php echo $this->createWebUrl('lesson', array('op'=>'record'));}">学习记录</a></li>
+	<li {if $op=='inform'}class="active"{/if}><a href="{php echo $this->createWebUrl('lesson', array('op'=>'inform'));}">开课提醒</a></li>
+	<li {if $op=='updomain'}class="active"{/if}><a href="{php echo $this->createWebUrl('lesson', array('op'=>'updomain'));}">更新音视频域名</a></li>
+</ul>

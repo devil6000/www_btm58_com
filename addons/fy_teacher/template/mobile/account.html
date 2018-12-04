@@ -1,0 +1,65 @@
+<!--
+ * 修改密码
+ * ============================================================================
+ * 版权所有 2015-2018 微课堂团队，并保留所有权利。
+ * 网站地址: http://wx.haoshu888.com
+ * ----------------------------------------------------------------------------
+ * 这不是一个自由软件！不允许对程序代码以任何形式任何目的的再发布，作者将保留
+ * 追究法律责任的权力和最终解释权。
+ * ============================================================================
+-->
+{template '_header'}
+
+{if $op=='display'}
+<div class="panel admin-panel">
+    <div class="panel-head"><strong><span class="icon-key"></span> 修改登录密码</strong></div>
+    <div class="body-content">
+        <form method="post" class="form-x">
+            <div class="form-group">
+                <div class="label">
+                    <label for="sitename">当前帐号：</label>
+                </div>
+                <div class="field">
+                    <label style="line-height:33px;">{$teacher['account']}</label>
+                </div>
+            </div>      
+            <div class="form-group">
+                <div class="label">
+                    <label for="sitename">原始密码：</label>
+                </div>
+                <div class="field">
+                    <input type="password" class="input w50" id="mpass" name="mpass" size="50" placeholder="请输入原始密码" data-validate="required:请输入原始密码">       
+                </div>
+            </div>      
+            <div class="form-group">
+                <div class="label">
+                    <label for="sitename">新密码：</label>
+                </div>
+                <div class="field">
+                    <input type="password" class="input w50" name="newpass" size="50" placeholder="请输入新密码" data-validate="required:请输入新密码,length#>=6:新密码不能小于6位,length#<=20:新密码不能大于20位">         
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="label">
+                    <label for="sitename">确认新密码：</label>
+                </div>
+                <div class="field">
+                    <input type="password" class="input w50" name="renewpass" size="50" placeholder="请再次输入新密码" data-validate="required:请再次输入新密码,repeat#newpass:两次输入的密码不一致">          
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="label">
+                    <label></label>
+                </div>
+                <div class="field">
+					<input type="hidden" name="token" value="{$_W['token']}" />
+                    <input type="submit" name="submit" class="button bg-main icon-check-square-o" value="提交" />
+                </div>
+            </div>      
+        </form>
+    </div>
+</div>
+{/if}
+
+{template '_footer'}

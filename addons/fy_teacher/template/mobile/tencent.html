@@ -1,0 +1,240 @@
+<!--
+ * 腾讯云对象存储管理
+ * ============================================================================
+ * 版权所有 2015-2018 微课堂团队，并保留所有权利。
+ * 网站地址: http://wx.haoshu888.com
+ * ----------------------------------------------------------------------------
+ * 这不是一个自由软件！不允许对程序代码以任何形式任何目的的再发布，作者将保留
+ * 追究法律责任的权力和最终解释权。
+ * ============================================================================
+-->
+
+{template '_header'}
+
+{if $op=='display'}
+<script type="text/javascript" src="{MODULE_URL}template/mobile/ZeroClipboard/ZeroClipboard.js"></script>
+<div class="panel admin-panel">
+    <div class="panel-head"><strong class="icon-reorder"> 视频管理</strong></div>
+    <div class="padding border-bottom">
+        <form action="./index.php" method="get">
+			<input type="hidden" name="i" value="{$uniacid}">
+            <input type="hidden" name="c" value="entry">
+            <input type="hidden" name="m" value="fy_teacher">
+            <input type="hidden" name="do" value="tencent">
+            <input type="hidden" name="op" value="display">
+            <ul class="search" style="padding-left:10px;">
+                <li> <a class="button border-green icon-plus-square-o" href="{php echo $this->createMobileUrl('tencent', array('op'=>'upload'));}"> 上传视频</a> </li>
+				<li>
+                    <input type="text" placeholder="文件名" name="keyword" class="input" style="width:200px; line-height:17px; display:inline-block; margin-left:20px;" value="{$_GPC['keyword']}">
+                </li>
+				<button type="submit" class="button border-main icon-search"> 搜 索 </button>
+            </ul>
+        </form>
+    </div>
+    <table class="table table-hover text-center">
+        <tr>
+            <th style="width:15%;">预览</th>
+            <th style="width:20%;">文件名称</th>       
+            <th style="width:10%;">文件大小</th>
+            <th style="width:15%;">上传时间</th>
+            <th style="width:30%;">文件链接</th>       
+        </tr>
+			{loop $list $key $item}
+			<tr>
+				<td>
+					<a href="{php echo $this->createMobileUrl('tencent', array('op'=>'preview','id'=>$item['id']));}"><img src="{MODULE_URL}template/mobile/images/videoCover.png?v=1" width="180"/></a>
+				</td>
+				<td>{$item['name']}</td>
+				<td>{$item['size']} MB</td>
+				<td>{php echo date('Y-m-d H:i:s', $item['addtime'])}</td>       
+				<td>
+					<textarea class="input" id="content{$key}" style="overflow-y:auto;">{$item['sys_link']}</textarea>
+					<button id="copyId{$key}" onclick="copy(this.id)" class="copy-button" data-clipboard-target="content{$key}">复制链接</button>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<button onclick="delFile({$item['id']})" class="copy-button" style="border-color:#ff0505;">删除文件</button>
+				</td>
+			</tr>
+			<script type="text/javascript">
+			var clip = new ZeroClipboard(document.getElementById("copyId{$key}"), {
+				moviePath: "{MODULE_URL}template/mobile/ZeroClipboard/ZeroClipboard.swf"
+			});
+			clip.on('complete', function(client, args) {
+				alert("复制成功");
+			});
+			</script>
+			{/loop}
+        <tr>
+            <td colspan="8">
+               {$pager}
+			</td>
+        </tr>
+    </table>
+</div>
+<script type="text/javascript">
+document.body.onselectstart=document.body.oncontextmenu=function(){ return false;}
+function videoContro(obj, type){
+	var myvideo = document.getElementById(obj.id);
+	if(document.getElementById(obj.id).paused){
+		document.getElementById(obj.id).play();
+	}else{
+		document.getElementById(obj.id).pause();
+	}	
+}
+function delFile(id){
+	if(!confirm('该操作不可恢复，确定删除该文件?')){
+		return false;
+	}
+	location.href="{php echo $this->createMobileUrl('tencent', array('op'=>'delQcloud'));}" + "&id=" + id;
+}
+</script>
+
+{elseif $op=='upload'}
+<link href="{MODULE_URL}template/mobile/css/uploadVideo.css" rel="stylesheet">
+<script src="{MODULE_URL}template/mobile/QCloud/jquery-1.12.4.min.js"></script>
+<script src="{MODULE_URL}template/mobile/QCloud/crypto.js"></script>
+<script type="text/javascript" src="{MODULE_URL}template/mobile/QCloud/cos-js-sdk-v4.js"></script>
+<style type="text/css">
+
+</style>
+<div class="mloading-bar" style="margin-top: -31px; margin-left: -140px;"><img src="{MODULE_URL}template/mobile/images/download.gif"><span id="mloading-text">文件上传中，请勿刷新或关闭浏览器...</span></div>
+<div id="overlay" style="height: 100%; width: 100%; opacity: 0.2;"></div>
+<div class="panel admin-panel">
+    <div class="panel-head"><strong><span class="icon-pencil-square-o"></span> 上传音视频</strong></div>
+    <div class="body-content">
+		<input type="file" class="input" id="file" accept="audio/mp3,{php echo $video_type?$video_type:'video/mp4';}" style="display:none;">
+		<div class="form-group">
+			<div class="field">
+				<input type="button" class="button bg-main icon-check-square-o" id="sliceUploadFile" value="添加文件">
+				<input type="hidden" id="file_size" value="0" style="display:none;">
+				<span class="help-block">注意：当前系统上传单个文件限制为{$config['upload_max']}MB，音频请上传mp3格式文件，视频请上传mp4格式文件</span>
+			</div>
+		</div>
+		<div class="row">
+			<textarea id="result" class="input" rows="20"></textarea>
+		</div>
+		<object id="qs" width="0" height="0" type="application/x-shockwave-flash" data="../addons/fy_teacher/template/mobile/QCloud/Somethingtest.swf" style="visibility: visible;"></object>
+    </div>
+</div>
+<script type="text/javascript">
+$(function(){
+	$("#overlay").height("100%");
+	$("#overlay").width("100%");
+
+	var bucket = "{php echo $qcloud['bucket'];}";
+	var appid = "{php echo $qcloud['appid'];}";
+	var region = "{php echo $qcloud['qcloud_area'];}";
+	var myFolder = "/{php echo $teacher['id'];}/";
+
+	var cos = new CosCloud({
+		appid: appid,
+		bucket: bucket,
+		region: region,
+		getAppSign: function (callback) {
+			callback("{php echo $signature;}")
+		},
+		getAppSignOnce: function (callback) {
+			callback("")
+		}
+	});
+
+	var successCallBack = function (result) {
+		$(".mloading-bar").hide();
+		$("#overlay").hide();
+
+		var res = eval(result);
+
+		var cdnUrl = "{$qcloud['url']}";
+		var tmpUrl = res.data.source_url.split("myqcloud.com");
+		var resTxt = "============恭喜您，上传成功============";
+		resTxt += "\n\n============文件原地址=================\n\n" + res.data.source_url;
+
+		if(cdnUrl!=''){
+			resTxt += "\n\n============文件CDN加速地址：==========\n\n" + cdnUrl + tmpUrl[1];
+		}
+
+		$.ajax({
+			url:"<?php echo $this->createMobileUrl('tencent', array('op'=>'saveQcloudUrl')); ?>",
+			data:{com_name:tmpUrl[1], sys_link:res.data.source_url, size:$("#file_size").val()},
+			type:'post',
+			dataType:'json',
+			success:function(msg){
+			}
+		});
+
+		$("#result").val(resTxt);
+	};
+
+	var errorCallBack = function (result) {
+		$(".mloading-bar").hide();
+		$("#overlay").hide();
+
+		console.log(result);
+
+		var res = eval(result);
+		var errorHtml = "";
+		if(result.responseJSON.code=='-70'){
+			errorHtml = "【请求的appid和签名中的appid不匹配】";
+		}else if(result.responseJSON.code=='-71'){
+			errorHtml = "【操作太频繁】";
+		}else if(result.responseJSON.code=='-96'){
+			errorHtml = "【上传失败，原因：签名已过期，请刷新后重试】";
+		}else if(result.responseJSON.code=='-97'){
+			errorHtml = "【上传失败，原因：签名校验失败】";
+		}else if(result.responseJSON.code=='-177'){
+			errorHtml = "【上传失败，原因：同名文件已存在】";
+		}else if(result.responseJSON.code=='-178'){
+			errorHtml = "【路径冲突，要上传的文件或者目录已经存在】";
+		}else if(result.responseJSON.code=='-285'){
+			errorHtml = "【上传文件大小大于限制】";
+		}else if(result.responseJSON.code=='-5957'){
+			errorHtml = "【操作不存在的bucket】";
+		}else{
+			errorHtml = "【上传失败，请稍后重试】";
+		}
+		$("#result").val(errorHtml + "\n腾讯云存储返回信息：\n" + result.responseText + "\n 详细错误信息请查看：https://www.qcloud.com/document/product/436/8432");
+	};
+
+	var progressCallBack = function (curr) {
+		console.log('请稍等，文件正在上传中.... ' + parseInt(curr*100) + '%');
+		$("#result").val('文件上传中...' + parseInt(curr*100) + '%');
+		document.getElementById("mloading-text").innerHTML = '请稍等，文件正在上传中....' + parseInt(curr*100) + '%';
+	};
+
+	//分片上传文件,当选择大于20M大小的文件的时候用分片上传
+	$('#sliceUploadFile').on('click', function () {
+		$('#file').off('change').on('change', function (e) {
+			var file = e.target.files[0];
+			var file_size = parseInt((file.size/1024)/1024);
+			var max_img_size = {php echo $config['upload_max']};
+			if (file_size > max_img_size) {
+				alert("当前系统上传文件不能超过" + max_img_size + "MB");
+				return false;
+			}
+
+			$("#file_size").val(file_size);
+			$(".mloading-bar").show();
+			$("#overlay").fadeTo(200, 0.2);
+			cos.uploadFile(successCallBack, errorCallBack, progressCallBack, bucket, myFolder + file.name, file, 0);
+			return false;
+		});
+
+		setTimeout(function () {
+			$('#file').click();
+		}, 0);
+
+		return false;
+	});
+});
+</script>
+
+{elseif $op=='preview'}
+<div class="panel admin-panel">
+    <div class="panel-head"><strong><span class="icon-pencil-square-o"></span> 预览视频</strong></div>
+    <div class="body-content" style="text-align: center;">
+		<video src="{$playurl}" controls="controls" width="640" height="360"></video>
+    </div>
+</div>
+
+{/if}
+
+{template '_footer'}

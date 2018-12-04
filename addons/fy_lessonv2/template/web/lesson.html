@@ -1,0 +1,62 @@
+<!--
+ * 课程管理
+ * ============================================================================
+ * 版权所有 2015-2018 微课堂团队，并保留所有权利。
+ * 网站地址: https://wx.haoshu888.com
+ * ----------------------------------------------------------------------------
+ * 这不是一个自由软件！不允许对程序代码以任何形式任何目的的再发布，作者将保留
+ * 追究法律责任的权力和最终解释权。
+ * ============================================================================
+-->
+{if $op!='previewVideo'}
+	{template 'common/header'}
+	{template 'web/lesson/lesson-header'}
+{/if}
+<link href="{MODULE_URL}template/web/style/fycommon.css" rel="stylesheet">
+
+
+{if $operation == 'display'}
+
+	{template 'web/lesson/display'}
+
+{elseif $operation == 'postlesson'}
+
+	{template 'web/lesson/postlesson'}
+
+{elseif $operation == 'postsection'}
+
+	{template 'web/lesson/postsection'}
+
+{elseif $operation == 'viewsection'}
+
+	{template 'web/lesson/viewsection'}
+
+{elseif $op=='record'}
+
+	{template 'web/lesson/record'}
+
+{elseif $op=='updomain'}
+
+	{template 'web/lesson/updomain'}
+
+{elseif $op=='inform'}
+
+	{template 'web/lesson/inform'}
+
+{elseif $op=='informStudent'}
+
+	{template 'web/lesson/informStudent'}
+
+{elseif $op=='previewVideo'}
+	{template 'web/header/qcloudvod-header'}
+	{template 'web/lesson/lesson-header'}
+	{template 'web/lesson/previewVideo'}
+{elseif $op == 'praxis'}
+	{template 'web/lesson/praxis'}
+{elseif $op == 'postpraxis'}
+	{template 'web/lesson/postpraxis'}
+{/if}
+
+{if $op!='previewVideo'}
+	{template 'common/footer'}
+{/if}

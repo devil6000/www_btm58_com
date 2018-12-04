@@ -1,0 +1,270 @@
+<!--
+ * 课程订单
+ * ============================================================================
+ * 版权所有 2015-2018 微课堂团队，并保留所有权利。
+ * 网站地址: http://wx.haoshu888.com
+ * ----------------------------------------------------------------------------
+ * 这不是一个自由软件！不允许对程序代码以任何形式任何目的的再发布，作者将保留
+ * 追究法律责任的权力和最终解释权。
+ * ============================================================================
+-->
+{template '_header'}
+
+{if $op=='display'}
+<style type="text/css">
+    body{font-family: "Microsoft YaHei","simsun","Helvetica Neue", Arial, Helvetica, sans-serif;}
+    h1{font-size:24px;}
+    .table th{font-weight:bold;}
+    .table td{font-size:13px; color:#333;}
+</style>
+<script type="text/javascript" src="{MODULE_URL}template/mobile/jedate/jedate.js"></script>
+<div class="panel admin-panel">
+    <div class="panel-head"><strong class="icon-reorder"> 课程订单</strong></div>
+    <div class="padding border-bottom">
+        <form action="./index.php" method="get">
+            <input type="hidden" name="i" value="{$uniacid}" />
+            <input type="hidden" name="c" value="entry" />
+            <input type="hidden" name="m" value="fy_teacher" />
+            <input type="hidden" name="do" value="order" />
+            <input type="hidden" name="op" value="display" />
+            <ul class="search" style="padding-left:10px;">
+                <li>
+                    <input type="text" placeholder="订单编号/课程名称/用户姓名/手机号码" name="keyword" class="input" style="width:300px; line-height:17px; display:inline-block; margin-left:20px;" value="{$_GPC['keyword']}">
+                </li>
+                <li>
+                    <select name="status" class="input" style="width:150px; line-height:17px; display:inline-block">
+                        <option value="">订单状态</option>
+                        <option value="0" {if in_array($_GPC['status'], array('0'))}selected{/if}>待付款</option>
+                        <option value="1" {if $_GPC['status']==1}selected{/if}>已付款</option>
+                        <option value="2" {if $_GPC['status']==2}selected{/if}>已评价</option>
+                        <option value="-1" {if $_GPC['status']==-1}selected{/if}>已取消</option>
+                    </select>
+                </li>
+                <li>
+                    下单时间:
+                    <input class="input inputDate" id="starttime" name="starttime" type="text" onClick="jeDate({dateCell: '#starttime', isTime: false, format: 'YYYY-MM-DD'})" value="{$_GPC['starttime']}" readonly>
+                    ~
+                    <input class="input inputDate" id="endtime" name="endtime" type="text" onClick="jeDate({dateCell: '#endtime', isTime: false, format: 'YYYY-MM-DD'})" value="{$_GPC['endtime']}" readonly>
+                    &nbsp;&nbsp;
+                    <button type="submit" class="button border-main icon-search"> 搜 索 </button>
+                </li>
+            </ul>
+        </form>
+    </div>
+    <table class="table table-hover text-center">
+        <tr>
+            <th style="width:15%;">订单遍号</th>
+            <th style="width:15%;">昵称/姓名/手机号码</th>       
+            <th style="width:20%;">课程名称</th>
+            <th style="width:8%;">售价</th>
+            <th style="width:8%;">讲师收入</th>
+            <th style="width:8%;">订单状态</th>
+            <th style="width:12%;">下单时间</th>
+            <th>操作</th>       
+        </tr>
+        {loop $list $item}
+        <tr>
+            <td>{$item['ordersn']}</td>
+            <td>{$item['nickname']}<br/>{$item['realname']}，{$item['mobile']}</td>
+            <td>{$item['bookname']}</td>
+            <td>{$item['price']} 元</td>
+            <td>{php echo round($item['price']*$item['teacher_income']*0.01,2)} 元</td>  
+            <td>
+                {if $item['status'] == 0}<span class="label-box label-box-danger">未付款</span>{/if}
+                {if $item['status'] == 1}
+                <span class="label-box label-box-success">
+                    {if $item['paytype'] == 'credit'}余额支付
+                    {elseif $item['paytype'] == 'wechat'}微信支付
+                    {elseif $item['paytype'] == 'alipay'}支付宝支付
+                    {elseif $item['paytype'] == 'offline'}线下支付
+                    {else}无{/if}
+                </span>
+                {/if}
+                {if $item['status'] == 2}<span class="label-box label-box-info">已评价</span>{/if}
+                {if $item['status'] == -1}<span class="label-box label-box-default">已取消</span>{/if}			
+            </td>         
+            <td>{php echo date('Y-m-d H:i', $item['addtime']);}</td>
+            <td>
+                <div class="button-group">
+                    <a class="button border-green" href="{php echo $this->createMobileUrl('order', array('op'=>'details','orderid'=>$item['id']));}"><span class="icon-file-text-o"></span> 订单详情</a>
+                </div>
+            </td>
+        </tr>
+        {/loop}
+        <tr>
+            <td colspan="8">
+                {$pager}
+            </td>
+        </tr>
+    </table>
+</div>
+
+{elseif $op=='details'}
+<div class="panel admin-panel">
+    <div class="panel-head"><strong><span class="icon-pencil-square-o"></span> 订单详情</strong></div>
+    <div class="body-content">
+        <form class="form-x">
+            <div class="form-group">
+                <div class="label">
+                    <label class="order-title">订单编号：</label>
+                </div>
+                <div class="field">
+                    <span class="order-details">{$order['ordersn']}</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="label">
+                    <label class="order-title">课程名称：</label>
+                </div>
+                <div class="field">
+                    <span class="order-details">{$order['bookname']}</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="label">
+                    <label class="order-title">课程售价：</label>
+                </div>
+                <div class="field">
+                    <span class="order-details">{$order['price']} 元</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="label">
+                    <label class="order-title">讲师分成：</label>
+                </div>
+                <div class="field">
+                    <span class="order-details">{$order['teacher_income']}%</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="label">
+                    <label class="order-title">讲师收入：</label>
+                </div>
+                <div class="field">
+                    <span class="order-details">{php echo round($order['price']*$order['teacher_income']*0.01,2);} 元</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="label">
+                    <label class="order-title">付款方式：</label>
+                </div>
+                <div class="field">
+                    <span class="order-details">
+                        {if $order['paytype'] == 'credit'}余额支付
+                        {elseif $order['paytype'] == 'wechat'}微信支付
+                        {elseif $order['paytype'] == 'alipay'}支付宝支付
+                        {elseif $order['paytype'] == 'offline'}线下支付
+                        {else}无{/if}
+                    </span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="label">
+                    <label class="order-title">订单状态：</label>
+                </div>
+                <div class="field">
+                    <span class="order-details">
+                        {if $order['status'] == 0}<span class="label-box label-box-danger">未付款</span>{/if}
+                        {if $order['status'] == 1}<span class="label-box label-box-success">已付款</span>{/if}
+                        {if $order['status'] == 2}<span class="label-box label-box-info">已评价</span>{/if}
+                        {if $order['status'] == -1}<span class="label-box label-box-default">已取消</span>{/if}
+                    </span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="label">
+                    <label class="order-title">下单时间：</label>
+                </div>
+                <div class="field">
+                    <span class="order-details">{php echo date('Y-m-d H:i:s', $order['addtime'])}</span>
+                </div>
+            </div>
+			{if !empty($order['paytime'])}
+            <div class="form-group">
+                <div class="label">
+                    <label class="order-title">付款时间：</label>
+                </div>
+                <div class="field">
+                    <span class="order-details">{php echo date('Y-m-d H:i:s', $order['paytime'])}</span>
+                </div>
+            </div>
+			{/if}
+			{if !empty($order['paytype'])}
+			<div class="form-group">
+                <div class="label">
+                    <label class="order-title">订单有效期：</label>
+                </div>
+                <div class="field">
+                    <span class="order-details">{php echo $order['validity']==0 ? '长期有效' : date('Y-m-d H:i:s', $order['validity'])}</span>
+                </div>
+            </div>
+			{/if}
+            <div class="form-group">
+                <div class="label">
+                    <label class="order-title">昵称/姓名/手机号码：</label>
+                </div>
+                <div class="field">
+                    <span class="order-details"><img src="{$order['avatar']}" width="35" height="35">&nbsp;&nbsp;{$order['nickname']}&nbsp;/&nbsp;{$order['realname']}&nbsp;/&nbsp;{$order['mobile']}</span>
+                </div>
+            </div>
+        </form>
+    </div>
+	{if !empty($evaluate)}
+    <div class="panel-head"><strong><span class="icon-pencil-square-o"></span> 订单评价</strong></div>
+    <div class="body-content">
+        <form action="{$_W['siteurl']}" method="post" class="form-x">
+			<div class="form-group">
+                <div class="label">
+                    <label class="order-title">评价性质：</label>
+                </div>
+                <div class="field">
+                    <span class="order-details">
+					{if $evaluate['grade']==1}
+						<img src="{MODULE_URL}template/mobile/images/oc-h.png" style="line-height:43px;">(好评)
+					{elseif $evaluate['grade']==2}
+						<img src="{MODULE_URL}template/mobile/images/oc-z.png">(中评)
+					{elseif $evaluate['grade']==3}
+						<img src="{MODULE_URL}template/mobile/images/oc-c.png">(差评)
+					{/if}
+					</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="label">
+                    <label class="order-title">评价内容：</label>
+                </div>
+                <div class="field">
+                    <span class="order-details">{$evaluate['content']}</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="label">
+                    <label class="order-title">回复内容：</label>
+                </div>
+                <div class="field">
+					{if empty($evaluate['reply'])}
+                    <textarea name="reply" class="input" style="height:120px;"></textarea>
+					{else}
+					<span class="order-details">{$evaluate['reply']}</span>
+					{/if}
+                </div>
+            </div>
+			{if empty($evaluate['reply'])}
+			<div class="form-group">
+				<div class="label">
+					<label></label>
+				</div>
+				<div class="field">
+					<input type="hidden" value="{$_W['token']}" name="token">
+					<input class="button bg-main icon-check-square-o" type="submit" name="submit" value="提交">
+				</div>
+			</div>
+			{/if}
+        </form>
+    </div>
+	{/if}
+</div>
+{/if}
+
+
+{template '_footer'}

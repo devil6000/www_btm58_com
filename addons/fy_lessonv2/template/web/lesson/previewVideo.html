@@ -1,0 +1,98 @@
+{if $section['savetype']==0 || $section['savetype']==1 || $section['savetype']==3}
+	<!-- 其他存储、七牛云存储、腾讯云存储 -->
+	<div class="main">
+		<div class="panel panel-default">
+			<div class="panel-heading">视频预览</div>
+			<div class="panel-body" style="text-align: center;">
+				<video src="{$playurl}" controls="controls" width="640" height="360"></video>
+			</div>
+		</div>
+	</div>
+
+{elseif $section['savetype']==2}
+	<!-- 内嵌代码方式  -->
+	<style type="text/css">
+	iframe{height:500px !important;}
+	</style>
+	<div class="main">
+		<div class="panel panel-default">
+			<div class="panel-heading">视频预览</div>
+			<div class="panel-body" style="text-align: center;">
+				{php echo htmlspecialchars_decode($section['videourl']);}
+			</div>
+		</div>
+	</div>	
+
+{elseif $section['savetype']==4}
+	<!-- 阿里云点播 -->
+	<style type="text/css">
+	.prism-player{margin:0 auto;}
+	</style>
+	<link rel="stylesheet" href="//g.alicdn.com/de/prismplayer/2.7.2/skins/default/aliplayer-min.css" />
+	<script type="text/javascript" src="//g.alicdn.com/de/prismplayer/2.7.2/aliplayer-min.js"></script>
+
+	<div class="main">
+		<div class="panel panel-default">
+			<div class="panel-heading">视频预览</div>
+			<div class="panel-body">
+				<div class="prism-player" id="J_prismPlayer"></div>
+			</div>
+		</div>
+	</div>
+	<script>
+		var player = new Aliplayer({
+			id: "J_prismPlayer",
+			autoplay: false,
+			isLive:false,
+			playsinline:true,
+			width:"640px",
+			height:"360px",
+			controlBarVisibility:"click",
+			showBarTime:"3000",
+			useH5Prism:false,
+			useFlashPrism:false,
+			x5_type:"h5",
+			x5_video_position:"top",
+			vid: "<?php echo $section['videourl']; ?>",
+			playauth: "<?php echo $playAuth; ?>",
+			cover:"",
+			<?php if($audio){ ?>
+				mediaType: "audio",
+			<?php } ?>
+		});
+	</script>
+
+{elseif $section['savetype']==5}
+	<!-- 腾讯云点播 -->
+	<style type="text/css">
+	.video-js{margin:0 auto;}
+	</style>
+	<link href="//imgcache.qq.com/open/qcloud/video/tcplayer/tcplayer.css" rel="stylesheet">
+	<script src="//imgcache.qq.com/open/qcloud/video/tcplayer/tcplayer.min.js"></script>
+
+	<div class="main">
+		<div class="panel panel-default">
+			<div class="panel-heading">视频预览</div>
+			<div class="panel-body">
+				<video id="player-container-id" width="640" height="360" preload="auto" playsinline webkit-playsinline></video>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		var player = TCPlayer('player-container-id', {
+			fileID: "<?php echo $section['videourl']; ?>",
+			appID : "<?php echo $qcloudvod['appid']; ?>",
+			t	  : "<?php echo $res['t']; ?>",
+			us	  : "<?php echo $res['us']; ?>",
+			sign  : "<?php echo $res['sign']; ?>",
+			exper : "",
+			plugins:{
+				ContinuePlay: {
+				   text:'上次播放至 ',
+				   btnText: '恢复播放'
+				},
+		   }
+		});
+	</script>
+
+{/if}

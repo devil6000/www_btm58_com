@@ -1,0 +1,306 @@
+<!--
+ * 阿里云点播
+ * ============================================================================
+ * 版权所有 2015-2018 微课堂团队，并保留所有权利。
+ * 网站地址: http://wx.haoshu888.com
+ * ----------------------------------------------------------------------------
+ * 这不是一个自由软件！不允许对程序代码以任何形式任何目的的再发布，作者将保留
+ * 追究法律责任的权力和最终解释权。
+ * ============================================================================
+-->
+
+{template '_header'}
+
+{if $op=='display'}
+<script type="text/javascript" src="{MODULE_URL}template/mobile/ZeroClipboard/ZeroClipboard.js"></script>
+<div class="panel admin-panel">
+    <div class="panel-head"><strong class="icon-reorder"> 视频管理</strong></div>
+    <div class="padding border-bottom">
+        <form action="./index.php" method="get">
+			<input type="hidden" name="i" value="{$uniacid}">
+            <input type="hidden" name="c" value="entry">
+            <input type="hidden" name="m" value="fy_teacher">
+            <input type="hidden" name="do" value="aliyunvod">
+            <input type="hidden" name="op" value="display">
+            <ul class="search" style="padding-left:10px;">
+                <li> <a class="button border-green icon-plus-square-o" href="{php echo $this->createMobileUrl('aliyunvod', array('op'=>'upload'));}"> 上传视频</a> </li>
+				<li>
+                    <input type="text" placeholder="文件名" name="keyword" class="input" style="width:200px; line-height:17px; display:inline-block; margin-left:20px;" value="{$_GPC['keyword']}">
+                </li>
+				<button type="submit" class="button border-main icon-search"> 搜 索 </button>
+            </ul>
+        </form>
+    </div>
+    <table class="table table-hover text-center">
+        <tr>
+            <th style="width:15%;">预览</th>
+            <th style="width:20%;">文件名称</th>       
+            <th style="width:10%;">文件大小</th>
+            <th style="width:15%;">上传时间</th>
+            <th style="width:30%;">VideoId</th>       
+        </tr>
+			{loop $list $key $item}
+			<tr>
+				<td>
+					<a href="{php echo $this->createMobileUrl('aliyunvod', array('op'=>'preview','id'=>$item['id']));}"><img src="{MODULE_URL}template/mobile/images/videoCover.png?v=1" width="180"/></a>
+				<td>{$item['name']}</td>
+				<td>{$item['size']} MB</td>
+				<td>{php echo date('Y-m-d H:i:s', $item['addtime'])}</td>       
+				<td>
+					<textarea class="input" id="content{$key}" style="overflow-y:auto;">{$item['videoid']}</textarea>
+					<button id="copyId{$key}" onclick="copy(this.id)" class="copy-button" data-clipboard-target="content{$key}">复制链接</button>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<button onclick="delFile({$item['id']})" class="copy-button" style="border-color:#ff0505;">删除文件</button>
+				</td>
+			</tr>
+			<script type="text/javascript">
+			var clip = new ZeroClipboard(document.getElementById("copyId{$key}"), {
+				moviePath: "{MODULE_URL}template/mobile/ZeroClipboard/ZeroClipboard.swf"
+			});
+			clip.on('complete', function(client, args) {
+				alert("复制成功");
+			});
+			</script>
+			{/loop}
+        <tr>
+            <td colspan="8">
+               {$pager}
+			</td>
+        </tr>
+    </table>
+</div>
+<script type="text/javascript">
+document.body.onselectstart=document.body.oncontextmenu=function(){ return false;}
+function videoContro(obj, type){
+	var myvideo = document.getElementById(obj.id);
+	if(document.getElementById(obj.id).paused){
+		document.getElementById(obj.id).play();
+	}else{
+		document.getElementById(obj.id).pause();
+	}	
+}
+function delFile(id){
+	if(!confirm('该操作不可恢复，确定删除该文件?')){
+		return false;
+	}
+	location.href="{php echo $this->createMobileUrl('aliyunvod', array('op'=>'delVideo'));}" + "&id=" + id;
+}
+</script>
+
+{elseif $op=='upload'}
+<link href="{MODULE_URL}template/mobile/css/uploadVideo.css" rel="stylesheet">
+<script src="{MODULE_URL}../fy_lessonv2/library/aliyunVod/js/es6-promise.min.js"></script>
+<script src="{MODULE_URL}../fy_lessonv2/library/aliyunVod/js/aliyun-oss-sdk-5.2.0.min.js"></script>
+<script src="{MODULE_URL}../fy_lessonv2/library/aliyunVod/js/aliyun-upload-sdk-1.4.0.min.js"></script>
+
+<div class="mloading-bar" style="margin-top: -31px; margin-left: -140px;"><img src="{MODULE_URL}template/mobile/images/download.gif"><span id="mloading-text">文件上传中，请勿刷新或关闭浏览器...</span></div>
+<div id="overlay" style="height: 100%; width: 100%; opacity: 0.2;"></div>
+<div class="panel admin-panel">
+    <div class="panel-head"><strong><span class="icon-pencil-square-o"></span> 上传视频</strong></div>
+    <div class="body-content">
+		<div class="body-content">
+			<input type="file" name="file" id="files" accept="video/*,audio/mp3" class="btn btn-default"/>
+			<input type="hidden" id="file_size"  value="0">
+			<input type="hidden" id="uploadAuth" value="">
+			<input type="hidden" id="uploadAddress" value="">
+			<input type="hidden" id="videoId" value="">
+			<br/>
+			1、当前系统上传单个文件限制为{$config['upload_max']}MB；
+			<br/>
+			2、点播主要支持视频格式，mp3文件上传后会被自动转码为mp4。选择文件后，系统将自动开始上传，上传过程请勿刷新浏览器，否则将导致文件上传失败。
+			<br/>
+			<select multiple="multiple" id="textarea" style="display:block;margin-top:15px;width:98%;height:400px !important;overflow-x:auto;"></select>
+		</div>
+		
+    </div>
+</div>
+<script type="text/javascript">
+var uploader = new AliyunUpload.Vod({
+	retryCount: 5,
+    'onUploadFailed': function (uploadInfo, code, message) {
+		hideOverlay();
+        log("上传文件失败：" + uploadInfo.file.name + ",错误代码:" + code + ", 错误信息:" + message);
+    },
+    'onUploadSucceed': function (uploadInfo) {
+		$.ajax({
+			url:"<?php echo $this->createMobileUrl('aliyunvod', array('op'=>'saveVideo')); ?>",
+			data:{
+				filename: uploadInfo.file.name,
+				object: uploadInfo.object,
+				videoId: uploadInfo.videoId,
+				size: $("#file_size").val()
+			},
+			type:'post',
+			dataType:'json',
+			success:function(msg){
+			}
+		});
+		hideOverlay();
+        log("上传文件成功：" + uploadInfo.file.name + ", endpoint:" + uploadInfo.endpoint + ", bucket:" + uploadInfo.bucket + ", object:" + uploadInfo.object);
+    },
+    'onUploadProgress': function (uploadInfo, totalSize, loadedPercent) {
+        log("正在上传:文件名：" + uploadInfo.file.name + ", 大小:" + ((totalSize/1024)/1024).toFixed(2) + "MB, 进度:" + (loadedPercent * 100.00).toFixed(2) + "%");
+    },
+    onUploadCanceled:function(uploadInfo){
+		hideOverlay();
+        log("用户取消上传文件：" + uploadInfo.file.name);
+    },
+    'onUploadstarted': function (uploadInfo) {
+        if (isVodMode()) {
+            if(!uploadInfo.videoId)//这个文件没有上传异常
+            {
+                //mock 上传凭证，实际产品中需要通过接口获取
+                var uploadAuth = document.getElementById("uploadAuth").value;
+                var uploadAddress = document.getElementById("uploadAddress").value;
+                var videoId = document.getElementById("videoId").value;
+                //实际环境中调用调用点播的获取上传凭证接口
+                //https://help.aliyun.com/document_detail/55407.html?spm=a2c4g.11186623.6.629.CH7i3X
+                //获取上传凭证后，调用setUploadAuthAndAddress
+                uploader.setUploadAuthAndAddress(uploadInfo, uploadAuth, uploadAddress,videoId);
+            }
+            else//如果videoId有值，根据videoId刷新上传凭证
+            {
+                //mock 上传凭证 实际产品中需要通过接口获取
+                var uploadAuth = document.getElementById("uploadAuth").value;
+                var uploadAddress = document.getElementById("uploadAddress").value;
+                //实际环境中调用点播的刷新上传凭证接口，获取凭证
+                //https://help.aliyun.com/document_detail/55408.html?spm=a2c4g.11186623.6.630.BoYYcY
+                //获取上传凭证后，调用setUploadAuthAndAddress
+                uploader.setUploadAuthAndAddress(uploadInfo, uploadAuth, uploadAddress);
+            }
+        }
+        log("开始上传文件：" + uploadInfo.file.name + ", endpoint:" + uploadInfo.endpoint + ", bucket:" + uploadInfo.bucket + ", object:" + uploadInfo.object);
+    }
+    ,
+    'onUploadEnd':function(uploadInfo){
+		hideOverlay();
+        log("上传结束：已成功上传文件");
+    }
+});
+
+
+// 点播上传。每次上传都是独立的鉴权，所以初始化时，不需要设置鉴权
+// 临时账号过期时，在onUploadTokenExpired事件中，用resumeWithToken更新临时账号，上传会续传。
+var selectFile = function (event) {
+    var file = event.target.files[0];
+	var file_size = parseFloat((file.size/1024)/1024).toFixed(2);
+	$("#file_size").val(file_size);
+
+	var maxUploadSize = "<?php echo $config['upload_max'] ?>";
+	if (maxUploadSize>0 && file.size > maxUploadSize * 1024 * 1024) {
+		log("上传错误：当前系统限制最大上传文件 " + maxUploadSize + "MB");
+		return;
+	}
+
+	var uploadAuthUrl = "{php echo $this->createMobileUrl('aliyunvod', array('op'=>'getUploadInfo'));}";
+	$.ajax({
+		type: "POST",
+		url: uploadAuthUrl,
+		data: {filename:file.name},
+		dataType: "json",
+		success: function(res){
+			$("#uploadAuth").val(res.UploadAuth);
+			$("#uploadAddress").val(res.UploadAddress);
+			$("#videoId").val(res.VideoId);
+			addfile();
+		},
+		fail: function(res){
+			hideOverlay();
+			log("获取上传信息失败，请刷新重试!");
+		}
+	});    
+};
+
+document.getElementById("files")
+    .addEventListener('change', selectFile);
+
+function addfile(){
+	showOverlay();
+	var file = document.getElementById("files").files;
+	var userData;
+    if (isVodMode()) {
+        userData = '{"Vod":{"StorageLocation":"","UserData":{"IsShowWaterMark":"true","Priority":"7"}}}';
+    } else {
+        userData = '{"Vod":{"StorageLocation":"","Title":"'+file[0].name+'","Description":"","CateId":"","Tags":"","UserData":""}}';
+    }
+
+    log("添加待上传文件: " + file[0].name);
+    if (isVodMode()) {
+        // 点播上传。每次上传都是独立的OSS object，所以添加文件时，不需要设置OSS的属性
+        uploader.addFile(file[0], null, null, null, userData);
+    }
+	uploader.startUpload();
+}
+
+function showOverlay(){
+	$(".mloading-bar").show();
+	$("#overlay").show();
+}
+function hideOverlay(){
+	$(".mloading-bar").hide();
+	$("#overlay").hide();
+}
+
+var textarea=document.getElementById("textarea");
+
+function log(value) {
+    if (!value) {
+        return;
+    }
+
+    var len = textarea.options.length;
+    if (len > 0 && textarea.options[len-1].value.substring(0, 40) == value.substring(0, 40)) {
+    } else if (len > 25) {
+        textarea.remove(0);
+    }
+
+    var option=document.createElement("option");
+    option.value=value,option.innerHTML=value;
+    textarea.appendChild(option);
+}
+
+function isVodMode() {
+    var uploadAuth = document.getElementById("uploadAuth").value;
+    return (uploadAuth && uploadAuth.length > 0);
+}
+</script>
+
+{elseif $op=='preview'}
+<style type="text/css">
+.prism-player{margin:0 auto;}
+</style>
+<link rel="stylesheet" href="//g.alicdn.com/de/prismplayer/2.5.0/skins/default/aliplayer-min.css" />
+<script type="text/javascript" src="//g.alicdn.com/de/prismplayer/2.5.0/aliplayer-min.js"></script>
+
+<div class="panel admin-panel">
+    <div class="panel-head"><strong><span class="icon-pencil-square-o"></span> 预览视频</strong></div>
+    <div class="body-content">
+		<div class="body-content">
+			<div class="prism-player" id="J_prismPlayer"></div>
+		</div>
+		
+    </div>
+</div>
+
+<script>
+	var player = new Aliplayer({
+		id: "J_prismPlayer",
+		autoplay: false,
+		isLive:false,
+		playsinline:true,
+		width:"640px",
+		height:"400px",
+		controlBarVisibility:"click",
+		showBarTime:"3000",
+		useH5Prism:false,
+		useFlashPrism:false,
+		x5_type:"h5",
+		x5_video_position:"top",
+		vid: "<?php echo $file['videoid']; ?>",
+		playauth: "<?php echo $playAuth; ?>",
+		cover:""
+	});
+</script>
+{/if}
+
+{template '_footer'}

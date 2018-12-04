@@ -1,0 +1,126 @@
+<div class="main">
+    <form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+        <div class="panel panel-default">
+            <div class="panel-heading">习题信息</div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">当前课程</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" value="{$lesson['bookname']}" readonly/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">章节名称</label>
+                    <div class="col-sm-9">
+                        <input type="text" name="title" class="form-control" value="{$section['title']}" readonly />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">习题内容</label>
+                    <div class="col-sm-9">
+                        {php echo tpl_ueditor('subject', $praxis['subject']);}
+                        <div class="help-block">请填写习题内容</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">视频存储方式</label>
+                    <div class="col-sm-9">
+                        {loop $saveList $key $item}
+                        <label class="radio-inline" id="voidtype{$key}"><input type="radio" name="voidtype" value="{$key}" {if $praxis['voidtype'] == $key}checked="true"{/if} class="checkSaveType"/> {$item}</label>&nbsp;
+                        {/loop}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">【视频】<br/>【点播VideoId】</label>
+                    <div class="col-sm-9">
+                        <textarea id="voideurl" name="voideurl" class="form-control" style="min-height:100px;">{$praxis['voideurl']}</textarea>
+                        <div class="help-block">
+                            其他存储、七牛云存储和腾讯云存储请填写音视频url，视频请用mp4，音频请用mp3格式<br/>
+                            阿里云点播和腾讯云点播请填写VideoId
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">音频存储方式</label>
+                    <div class="col-sm-9">
+                        {loop $saveList $key $item}
+                        <label class="radio-inline" id="audiotype{$key}"><input type="radio" name="audiotype" value="{$key}" {if $praxis['audiotype'] == $key}checked="true"{/if} class="checkSaveType"/> {$item}</label>&nbsp;
+                        {/loop}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">【音频】<br/>【点播VideoId】</label>
+                    <div class="col-sm-9">
+                        <textarea id="audiourl" name="audiourl" class="form-control" style="min-height:100px;">{$praxis['audiourl']}</textarea>
+                        <div class="help-block">
+                            其他存储、七牛云存储和腾讯云存储请填写音视频url，视频请用mp4，音频请用mp3格式<br/>
+                            阿里云点播和腾讯云点播请填写VideoId
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">答案A内容</label>
+                    <div class="col-sm-10">
+                        {php echo tpl_ueditor('answer_a', $praxis['answer_a']);}
+                        <div class="help-block">答案A内容</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">答案B内容</label>
+                    <div class="col-sm-10">
+                        {php echo tpl_ueditor('answer_b', $praxis['answer_b']);}
+                        <div class="help-block">答案B内容</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">答案C内容</label>
+                    <div class="col-sm-10">
+                        {php echo tpl_ueditor('answer_c', $praxis['answer_c']);}
+                        <div class="help-block">答案C内容</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">答案D内容</label>
+                    <div class="col-sm-10">
+                        {php echo tpl_ueditor('answer_d', $praxis['answer_d']);}
+                        <div class="help-block">答案D内容</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">正确答案</label>
+                    <div class="col-sm-10"><input type="text" name="correct" value="{$praxis['correct']}" class="form-control" /></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">排序</label>
+                    <div class="col-sm-9">
+                        <input type="text" name="displayorder" class="form-control" value="{$praxis['displayorder']}" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group col-sm-12">
+            <input type="submit" name="submit" value="提交" class="btn btn-primary col-lg-1" />
+            <input type="hidden" name="token" value="{$_W['token']}" />
+            <input type="hidden" name="cid" value="{$cid}" />
+            <input type="hidden" name="pid" value="{$pid}" />
+            <input type="hidden" name="id" value="{$id}" />
+        </div>
+    </form>
+</div>
+<script type="text/javascript">
+    require(['jquery', 'util'], function($, util){
+        $(function(){
+            util.clip($("#copy-btn")[0], $("#copy-btn").text());
+        });
+    });
+
+    $(function() {
+
+    });
+
+</script>

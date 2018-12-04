@@ -1,0 +1,270 @@
+<!--
+ * 课程订单
+ * ============================================================================
+ * 版权所有 2015-2018 微课堂团队，并保留所有权利。
+ * 网站地址: http://wx.haoshu888.com
+ * ----------------------------------------------------------------------------
+ * 这不是一个自由软件！不允许对程序代码以任何形式任何目的的再发布，作者将保留
+ * 追究法律责任的权力和最终解释权。
+ * ============================================================================
+-->
+{template '_header'}
+
+{if $op=='display'}
+<style type="text/css">
+    body{font-family: "Microsoft YaHei","simsun","Helvetica Neue", Arial, Helvetica, sans-serif;}
+    h1{font-size:24px;}
+    .table th{font-weight:bold;}
+    .table td{font-size:13px; color:#333;}
+</style>
+<script type="text/javascript" src="{MODULE_URL}template/mobile/jedate/jedate.js"></script>
+<div class="panel admin-panel">
+    <div class="panel-head"><strong class="icon-reorder"> 课程收入</strong></div>
+    <div class="padding border-bottom">
+        <form action="./index.php" method="get">
+            <input type="hidden" name="i" value="{$uniacid}" />
+            <input type="hidden" name="c" value="entry" />
+            <input type="hidden" name="m" value="fy_teacher" />
+            <input type="hidden" name="do" value="income" />
+            <input type="hidden" name="op" value="display" />
+            <ul class="search" style="padding-left:10px;">
+				<li> <a class="button border-green icon-dollar" href="{php echo $this->createMobileUrl('income', array('op'=>'cash'));}"> 课程收入提现</a> </li>
+                <li>
+                    <input type="text" placeholder="课程名称 / 订单编号" name="keyword" class="input" style="width:220px; line-height:17px; display:inline-block; margin-left:20px;" value="{$_GPC['keyword']}">
+                </li>
+                <li>
+                    收入时间:
+                    <input class="input inputDate" id="starttime" name="starttime" type="text" onClick="jeDate({dateCell: '#starttime', isTime: false, format: 'YYYY-MM-DD'})" value="{$_GPC['starttime']}" readonly>
+                    ~
+                    <input class="input inputDate" id="endtime" name="endtime" type="text" onClick="jeDate({dateCell: '#endtime', isTime: false, format: 'YYYY-MM-DD'})" value="{$_GPC['endtime']}" readonly>
+                    &nbsp;&nbsp;
+                    <button type="submit" class="button border-main icon-search"> 搜 索 </button>
+                </li>
+            </ul>
+        </form>
+    </div>
+    <table class="table table-hover text-center">
+        <tr>
+            <th style="width:5%;">ID</th>
+            <th style="width:24%;">课程名称</th>       
+            <th style="width:9%;">课程售价</th>
+            <th style="width:9%;">讲师收入</th>
+            <th style="width:9%;">订单编号</th>
+            <th style="width:14%;">收入时间</th>
+            <th style="width:15%;">操作</th>       
+        </tr>
+        {loop $list $item}
+        <tr>
+            <td>{$item['id']}</td>
+            <td>{$item['bookname']}</td>
+            <td>{$item['orderprice']} 元</td>
+            <td>{$item['income_amount']} 元</td>  
+            <td>{$item['ordersn']}</td>
+            <td>{php echo date('Y-m-d H:i', $item['addtime']);}</td>
+            <td>
+                <div class="button-group">
+                    <a class="button border-green" href="{php echo $this->createMobileUrl('order', array('op'=>'details','orderid'=>$item['orderid']));}"><span class="icon-book"></span> 相关订单</a>
+                </div>
+            </td>
+        </tr>
+        {/loop}
+        <tr>
+            <td colspan="8">
+                {$pager}
+            </td>
+        </tr>
+    </table>
+</div>
+
+{elseif $op=='cash'}
+<div id="spinners" style="display:none;"><div class="spinner"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div></div>
+<div class="panel admin-panel">
+    <div class="panel-head"><strong><span class="icon-pencil-square-o"></span> 课程收入提现</strong></div>
+    <div class="body-content">
+        <form method="post" class="form-x" onsubmit="return checkCash();">
+            <div class="form-group">
+                <div class="label">
+                    <label>累计收入：</label>
+                </div>
+				<div class="field">
+					<div class="input-group">
+						<input type="text" class="input" value="{php echo $member['nopay_lesson']+$member['pay_lesson'];}" readonly="true" />
+						<span class="input-group-addon">元</span>
+					</div>
+				</div>
+            </div>
+			<div class="form-group">
+                <div class="label">
+                    <label>待提现佣金：</label>
+                </div>
+				<div class="field">
+					<div class="input-group">
+						<input type="text" class="input" value="{$member['nopay_lesson']}" readonly="true"/>
+						<span class="input-group-addon">元</span>
+					</div>
+				</div>
+            </div>
+			<div class="form-group">
+                <div class="label">
+                    <label>提现方式：</label>
+                </div>
+				<div class="field">
+					<div class="input-group" class="input">
+						<select name="cash_way" id="cash_way" class="input" onchange="selCashType(this.value)">
+							{if !empty($setting_cashway)}
+								<option value="">请选择...</option>
+								{loop $setting_cashway $way}
+									{if $way=='credit'}
+									<option value="1">提现到余额</option>
+									{/if}
+									{if $way=='weachat'}
+									<option value="2">提现到微信钱包</option>
+									{/if}
+									{if $way=='alipay'}
+									<option value="3">提现到支付宝</option>
+									{/if}
+								{/loop}
+							{else}
+								<option value="">暂无有效提现方式，请联系管理员</option>
+							{/if}
+						</select>
+					</div>
+				</div>
+            </div>
+			<div class="form-group" style="display:none;" id="pay_account">
+                <div class="label">
+                    <label>支付宝账号：</label>
+                </div>
+				<div class="field">
+					<div class="input-group">
+						<input type="text" class="input" name="pay_account" value="{$lastcashlog['pay_account']}"/>
+					</div>
+				</div>
+            </div>
+			<div class="form-group">
+                <div class="label">
+                    <label>提现金额：</label>
+                </div>
+				<div class="field">
+					<div class="input-group">
+						<input type="text" class="input" name="cash_num" value="" />
+						<span class="input-group-addon">元</span>
+					</div>
+				</div>
+            </div>
+            <div class="form-group">
+                <div class="label">
+                    <label></label>
+                </div>
+                <div class="field">
+					<input type="hidden" name="token" value="{$_W['token']}" />
+                    <input type="submit" name="submit" id="submit-btn" value="立即提现" class="button bg-main icon-check-square-o" />
+					<input type="button" value="提现记录" class="button bg-green icon-check-square-o" style="padding:6px 25px;margin-left:25px;" onclick="location.href='{$cashListUrl}'"/>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+function checkCash(){
+	var cash_way = $("#cash_way option:selected").val();
+	var number = $("input[name=cash_num]").val();
+	var pay_account = $("input[name=pay_account]").val();
+	var total = {php echo $member['nopay_lesson']};
+	var cash_lower = {php echo $comsetting['cash_lower_teacher']};
+	if(cash_way==3 && pay_account==''){
+		alert("请输入提现帐号");
+		return false;
+	}
+	if(cash_way==''){
+		alert("请选择提现方式");
+		return false;
+	}
+	if(number==''){
+		alert("请输入提现金额");
+		return false;
+	}
+	if(parseFloat(number)!=number){
+		alert("您输入的提现金额非法");
+		return false;
+	}
+	if(number > total){
+		alert("您当前可提现额度为"+total+"元");
+		return false;
+	}
+	if(number < cash_lower){
+		alert("当前系统最低提现额度为"+cash_lower+"元");
+		return false;
+	}
+	if(!confirm('确认提交?')){
+		return false;
+	}
+	document.getElementById("spinners").style.display = 'block';
+
+	return true;
+}
+
+function selCashType(cash_type){
+	if(cash_type==3){
+		document.getElementById("pay_account").style.display = 'block';
+	}else{
+		document.getElementById("pay_account").style.display = 'none';
+	}
+}
+</script>
+
+{elseif $op=='cashList'}
+<style type="text/css">
+.table td{padding:13px;}
+</style>
+<div class="panel admin-panel">
+    <div class="panel-head"><strong class="icon-reorder"> 课程收入提现明细</strong></div>
+    <table class="table table-hover text-center">
+        <tr>
+            <th style="width:8%;">ID</th>
+            <th style="width:11%;">提现方式</th>       
+            <th style="width:11%;">提现金额</th>
+            <th style="width:11%;">处理方式</th>
+            <th style="width:11%;">提现状态</th>
+            <th style="width:15%;">处理时间</th>
+			<th style="width:15%;">申请时间</th>
+			<th>备注</th>
+        </tr>
+        {loop $list $item}
+        <tr>
+            <td>{$item['id']}</td>
+            <td>
+				{if $item['cash_way']==1}
+				<span class="label-box label-box-default">账户余额</span>
+				{elseif $item['cash_way']==2}
+				<span class="label-box label-box-success">微信钱包</span>
+				{elseif $item['cash_way']==3}
+				<span class="label-box label-box-info">支付宝</span>
+				{/if}
+			</td>
+            <td>{$item['cash_num']} 元</td>
+            <td>{if $item['cash_type']==1}管理员审核{elseif $item['cash_type']==2}自动到账{/if}</td>
+            <td>
+				{if $item['status']==0}
+				<span class="label-box label-box-danger">待审核</span>
+				{elseif $item['status']==1}
+				<span class="label-box label-box-success">提现成功</span>
+				{elseif $item['status']==-1}
+				<span class="label-box label-box-default">审核未通过</span>
+				{/if}
+			</td>
+			<td>{php echo $item['disposetime']?date('Y-m-d H:i:s', $item['disposetime']):'';}</td>
+            <td>{php echo date('Y-m-d H:i:s', $item['addtime']);}</td>
+			<td>{$item['remark']}</td>
+        </tr>
+        {/loop}
+        <tr>
+            <td colspan="8">
+                {$pager}
+            </td>
+        </tr>
+    </table>
+</div>
+{/if}
+
+{template '_footer'}

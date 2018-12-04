@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+        <meta name="renderer" content="webkit">
+        <title>讲师管理平台</title>
+        <link rel="stylesheet" href="{MODULE_URL}template/mobile/css/pintuer.css?v={$versions}">
+        <link rel="stylesheet" href="{MODULE_URL}template/mobile/css/admin.css?v={$versions}">
+        <script src="{MODULE_URL}template/mobile/js/jquery.js"></script>   
+        <script src="{MODULE_URL}template/mobile/js/pintuer.js"></script>
+    </head>
+    <body style="background-color:#f2f9fd;">
+        <div class="header bg-main">
+            <div class="logo margin-big-left fadein-top">
+                <h1><img src="{$teacher_avatar}" class="radius-circle rotate-hover" height="50"/>讲师管理平台</h1>
+            </div>
+            <div class="head-l"><a class="button button-little bg-red" href="{php echo $this->createMobileUrl('logout');}"><span class="icon-power-off"></span> 退出登录</a> </div>
+        </div>
+        <div class="leftnav">
+            <div class="leftnav-title"><strong><span class="icon-list"></span>菜单列表</strong></div>
+            <h2 {if in_array($_GPC['do'], array('index','order','income','evaluate','qiniu','tencent','aliyunvod','qcloudvod'))}class="on"{/if}><span class="icon-user"></span>讲师中心</h2>
+            <ul {if in_array($_GPC['do'], array('index','order','income','evaluate','qiniu','tencent','aliyunvod','qcloudvod'))}style="display:block"{/if}>
+                <li><a href="{php echo $this->createMobileUrl('index');}" {if $_GPC['do']=='index'}class="on"{/if}><span class="icon-caret-right"></span>课程管理</a></li>
+                <li><a href="{php echo $this->createMobileUrl('order');}" {if $_GPC['do']=='order'}class="on"{/if}><span class="icon-caret-right"></span>课程订单</a></li>
+                <li><a href="{php echo $this->createMobileUrl('income');}" {if $_GPC['do']=='income'}class="on"{/if}><span class="icon-caret-right"></span>课程收入</a></li>
+				<li><a href="{php echo $this->createMobileUrl('evaluate');}" {if $_GPC['do']=='evaluate'}class="on"{/if}><span class="icon-caret-right"></span>评论管理</a></li>
+				{if $config['qiniu_switch']==1}
+				<li><a href="{php echo $this->createMobileUrl('qiniu');}" {if $_GPC['do']=='qiniu'}class="on"{/if}><span class="icon-caret-right"></span>七牛云存储</a></li>
+				{/if}
+				{if $config['tencent_switch']==1}
+				<li><a href="{php echo $this->createMobileUrl('tencent');}" {if $_GPC['do']=='tencent'}class="on"{/if}><span class="icon-caret-right"></span>腾讯云存储</a></li>
+				{/if}
+				{if $config['aliyun_switch']==1}
+				<li><a href="{php echo $this->createMobileUrl('aliyunvod');}" {if $_GPC['do']=='aliyunvod'}class="on"{/if}><span class="icon-caret-right"></span>阿里云点播</a></li>
+				{/if}
+				{if $config['qcloud_switch']==1}
+				<li><a href="{php echo $this->createMobileUrl('qcloudvod');}" {if $_GPC['do']=='qcloudvod'}class="on"{/if}><span class="icon-caret-right"></span>腾讯云点播</a></li>
+				{/if}
+            </ul>   
+            <h2 {if in_array($_GPC['do'], array('account'))}class="on"{/if}><span class="icon-pencil-square-o"></span>个人设置</h2>
+            <ul {if in_array($_GPC['do'], array('account'))}style="display:block"{/if}>
+                <li><a href="{php echo $this->createMobileUrl('account');}" {if $_GPC['do']=='account'}class="on"{/if}><span class="icon-caret-right"></span>修改密码</a></li>
+            </ul>  
+        </div>
+        <script type="text/javascript">
+            $(function () {
+                $(".leftnav h2").click(function () {
+                    $(this).next().slideToggle(200);
+                })
+                $(".leftnav ul li a").click(function () {
+                    $("#a_leader_txt").text($(this).text());
+                })
+            });
+        </script>
+        <ul class="bread">
+            <li><a href="javascript:;" class="icon-home"> 首页</a></li>
+			{loop $linkNav $nav}
+            <li><a href="{$nav['link']}">{$nav['title']}</a></li>
+			{/loop}
+        </ul>
+        <div class="admin">
+

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns="http://www.we7.cc" versionCode="0.8,1.0">
+	<application setting="true">
+		<name><![CDATA[微讲师]]></name>
+		<identifie><![CDATA[fy_teacher]]></identifie>
+		<version><![CDATA[2.6.3]]></version>
+		<type><![CDATA[biz]]></type>
+		<ability><![CDATA[微讲师依赖于微课堂运行，是微课堂的一款辅助独立模块。微讲师从v2.0版本开始支持微课堂V2模块，如果您继续使用微课堂V1模块，请不要再升级。]]></ability>
+		<description><![CDATA[微课堂讲师依赖于微课堂运行，是微课堂的一款辅助独立模块。微课堂讲师主要把讲师独立分开出来，实现讲师自行管理课程，课程收入和提现实现系统化。]]></description>
+		<author><![CDATA[淘宝超人源码 微讲师]]></author>
+		<url><![CDATA[http://www.we7.cc]]></url>
+	</application>
+	<platform>
+		<subscribes>
+		</subscribes>
+		<handles>
+		</handles>
+		<rule embed="false" />
+		<card embed="false" />
+		
+	</platform>
+	<bindings>
+		<cover>
+			<entry title="讲师管理平台" do="index" state="" direct="false" />
+		</cover>
+		<menu>
+			<entry title="课程审核" do="lesson" state="" direct="false" />
+			<entry title="讲师审核" do="teacher" state="" direct="false" />
+		</menu>
+	</bindings>
+	<permissions>
+	</permissions>
+	<install><![CDATA[]]></install>
+	<uninstall><![CDATA[]]></uninstall>
+	<upgrade><![CDATA[upgrade.php]]></upgrade>
+</manifest>

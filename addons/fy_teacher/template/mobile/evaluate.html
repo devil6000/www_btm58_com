@@ -1,0 +1,230 @@
+<!--
+ * 评论管理
+ * ============================================================================
+ * 版权所有 2015-2018 微课堂团队，并保留所有权利。
+ * 网站地址: http://wx.haoshu888.com
+ * ----------------------------------------------------------------------------
+ * 这不是一个自由软件！不允许对程序代码以任何形式任何目的的再发布，作者将保留
+ * 追究法律责任的权力和最终解释权。
+ * ============================================================================
+-->
+{template '_header'}
+
+{if $op=='display'}
+<style type="text/css">
+    body{font-family: "Microsoft YaHei","simsun","Helvetica Neue", Arial, Helvetica, sans-serif;}
+    h1{font-size:24px;}
+    .table th{font-weight:bold;}
+    .table td{font-size:13px; color:#333;}
+</style>
+<script type="text/javascript" src="{MODULE_URL}template/mobile/jedate/jedate.js"></script>
+<div class="panel admin-panel">
+    <div class="panel-head"><strong class="icon-reorder"> 课程评价</strong></div>
+    <div class="padding border-bottom">
+        <form action="./index.php" method="get">
+            <input type="hidden" name="i" value="{$uniacid}" />
+            <input type="hidden" name="c" value="entry" />
+            <input type="hidden" name="m" value="fy_teacher" />
+            <input type="hidden" name="do" value="evaluate" />
+            <input type="hidden" name="op" value="display" />
+            <ul class="search" style="padding-left:10px;">
+                <li>
+                    <input type="text" placeholder="订单编号/课程名称/用户姓名/手机号码" name="keyword" class="input" style="width:300px; line-height:17px; display:inline-block; margin-left:20px;" value="{$_GPC['keyword']}">
+                </li>
+                <li>
+                    <select name="reply" class="input" style="width:150px; line-height:17px; display:inline-block">
+                        <option value="">回复状态</option>
+                        <option value="0" {if in_array($_GPC['reply'], array('0'))}selected{/if}>未回复</option>
+                        <option value="1" {if $_GPC['reply']==1}selected{/if}>已回复</option>
+                    </select>
+                </li>
+				<li>
+                    <select name="status" class="input" style="width:150px; line-height:17px; display:inline-block">
+                        <option value="">审核状态</option>
+                        <option value="0" {if $_GPC['status']=='0'}selected{/if}>待审核</option>
+                        <option value="1" {if $_GPC['status']==1}selected{/if}>已通过</option>
+						<option value="-1" {if $_GPC['status']==-1}selected{/if}>未通过</option>
+                    </select>
+                </li>
+                <li>
+                    评价时间:
+                    <input class="input inputDate" id="starttime" name="starttime" type="text" onClick="jeDate({dateCell: '#starttime', isTime: false, format: 'YYYY-MM-DD'})" value="{$_GPC['starttime']}" readonly>
+                    ~
+                    <input class="input inputDate" id="endtime" name="endtime" type="text" onClick="jeDate({dateCell: '#endtime', isTime: false, format: 'YYYY-MM-DD'})" value="{$_GPC['endtime']}" readonly>
+                    &nbsp;&nbsp;
+                    <button type="submit" class="button border-main icon-search"> 搜 索 </button>
+                </li>
+            </ul>
+        </form>
+    </div>
+    <table class="table table-hover text-center">
+        <tr>
+            <th style="width:15%;">订单遍号</th>
+            <th style="width:15%;">昵称/姓名/手机号码</th>       
+            <th style="width:25%;">课程名称</th>
+            <th style="width:12%;">评价/回复</th>
+            <th style="width:15%;">审核状态</th>
+            <th style="width:8%;">评价日期</th>
+            <th>操作</th>       
+        </tr>
+        {loop $list $item}
+        <tr>
+            <td>{php echo $item['ordersn']?$item['ordersn']:'免费课程';}</td>
+            <td>{$item['nickname']}<br/>{$item['realname']}，{$item['mobile']}</td>
+            <td>{$item['bookname']}</td>
+            <td>
+                {if $item['grade']==1}
+					<span class="label-box" style="background-color:#FB5B5B;">好评</span>
+				{elseif $item['grade']==2}
+					<span class="label-box" style="background-color:#D99810;">中评</span>
+				{elseif $item['grade']==3}
+					<span class="label-box" style="background-color:#555555;">差评</span>
+				{/if}
+				
+				{if !empty($item['reply'])}
+					<span class="label-box label-box-success">已回复</span>
+				{else}
+					<span class="label-box label-box-default">未回复</span>
+				{/if}	
+            </td>
+			<td>
+				{if $item['status']=='1'}
+					<span class="label-box" style="background-color:#11ca6d;">通过</span>
+				{elseif $item['status']=='0'}
+					<span class="label-box" style="background-color:#ff9600;">待审核</span>
+				{elseif $item['status']=='-1'}
+					<span class="label-box" style="background-color:#777;">未通过</span>
+				{/if}
+			</td>
+            <td>{php echo date('Y-m-d H:i:s', $item['addtime']);}</td>
+            <td>
+                <div class="button-group">
+                    <a class="button border-green" href="{php echo $this->createMobileUrl('evaluate', array('op'=>'details','id'=>$item['id']));}"><span class="icon-file-text-o"></span> 查看</a>
+                </div>
+            </td>
+        </tr>
+        {/loop}
+        <tr>
+            <td colspan="8">
+                {$pager}
+            </td>
+        </tr>
+    </table>
+</div>
+
+{elseif $op=='details'}
+<div class="panel admin-panel">
+    <div class="panel-head"><strong><span class="icon-pencil-square-o"></span> 评论详情</strong></div>
+    <div class="body-content">
+        <form class="form-x" method="post">
+            <div class="form-group">
+                <div class="label">
+                    <label class="order-title">订单编号：</label>
+                </div>
+                <div class="field">
+                    <span class="order-details">{$evaluate['ordersn']}</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="label">
+                    <label class="order-title">课程名称：</label>
+                </div>
+                <div class="field">
+                    <span class="order-details">{$evaluate['bookname']}</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="label">
+                    <label class="order-title">昵称/姓名/手机号码：</label>
+                </div>
+                <div class="field">
+                    <span class="order-details"><img src="{$evaluate['avatar']}" width="35" height="35">&nbsp;&nbsp;{$evaluate['nickname']}&nbsp;/&nbsp;{$evaluate['realname']}&nbsp;/&nbsp;{$evaluate['mobile']}</span>
+                </div>
+            </div>
+			<div class="form-group">
+                <div class="label">
+                    <label class="order-title">评价级别：</label>
+                </div>
+                <div class="field">
+                    <span class="order-details">
+					{if $evaluate['grade']==1}
+						<img src="{MODULE_URL}template/mobile/images/oc-h.png" style="line-height:43px;">(好评)
+					{elseif $evaluate['grade']==2}
+						<img src="{MODULE_URL}template/mobile/images/oc-z.png">(中评)
+					{elseif $evaluate['grade']==3}
+						<img src="{MODULE_URL}template/mobile/images/oc-c.png">(差评)
+					{/if}
+					</span>
+                </div>
+			</div>
+			<div class="form-group">
+				<div class="label">
+					<label class="order-title">评价内容：</label>
+				</div>
+				<div class="field">
+					<span class="order-details">{$evaluate['content']}</span>
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="label">
+					<label class="order-title">审核状态：</label>
+				</div>
+				{if $config['evaluate_audit_switch']}
+				<div class="field">
+					<div class="button-group radio">
+						<label class="button {if $evaluate['status']=='1'}active{/if}"><span class="icon icon-check"></span>          	
+							<input name="status" value="1" type="radio" {if $evaluate['status']=='1'}checked{/if}>通过
+						</label>
+						<label class="button {if $evaluate['status']=='0'}active{/if}"><span class="icon icon-times"></span>          	
+							<input name="status" value="0" type="radio" {if $evaluate['status']=='0'}checked{/if}>待审核
+						</label>
+						<label class="button {if $evaluate['status']=='-1'}active{/if}">
+							<span class="icon icon-times"></span>             
+							<input name="status" value="-1" type="radio" {if $evaluate['status']=='-1'}checked{/if}>未通过             
+						</label>
+						<br>
+						<div class="tips">未通过和待审核的评论将不会显示在手机端</div>
+					</div>       
+				</div>
+				{else}
+				<div class="field">
+					{if $evaluate['status']=='1'}
+						<span class="label-box" style="line-height:2.5em;background-color:#11ca6d;">通过</span>
+					{elseif $evaluate['status']=='0'}
+						<span class="label-box" style="line-height:2.5em;background-color:#ff9600;">待审核</span>
+					{elseif $evaluate['status']=='-1'}
+						<span class="label-box" style="line-height:2.5em;background-color:#777;">未通过</span>
+					{/if}
+				</div>
+				{/if}
+			</div>
+			<div class="form-group">
+				<div class="label">
+					<label class="order-title">回复内容：</label>
+				</div>
+				<div class="field">
+					{if empty($evaluate['reply'])}
+					<textarea name="reply" class="input" style="height:120px;"></textarea>
+					{else}
+					<span class="order-details">{$evaluate['reply']}</span>
+					{/if}
+				</div>
+			</div>
+			{if empty($evaluate['reply'])}
+			<div class="form-group">
+				<div class="label">
+					<label></label>
+				</div>
+				<div class="field">
+					<input type="hidden" value="{$_W['token']}" name="token">
+					<input class="button bg-main icon-check-square-o" type="submit" name="submit" value="提交回复">
+				</div>
+			</div>
+			{/if}
+        </form>
+    </div>
+</div>
+{/if}
+
+
+{template '_footer'}

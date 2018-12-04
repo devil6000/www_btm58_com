@@ -1,0 +1,313 @@
+<!-- 
+ * 腾讯云点播
+ * ============================================================================
+ * 版权所有 2015-2018 微课堂团队，并保留所有权利。
+ * 网站地址: https://wx.haoshu888.com
+ * ----------------------------------------------------------------------------
+ * 这不是一个自由软件！不允许对程序代码以任何形式任何目的的再发布，作者将保留
+ * 追究法律责任的权力和最终解释权。
+ * ============================================================================
+-->
+
+{if !in_array($op, $qcloud_array)}
+	{template 'common/header'}
+	{template 'web/video/video-header'}
+{/if}
+<link href="{MODULE_URL}template/web/style/fycommon.css" rel="stylesheet">
+
+
+{if $op == 'display'}
+<div class="main">
+    <div class="panel panel-info">
+        <div class="panel-heading">筛选</div>
+        <div class="panel-body">
+            <form action="./index.php" method="get" class="form-horizontal" role="form">
+                <input type="hidden" name="c" value="site" />
+                <input type="hidden" name="a" value="entry" />
+                <input type="hidden" name="m" value="fy_lessonv2" />
+                <input type="hidden" name="do" value="qcloudvod" />
+                <input type="hidden" name="op" value="display" />
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width:100px;">视频名称</label>
+                    <div class="col-sm-2 col-lg-3">
+                        <input class="form-control" name="keyword" type="text" value="{$_GPC['keyword']}">
+                    </div>
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">上传时间</label>
+                    <div class="col-sm-8 col-lg-3 col-xs-12">
+                        {php echo tpl_form_field_daterange('time', array('starttime'=>($starttime ? date('Y-m-d', $starttime) : false),'endtime'=> ($endtime ? date('Y-m-d', $endtime) : false)));}
+                    </div>
+                    <div class="col-sm-3 col-lg-3">
+                        <button class="btn btn-default"><i class="fa fa-search"></i> 搜索</button>
+						&nbsp;&nbsp;
+						<a href="{php echo $this->createWebUrl('qcloudvod',array('op'=>'upQcloudVod'));}" class="btn btn-success"><i class="fa fa-plus"></i> 上传视频</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="panel panel-default">
+        <form action="" method="post" class="form-horizontal form" >
+        <div class="table-responsive panel-body">
+            <table class="table table-hover">
+                <thead class="navbar-inner">
+                <tr>
+                    <th style="width:15%;">视频预览</th>
+                    <th style="width:15%;">视频名称</th>
+                    <th style="width:10%;">视频大小</th>
+					<th style="width:14%;">上传时间</th>
+                    <th style="width:35%;">VideoId</th>
+					<th style="text-align:right;width:8%;">操作</th>
+                </tr>
+                </thead>
+                <tbody style="font-size: 13px;">
+                {loop $list $key $item}
+                <tr>
+                    <td>
+						<a href="{php echo $this->createWebUrl('qcloudvod', array('op'=>'preview','id'=>$item['id']));}"><img src="{MODULE_URL}template/mobile/images/videoCover.png?v=1" width="150"/></a>
+					</td>
+                    <td style="word-break:break-all;">{$item['name']}</td>
+					<td>{$item['size']} MB</td>
+					<td>{php echo date('Y-m-d H:i:s', $item['addtime'])}</td>
+                    <td>
+                        <textarea style="width:300px;height:85px; border-radius:5px;" id="content{$key}" style="overflow-y:auto;" onclick="selectTxt(this)">{$item['videoid']}</textarea>
+                    </td>
+					<td style="text-align:right;">
+                        <a class="btn btn-default btn-sm" href="{php echo $this->createWebUrl('qcloudvod', array('op'=>'delVideo', 'id'=>$item['id']));}" title="删除" onclick="return confirm('确认删除？');return false;"><i class="fa fa-remove"></i></a>
+                    </td>
+                </tr>
+                {/loop}
+                </tbody>
+            </table>
+            {$pager}
+        </div>
+    </div>
+    </form>
+</div>
+<script type="text/javascript">
+function selectTxt(obj){
+	$(obj).select();
+}
+</script>
+
+{elseif $op=='upQcloudVod'}
+{template 'web/header/qcloudvod-header'}
+{template 'web/video/video-header'}
+<style type="text/css">
+#resultBox {
+    width: 96%;
+    height: 350px;
+    border: 1px solid #ccc;
+    overflow: auto;
+	margin: 0px;
+}
+.uploaderMsgBox{
+	padding: 10px;
+}
+</style>
+<div class="main">
+	<div class="alert alert-info">
+	    <span>点播主要支持视频格式，mp3文件上传后会被自动转码为mp4。选择文件后，系统将自动开始上传，上传过程请勿刷新浏览器，否则将导致文件上传失败。</span>
+	</div>
+	<div class="mloading-bar" style="margin-top:-180px; margin-left:-140px;"><img src="{MODULE_URL}template/mobile/images/download.gif"><span id="mloading-text">文件上传中，请勿刷新或关闭浏览器...</span></div>
+	<div id="overlay" style="height: 100%; width: 100%; opacity: 0.2;"></div>
+	<div class="panel admin-panel">
+		<div class="body-content">
+			<form id="form1">
+				<input id="uploadVideoNow-file" type="file" accept="video/*,audio/mp3" style="display:none;">
+				<input type="hidden" id="file_size"  value="0">
+			</form>
+			<div class="form-group">
+				<div class="field">
+					<input type="button" class="btn btn-default" id="uploadVideoNow" value="上传视频">
+				</div>
+			</div>
+			<div class="row" id="resultBox"></div>
+		</div>
+	</div>
+</div>
+
+<script src="//imgcache.qq.com/open/qcloud/js/vod/sdk/ugcUploader.js"></script>
+<script type="text/javascript">
+var index = 0;
+var cosBox = [];
+
+/** 
+ * 计算签名
+**/
+var getSignature = function(callback){
+	$.ajax({
+		url: "{php echo $this->createWebUrl('qcloudvod', array('op'=>'getUploadInfo'));}",
+		type: 'POST',
+		dataType: 'json',
+		success: function(res){
+			if(res && res.signature) {
+				callback(res.signature);
+			} else {
+				return '获取签名失败';
+			}
+		}
+	});
+};
+
+/**
+ * 添加上传信息模块
+ */
+var addUploaderMsgBox = function(type){
+	var html = '<div class="uploaderMsgBox" name="box'+index+'">';
+	if(!type || type == 'hasVideo') {
+		html += '视频名称：<span name="videoname'+index+'"></span><br/>' + 
+			'计算sha进度：<span name="videosha'+index+'">0%</span><br/>' + 
+			'上传进度：<span name="videocurr'+index+'">0%</span><br/>' + 
+			'videoId：<span name="videofileId'+index+'">   </span><br/>' + 
+			'上传结果：<span name="videoresult'+index+'">   </span><br/><br>';
+	}
+	
+	if(!type || type == 'hasCover') {
+		html += '封面名称：<span name="covername'+index+'"></span>；' + 
+		'计算sha进度：<span name="coversha'+index+'">0%</span>；' + 
+		'上传进度：<span name="covercurr'+index+'">0%</span>；' + 
+		'上传结果：<span name="coverresult'+index+'">   </span>；<br>' + 
+		'地址：<span name="coverurl'+index+'">   </span>；<br>' + 
+		'</div>'
+	}
+	html += '</div>';
+	
+	$('#resultBox').append(html);
+	return index++;
+};
+
+/** 
+ * 直接上传视频
+**/
+$('#uploadVideoNow-file').on('change', function (e) {
+	showOverlay();
+
+	var file = e.target.files[0];
+	var file_size = parseFloat((file.size/1024)/1024).toFixed(2);
+	$("#file_size").val(file_size);
+
+	var num = addUploaderMsgBox('hasVideo');
+	var videoFile = this.files[0];
+	$('#result').append(videoFile.name +　'\n');
+	var resultMsg = qcVideo.ugcUploader.start({
+		videoFile: videoFile,
+		getSignature: getSignature,
+		allowAudio: 1,
+		success: function(result){
+			if(result.type == 'video') {
+				$('[name=videoresult'+num+']').text('上传成功');
+				$('[name=cancel'+num+']').remove();
+				cosBox[num] = null;
+			} else if (result.type == 'cover') {
+				$('[name=coverresult'+num+']').text('上传成功');
+			}
+			hideOverlay();
+		},
+		error: function(result){
+			$('.uploaderMsgBox').append('<br>上传失败，原因：'+result.msg);
+			hideOverlay();
+		},
+		progress: function(result){
+			if(result.type == 'video') {
+				$('[name=videoname'+num+']').text(result.name);
+				$('[name=videosha'+num+']').text(Math.floor(result.shacurr*100)+'%');
+				$('[name=videocurr'+num+']').text(Math.floor(result.curr*100)+'%');
+				$('[name=cancel'+num+']').attr('taskId', result.taskId);
+				cosBox[num] = result.cos;
+			} else if (result.type == 'cover') {
+				$('[name=covername'+num+']').text(result.name);
+				$('[name=coversha'+num+']').text(Math.floor(result.shacurr*100)+'%');
+				$('[name=covercurr'+num+']').text(Math.floor(result.curr*100)+'%');
+			}
+			
+		},
+		finish: function(result){
+			$('[name=videofileId'+num+']').text(result.fileId);
+			$('[name=videourl'+num+']').text(result.videoUrl);
+			if(result.message) {
+				$('[name=videofileId'+num+']').text(result.message);
+			}
+			hideOverlay();
+			saveVideo(result);
+		}
+	});
+	if(resultMsg){
+		$('[name=box'+num+']').text(resultMsg);
+	}
+	$('#form1')[0].reset();
+});
+
+$('#uploadVideoNow').on('click', function () {
+	$('#uploadVideoNow-file').click();
+});
+
+function saveVideo(result){
+	$.ajax({
+		url:"<?php echo $this->createWebUrl('qcloudvod', array('op'=>'saveVideo')); ?>",
+		data:{
+			filename: result.videoName,
+			videourl: result.videoUrl,
+			videoid: result.fileId,
+			size: $("#file_size").val()
+		},
+		type:'POST',
+		dataType:'json',
+		success:function(msg){
+		}
+	});
+}
+
+function showOverlay(){
+	$(".mloading-bar").show();
+	$("#overlay").show();
+}
+function hideOverlay(){
+	$(".mloading-bar").hide();
+	$("#overlay").hide();
+}
+
+</script>
+
+{elseif $op=='preview'}
+{template 'web/header/qcloudvod-header'}
+{template 'web/video/video-header'}
+
+<link href="//imgcache.qq.com/open/qcloud/video/tcplayer/tcplayer.css" rel="stylesheet">
+<script src="//imgcache.qq.com/open/qcloud/video/tcplayer/tcplayer.min.js"></script>
+
+<div class="main">
+    <div class="panel panel-default">
+        <div class="panel-heading">视频预览</div>
+		<div class="panel-body">
+			<div class="form-group">
+				<label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
+				<div class="col-sm-9">
+					<video id="player-container-id" width="640" height="400" preload="auto" playsinline webkit-playsinline></video>
+				</div>
+			</div>
+		</div>
+    </div>
+</div>
+<script type="text/javascript">
+	var player = TCPlayer('player-container-id', {
+		fileID: "<?php echo $file['videoid']; ?>",
+		appID : "<?php echo $qcloudvod['appid']; ?>",
+		t	  : "<?php echo $res['t']; ?>",
+		us	  : "<?php echo $res['us']; ?>",
+		sign  : "<?php echo $res['sign']; ?>",
+		exper : "",
+		plugins:{
+			ContinuePlay: {
+				text:'上次播放至 ',
+				btnText: '恢复播放'
+			},
+		}
+	});
+</script>
+
+{/if}
+
+{if !in_array($op, $qcloud_array)}
+	{template 'common/footer'}
+{/if}

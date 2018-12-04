@@ -1,0 +1,784 @@
+<!--
+ * 课程管理
+ * ============================================================================
+ * 版权所有 2015-2018 微课堂团队，并保留所有权利。
+ * 网站地址: http://wx.haoshu888.com
+ * ----------------------------------------------------------------------------
+ * 这不是一个自由软件！不允许对程序代码以任何形式任何目的的再发布，作者将保留
+ * 追究法律责任的权力和最终解释权。
+ * ============================================================================
+-->
+{template '_header'}
+
+{if $op=='display'}
+<div class="panel admin-panel">
+    <div class="panel-head"><strong class="icon-reorder"> 课程管理</strong></div>
+    <div class="padding border-bottom">
+        <form action="./index.php" method="get">
+            <input type="hidden" name="i" value="{$uniacid}" />
+            <input type="hidden" name="c" value="entry" />
+            <input type="hidden" name="m" value="fy_teacher" />
+            <input type="hidden" name="do" value="index" />
+            <input type="hidden" name="op" value="display" />
+            <ul class="search" style="padding-left:10px;">
+                <li> <a class="button border-green icon-plus-square-o" href="{php echo $this->createMobileUrl('index', array('op'=>'edit'));}"> 添加课程</a> </li>
+                <li>
+                    <input type="text" placeholder="课程名称" name="bookname" class="input" style="width:200px; line-height:17px; display:inline-block; margin-left:20px;" value="{$_GPC['bookname']}">
+                </li>
+                <li>
+                    <select name="cat_id" class="input" style="width:150px; line-height:17px; display:inline-block">
+                        <option value="">课程分类</option>
+                        {loop $catList $item}
+                        <option value="{$item['id']}" {if $_GPC['cat_id']==$item['id']}selected{/if}>{$item['name']}</option>
+                        {/loop}
+                    </select>
+                    &nbsp;&nbsp;
+                    <select name="status" class="input" style="width:150px; line-height:17px;display:inline-block">
+                        <option value="">课程状态</option>
+                        <option value="1" {if $_GPC['status']==1}selected{/if}>已上架</option>
+                        <option value="0" {if in_array($_GPC['status'], array('0'))}selected{/if}>已下架</option>
+                        <option value="-1" {if $_GPC['status']==-1}selected{/if}>暂停销售</option>
+                        <option value="2" {if $_GPC['status']==2}selected{/if}>审核中</option>
+                    </select>
+                    &nbsp;&nbsp;
+                    <button type="submit" class="button border-main icon-search"> 搜 索 </button>
+                </li>
+            </ul>
+        </form>
+    </div>
+    <table class="table table-hover text-center">
+        <tr>
+            <th style="width:5%;">ID</th>
+            <th style="width:24%;">课程名称</th>       
+            <th style="width:9%;">一二级分类</th>
+            <th style="width:12%;">价格 / 分成</th>
+            <th style="width:9%;">状态</th>
+            <th style="width:9%;">销售</th>
+            <th style="width:14%;">添加时间</th>
+            <th style="width:14%;">操作</th>       
+        </tr>
+        {loop $list $item}
+        <tr>
+            <td>{$item['id']}</td>
+            <td>{$item['bookname']}</td>
+            <td>{$item['category_parent']['name']}<br/>{$item['category_child']['name']}</td>
+            <td>{$item['price']} 元 / {$item['teacher_income']}%</td>  
+            <td>
+                {if $item['status']==-1}
+                <span class="label-box label-box-info">暂停销售</span>
+                {elseif $item['status']==0}
+                <span class="label-box label-box-default">已下架</span>
+                {elseif $item['status']==1}
+                <span class="label-box label-box-success">已上架</span>
+                {elseif $item['status']==2}
+                <span class="label-box label-box-danger">审核中</span>
+                {/if}
+            </td>         
+            <td>真实销量：{$item['buynum']}<br/>虚拟销量：{$item['virtual_buynum']}</td>
+            <td>{php echo date('Y-m-d H:i', $item['addtime']);}</td>
+            <td>
+                <div class="button-group">
+                    <a class="button border-green" href="{php echo $this->createMobileUrl('index', array('op'=>'viewSection','pid'=>$item['id']));}"><span class="icon-book"></span> 章节</a>
+                    <a class="button border-blue" href="{php echo $this->createMobileUrl('index', array('op'=>'edit','id'=>$item['id'],'refurl'=>$_W['siteurl']));}"><span class="icon-edit"></span> 编辑</a>
+                </div>
+            </td>
+        </tr>
+        {/loop}
+        <tr>
+            <td colspan="8">
+                {$pager}
+            </td>
+        </tr>
+    </table>
+</div>
+
+{elseif $op=='edit'}
+<script type="text/javascript" src="{MODULE_URL}ueditor/ueditor.config.js"></script>  
+<script type="text/javascript" src="{MODULE_URL}ueditor/ueditor.all.min.js"></script>
+<div class="panel admin-panel">
+    <div class="panel-head"><strong><span class="icon-pencil-square-o"></span> {if $id>0}{编辑课程}{else}添加课程{/if}</strong></div>
+    <div class="body-content">
+        <form method="post" class="form-x" enctype="multipart/form-data">
+            <div class="form-group">
+                <div class="label">
+                    <label>课程名称：</label>
+                </div>
+                <div class="field">
+                    <input type="text" class="input" name="bookname" value="{$lesson['bookname']}">
+                    <div class="tips" title=""></div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="label">
+                    <label>课程分类：</label>
+                </div>
+                <div class="field">
+                    <select name="pid" class="input w25" id="category_parent" name="pid" onchange="renderCategory(this.value)">
+                        <option value="">请选择一级分类</option>
+                        {loop $catList $item}
+                        <option value="{$item['id']}">{$item['name']}</option>
+                        {/loop}
+                    </select>
+					<select name="cid" class="input w25" id="category_child">
+                        <option value="">请选择二级分类</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="label">
+                    <label>课程封面：</label>
+                </div>
+                <div class="field">
+                    <input type="file" id="uploadFile" name="uploadFile" style="display:none;" accept="image/*" onchange="uploadImage()"/>
+                    <input type="button" class="button bg-blue margin-left" name="dasd" value="+ 浏览上传" onclick="uploadFile.click()">
+					<input type="hidden" name="images" id="images" value="{$lesson['images']}" />
+                </div>
+                <div class="tips">
+                    <div id="uploadDiv" style="display: none;"><img src="{MODULE_URL}template/mobile/images/uploadimage.gif"></div>
+                    <div id="imgDiv" class="imgDiv">
+						<img id="newImageSrc" src="{if !empty($lesson['images'])}{$_W['attachurl']}{$lesson['images']}{else}{MODULE_URL}template/mobile/images/nopic.jpg{/if}">
+						<div>建议尺寸 600 * 350px，也可根据自己的实际情况做图片尺寸</div>
+					</div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="label">
+                    <label>课程价格：</label>
+                </div>
+                <div class="field">
+                    <div class="input-group">
+                        <input type="text" class="input" name="price" value="{$lesson['price']}">
+                        <span class="input-group-addon">元</span>
+                    </div>
+                    <div class="tips">留空或填写为0表示该课程为免费课程，即不付费即可观看学习</div>
+                </div>
+            </div>
+			<div class="form-group">
+                <div class="label">
+                    <label>课程有效期：</label>
+                </div>
+                <div class="field">
+					{loop $spec_list $item}
+                    <div class="input-group w60">
+						<span class="input-group-addon">有效期</span>
+                        <input type="text" class="input" name="spec_time[]" value="{$item['spec_day']}">
+                        <span class="input-group-addon">天</span>
+						<span class="input-group-addon">需</span>
+						<input type="text" class="input" name="spec_price[]" value="{$item['spec_price']}">
+                        <span class="input-group-addon">元</span>
+                    </div>
+					{/loop}
+					<div id="specdiv"></div>
+					<a href="javascript:;" id="spec-add" class="button border-green icon-plus-square-o" style="padding:2px 10px;margin:5px 0;"><i class="fa fa-plus-circle"></i> 添加新规格</a>
+                    <div class="tips">有效期为-1表示永久有效，保存时，留空的规格将自动删除</div>
+                </div>
+            </div>
+			<div class="form-group">
+                <div class="label">
+                    <label>课程库存：</label>
+                </div>
+                <div class="field">
+                    <input type="text" class="input" name="stock" value="{$lesson['stock']}">
+                    <div class="tips">只有当系统启用库存时，该选项才会起作用，免费课程不受库存影响</div>
+                </div>
+            </div>
+			<div class="form-group">
+                <div class="label">
+                    <label>(VIP)课程折扣：</label>
+                </div>
+                <div class="field">
+                    <div class="button-group radio">
+                        <label class="button {if $lesson['isdiscount']==1}active{/if}">
+                            <span class="icon icon-check"></span>             
+                            <input name="isdiscount" value="1" type="radio" {if $lesson['isdiscount']==1}checked{/if}>开启             
+                        </label>             
+                        <label class="button {if $lesson['isdiscount']==0}active{/if}"><span class="icon icon-times"></span>          	
+                            <input name="isdiscount" value="0" type="radio" {if $lesson['isdiscount']==0}checked{/if}>关闭
+                        </label>
+                        <br/>
+                        <div class="tips">开启VIP会员课程折扣后，该项留空或为0表示使用当前会员对应的VIP会员等级最低折扣</div>
+                    </div>       
+                </div>
+            </div>
+			<div class="form-group vip-discount" {if $lesson['isdiscount']==0}style="display: none;"{/if}>
+                <div class="label">
+                    <label>(VIP)课程折扣比例：</label>
+                </div>
+                <div class="field">
+                    <div class="input-group">
+                        <input type="text" class="input" name="vipdiscount" value="{$lesson['vipdiscount']}" />
+                        <span class="input-group-addon">%</span>
+                    </div>
+                    <div class="tips">开启(VIP)课程折扣后，该项留空或为0表示VIP会员以<span class="highlight">{$setting['vipdiscount']}%</span>进行购买课程</div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="label">
+                    <label>讲师分成：</label>
+                </div>
+                <div class="field">
+                    <div class="input-group">
+                        <input type="text" class="input" name="teacher_income" value="{$lesson_income}" readonly='true'>
+                        <span class="input-group-addon">%</span>
+                    </div>
+                    <div class="tips">讲师分成是指该课程每出售一次，讲师获得课程售价一定比例作为讲师收入，讲师分成 = 课程售价 x 讲师分成(%)</div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="label">
+                    <label>虚拟购买人数：</label>
+                </div>
+                <div class="field">
+                    <div class="input-group">
+                        <input type="text" class="input" name="virtual_buynum" value="{$lesson['virtual_buynum']}">
+                        <span class="input-group-addon">人</span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="label">
+                    <label>课程难度：</label>
+                </div>
+                <div class="field">
+                    <input type="text" class="input" name="difficulty" value="{$lesson['difficulty']}">
+                    <div class="tips">例如：入门篇、进阶篇、高级篇</div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="label">
+                    <label>课程介绍：</label>
+                </div>
+                <div class="field">
+                    <textarea name="descript" id="descript" style="width:98%;">{$lesson['descript']}</textarea>
+                    <script type="text/javascript">var editor = new UE.ui.Editor();   editor.render("descript");</script>
+                </div>
+            </div>
+			{if $config['commission_switch']==1}
+            <div class="form-group">
+                <div class="label">
+                    <label>一级佣金比例：</label>
+                </div>
+                <div class="field">
+                    <div class="input-group">
+                        <input type="text" class="input" name="commission1" value="{$commission['commission1']}">
+                        <span class="input-group-addon">%</span>
+                    </div>
+                    <div class="tips">留空或填写0使用系统全局佣金比例</div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="label">
+                    <label>二级佣金比例：</label>
+                </div>
+                <div class="field">
+                    <div class="input-group">
+                        <input type="text" class="input" name="commission2" value="{$commission['commission2']}">
+                        <span class="input-group-addon">%</span>
+                    </div>
+                    <div class="tips">留空或填写0使用系统全局佣金比例</div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="label">
+                    <label>三级佣金比例：</label>
+                </div>
+                <div class="field">
+                    <div class="input-group">
+                        <input type="text" class="input" name="commission3" value="{$commission['commission3']}">
+                        <span class="input-group-addon">%</span>
+                    </div>
+                    <div class="tips">留空或填写0使用系统全局佣金比例</div>
+                </div>
+            </div>
+			{/if}
+            <div class="form-group">
+                <div class="label">
+                    <label>免费学习等级：</label>
+                </div>
+                <div class="field">
+                    <div class="button-group radio">
+						{loop $level_list $key $level}
+						<input type="checkbox" name="vipview[]" value="{$level['id']}" {if in_array($level['id'],$vipview)}checked{/if}>{$level['level_name']}&nbsp;&nbsp;
+							{if ($key+1)%4==0}<br/>{/if}
+						{/loop}
+                        <br/>
+                        <div class="tips">开启该功能后，选中的VIP等级用户可免费在线学习该课程</div>
+                    </div>       
+                </div>
+            </div>
+			<div class="form-group">
+                <div class="label">
+                    <label>优惠券抵扣：</label>
+                </div>
+                <div class="field">
+                    <div class="button-group radio">
+                        <label class="button {if $lesson['support_coupon']==1}active{/if}">
+                            <span class="icon icon-check"></span>             
+                            <input name="support_coupon" value="1" type="radio" {if $lesson['support_coupon']==1}checked{/if}>支持             
+                        </label>             
+                        <label class="button {if $lesson['support_coupon']==0}active{/if}"><span class="icon icon-times"></span>          	
+                            <input name="support_coupon" value="0" type="radio" {if $lesson['support_coupon']==0}checked{/if}>不支持
+                        </label>
+                        <br/>
+                        <div class="tips">不支持优惠券抵扣的课程将无法使用优惠券抵扣支付金额</div>
+                    </div>       
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="label">
+                    <label>课程状态：</label>
+                </div>
+                <div class="field">
+                    <div class="button-group radio">
+						{if $lesson['status']!=2 && !empty($lesson)}
+                        <label class="button {if empty($lesson) || $lesson['status'] == 1}active{/if}">
+                            <span class="icon icon-check"></span>
+                            <input name="status" value="1" type="radio" {if $lesson['status'] == 1}checked="true"{/if}>上架             
+                        </label>             
+                        <label class="button {if !empty($lesson) && $lesson['status'] == 0}active{/if}">
+                            <span class="icon icon-check"></span>
+                            <input name="status" value="0" type="radio" {if !empty($lesson) && $lesson['status'] == 0}checked="true"{/if}>下架
+                        </label>
+                        <label class="button {if $lesson['status'] == -1}active{/if}">
+                            <span class="icon icon-check"></span>
+                            <input name="status" value="-1" type="radio" {if $lesson['status'] == -1}checked="true"{/if}>暂停销售
+                        </label>
+						{else}
+						<label class="button {if empty($lesson) || $lesson['status'] == 2}active{/if}">
+                            <span class="icon icon-check"></span>
+                            <input name="status" value="2" type="radio" {if $lesson['status'] == 2}checked="true"{/if}>审核中
+                        </label>
+						{/if}
+                        <br/>
+                        <div class="tips">【上架】课程正常销售，【下架】【审核中】的课程将不能再进行观看或购买，【暂停销售】已购买课程用户可正常观看，未购买用户不能查看</div>
+                    </div>       
+                </div>
+            </div>
+			<div class="form-group">
+                <div class="label">
+                    <label>连载状态：</label>
+                </div>
+                <div class="field">
+                    <div class="button-group radio">
+                        <label class="button {if $lesson['section_status']==1}active{/if}">
+                            <span class="icon icon-check"></span>             
+                            <input name="section_status" value="1" type="radio" {if $lesson['section_status']==1}checked{/if}>更新中             
+                        </label>             
+                        <label class="button {if $lesson['section_status']==0}active{/if}"><span class="icon icon-times"></span>          	
+                            <input name="section_status" value="0" type="radio" {if $lesson['section_status']==0}checked{/if}>已完结
+                        </label>
+                        <br/>
+                        <div class="tips">不支持优惠券抵扣的课程将无法使用优惠券抵扣支付金额</div>
+                    </div>       
+                </div>
+            </div>
+			<div class="form-group">
+                <div class="label">
+                    <label>课程链接：</label>
+                </div>
+                <div class="field">
+                    <div class="button-group radio">
+						{$_W['siteroot']}app/{php echo str_replace('fy_teacher', 'fy_lessonv2', str_replace("./", "", $this->createMobileUrl('lesson', array('id'=>$lesson['id']))));}
+                    </div>       
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="label">
+                    <label></label>
+                </div>
+                <div class="field">
+					<input type="hidden" name="token" value="{$_W['token']}" />
+                    <input type="submit" name="submit" value="提交" class="button bg-main icon-check-square-o" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script src="{MODULE_URL}template/mobile/js/ajaxfileupload.js"></script> 
+<script type="text/javascript">
+$(function () {
+	$(':radio[name="isdiscount"]').click(function () {
+	   if ($(this).val()=='0') {
+				$('.vip-discount').hide();
+			} else {
+
+				$('.vip-discount').show();
+			}
+	});
+});
+function uploadImage(){
+	$("#uploadDiv").show();
+	$("#imgDiv").hide();
+	$.ajaxFileUpload({
+			url:'{php echo $this->createMobileUrl("AjaxUploadImage");}',
+			secureuri:false,
+			fileElementId:'uploadFile',
+			dataType: 'json',
+			success: function (data, status){
+				if(data.success == true){
+					$("#uploadDiv").hide();
+					$("#imgDiv").show();
+					$("#newImageSrc").attr("src", "<?php echo $_W['attachurl']; ?>" + data.path);
+					$("#images").val(data.path);
+				}else{
+					alert(data.message);
+					$("#uploadDiv").hide();
+					$("#imgDiv").show();
+				}
+				
+			},
+			error: function(data, status, e) {
+				alert("网络错误，请稍候重试");
+				$("#uploadDiv").hide();
+				$("#imgDiv").show();
+			}
+	});
+	return false;
+}
+
+//添加规格按钮
+$("#spec-add").click(function () {
+    var spec_html = '';
+    spec_html += '<div class="input-group w60">';
+    spec_html += '	<span class="input-group-addon">有效期</span>';
+    spec_html += '	<input type="text" class="input" name="spec_time[]">';
+    spec_html += '	<span class="input-group-addon">天</span>';
+    spec_html += '	<span class="input-group-addon">需</span>';
+    spec_html += '	<input type="text" class="input" name="spec_price[]">';
+    spec_html += '	<span class="input-group-addon">元</span>';
+    spec_html += '</div>';
+
+    $("#specdiv").append(spec_html);
+});
+</script>
+</script>
+<script type="text/javascript">
+var category = {php echo json_encode($catList);};
+var pid = {php echo $lesson['pid']?$lesson['pid']:0};
+var html = '<option value="0">请选择一级分类</option>';
+$(function(){
+	$("#category_parent").find("option[value='"+pid+"']").attr("selected",true);
+	document.getElementById("category_parent").onchange();
+});
+
+function renderCategory(id){
+	var chtml = '<option value="0">请选择二级分类</option>';
+	var cid = {php echo $lesson['cid']?$lesson['cid']:0};
+	for(var i in category){
+		if(category[i].id==id){
+			var child = category[i].child;
+			for(var j in child){
+				if(child[j].id==cid){
+					chtml += '<option value="' + child[j].id+'" selected>' + child[j].name + '</option>';
+				}else{
+					chtml += '<option value="' + child[j].id+'">' + child[j].name + '</option>';
+				}
+			}
+			$("#category_child").html(chtml);
+		}
+	}
+}
+</script>
+
+{elseif $op=='viewSection'}
+<div class="panel admin-panel">
+    <div class="panel-head"><strong class="icon-reorder"> <span class="highlight">[{$lesson['bookname']}]</span>章节管理</strong></div>
+	<div class="padding border-bottom">
+		<ul class="search" style="padding-left:10px;">
+			<li> <a class="button border-green icon-plus-square-o" href="{php echo $this->createMobileUrl('index', array('op'=>'editSection','pid'=>$lesson['id']));}"> 添加章节</a> </li>
+		</ul>
+    </div>
+    <table class="table table-hover text-center">
+		<form action="{php echo $this->createMobileUrl('index', array('op'=>'delAll'));}" method="post" id="secForm">
+			<tr>
+				<th style="width:60px;">全选</th>
+				<th style="width:34%; text-align:left;">章节名称</th>       
+				<th style="width:9%;">性质</th>
+				<th style="width:9%;">类型</th>
+				<th style="width:9%;">状态</th>
+				<th style="width:15%;">添加时间</th>
+				<th>操作</th>       
+			</tr>
+			{loop $section_list $sec}
+			<tr>
+				<td>
+					<input type="checkbox" name="ids[]" value="{$sec['id']}" />
+				</td>
+				<td style="text-align: left;">[ID：{$sec['id']}] {$sec['title']}</td>
+				<td>
+					{if $sec['is_free']==1}
+						<span class="label-box label-box-success">试听章节</span>
+					{else}
+						<span class="label-box label-box-info">付费章节</span>
+					{/if}
+				</td>  
+				<td>
+					{if $sec['sectiontype']==1}
+						视频章节
+					{elseif $sec['sectiontype']==2}
+						图文章节
+					{elseif $sec['sectiontype']==3}
+						音频章节
+					{/if}
+				</td>         
+				<td>
+					{if $sec['status']==1}
+						<span class="label-box label-box-success">上架</span>
+					{else}
+						<span class="label-box label-box-default">下架</span>
+					{/if}
+				</td>
+				<td>{php echo date('Y-m-d H:i:s', $sec['addtime']);}</td>
+				<td>
+					<div class="button-group">
+						<a class="button border-blue" href="{php echo $this->createMobileUrl('index', array('op'=>'editSection','pid'=>$lesson['id'], 'id'=>$sec['id']));}"><span class="icon-edit"></span> 编辑</a>
+						<a class="button border-red" href="{php echo $this->createMobileUrl('index', array('op'=>'delete','id'=>$sec['id'],'refurl'=>$_W['siteurl']));}" onclick="return confirm('该操作无法撤消，确定删除?');"><span class="icon-edit"></span> 删除</a>
+					</div>
+				</td>
+			</tr>
+			{/loop}
+			<tr>
+				<td colspan="8">
+					<div class="bottom-select">
+						<button type="button" class="button border-blue" id="checkall"><span class="icon-check"></span> 全选</button>
+						<button type="submit" class="button border-red" id="delSelect"><span class="icon-trash-o"></span> 批量删除</button>
+					</div>
+					{$pager}
+				</td>
+			</tr>
+		</form>
+    </table>
+</div>
+<script type="text/javascript">
+function del(id){
+	if(!confirm("您确定要删除吗?")){
+		return false;
+	}
+}
+
+$("#checkall").click(function(){ 
+  $("input[name='ids[]']").each(function(){
+	  if (this.checked) {
+		  this.checked = false;
+	  }
+	  else {
+		  this.checked = true;
+	  }
+  });
+});
+
+$("#delSelect").click(function(){ 
+	var Checkbox=false;
+	 $("input[name='ids[]']").each(function(){
+	  if (this.checked==true) {		
+		Checkbox=true;	
+	  }
+	});
+	if (Checkbox){
+		if (!confirm("您确认要删除选中的内容吗？")){
+			return false;
+		} 		
+	}else{
+		alert("请选择您要删除的内容!");
+		return false;
+	}
+});
+</script>
+
+{elseif $op=='editSection'}
+<script type="text/javascript" src="{MODULE_URL}ueditor/ueditor.config.js"></script>  
+<script type="text/javascript" src="{MODULE_URL}ueditor/ueditor.all.min.js"></script>
+<div class="panel admin-panel">
+    <div class="panel-head"><strong><span class="icon-pencil-square-o"></span> {if $id>0}{编辑章节}{else}添加章节{/if}</strong></div>
+    <div class="body-content">
+        <form method="post" class="form-x" enctype="multipart/form-data">
+            <div class="form-group">
+                <div class="label">
+                    <label>课程名称：</label>
+                </div>
+                <div class="field">
+                    <input type="text" class="input" name="bookname" value="{$lesson['bookname']}" readonly="true">
+                    <div class="tips" title=""></div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="label">
+                    <label>章节名称：</label>
+                </div>
+                <div class="field">
+                    <div class="input-group">
+                        <input type="text" class="input" name="title" value="{$section['title']}">
+                    </div>
+                    <div class="tips">例如 第一节：初步认识HTML、1-1 初步认识HTML</div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="label">
+                    <label>章节类型：</label>
+                </div>
+                <div class="field">
+                    <div class="button-group radio">
+                        <label class="button vtype {if $section['sectiontype'] == 1 || empty($section)}active{/if}">
+                            <span class="icon icon-check"></span>             
+                            <input name="sectiontype" value="1" type="radio" {if $section['sectiontype'] == 1 || empty($section)}checked="true"{/if} />视频章节
+                        </label>
+						<label class="button atype {if $section['sectiontype'] == 2}active{/if}">
+                            <span class="icon icon-check"></span>             
+                            <input name="sectiontype" value="2" type="radio" {if $section['sectiontype']==2}checked="true"{/if}>图文章节
+                        </label>
+						<label class="button vtype {if $section['sectiontype'] == 3}active{/if}">
+                            <span class="icon icon-check"></span>             
+                            <input name="sectiontype" value="3" type="radio" {if $section['sectiontype']==3}checked="true"{/if}>音频章节
+                        </label>
+                    </div>       
+                </div>
+            </div>
+			<div class="form-group videoaudio">
+                <div class="label">
+                    <label>存储方式：</label>
+                </div>
+                <div class="field">
+                    <div class="button-group radio">
+						{loop $saveList $key $item}
+						<label class="button" id="savetype{$key}" {if $section['savetype'] == $key}active{/if}">
+                            <span class="icon icon-check"></span>             
+                            <input name="savetype" value="{$key}" type="radio" {if $section['savetype'] == $key}checked="true"{/if} />{$item}
+                        </label>
+						{/loop}
+                    </div>       
+                </div>
+            </div>
+			<div class="form-group videoaudio {if $section['sectiontype']==2}hidden{/if}">
+				<div class="label">
+					<label>【视频/音频URL】<br/>【点播VideoId】</label>
+				</div>
+				<div class="field">
+					<textarea class="input" id="videourl" name="videourl" style="height:80px">{$section['videourl']}</textarea>
+					<div class="tips">
+						其他存储、七牛云存储和腾讯云存储请填写音视频url，视频请用mp4，音频请用mp3格式<br/>
+						阿里云点播和腾讯云点播请填写VideoId
+					</div>
+				</div>
+			</div>
+			<div class="form-group videoaudio {if $section['sectiontype']==2}hidden{/if}">
+                <div class="label">
+                    <label>视频/音频时长：</label>
+                </div>
+                <div class="field">
+                    <input type="text" class="input" name="videotime" value="{$section['videotime']}">
+                    <div class="tips">请输入视频/音频时长，例如：08:12, 26:50</div>
+                </div>
+            </div>
+			<div class="form-group {if $section['sectiontype']!=2}hidden{/if}" id="scontent">
+                <div class="label">
+                    <label>章节内容：</label>
+                </div>
+                <div class="field">
+                    <textarea name="content" id="content" style="width:98%;">{$section['content']}</textarea>
+                    <script type="text/javascript">var editor = new UE.ui.Editor();   editor.render("content");</script>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="label">
+                    <label>章节性质：</label>
+                </div>
+                <div class="field">
+                    <div class="button-group radio">
+                        <label class="button {if $section['is_free'] == 1}active{/if}" onclick="audition(1)">
+                            <span class="icon icon-check"></span>             
+                            <input name="is_free" value="1" type="radio" {if $section['is_free'] == 1}checked="true"{/if}>试听章节             
+                        </label>             
+                        <label class="button {if empty($section) || $section['is_free'] == 0}active{/if}" onclick="audition(2)">
+                            <span class="icon icon-check"></span>
+                            <input name="is_free" value="0" type="radio" {if empty($section) || $section['is_free'] == 0}checked="true"{/if}>付费章节
+                        </label>
+                        <br/>
+                        <div class="tips">未购买课程情况下，用户可以观看学习【试听章节】，【付费章节】需购买课程后方可观看学习（课程性质为VIP免费观看学习且当前会员为VIP身份除外）。</div>
+                    </div>       
+                </div>
+            </div>
+			<div class="form-group {if $section['is_free']!=1}hidden{/if}" id="audition">
+                <div class="label">
+                    <label>试听时长：</label>
+                </div>
+                <div class="field">
+                    <div class="input-group">
+                        <input type="text" class="input" name="test_time" value="{$section['test_time']}">
+                        <span class="input-group-addon">秒</span>
+                    </div>
+                    <div class="tips">请输入试听时长，0表示可试听整个章节</div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="label">
+                    <label>章节状态：</label>
+                </div>
+                <div class="field">
+                    <div class="button-group radio">
+                        <label class="button {if empty($section) || $section['status'] == 1}active{/if}">
+                            <span class="icon icon-check"></span>
+                            <input name="status" value="1" type="radio" {if empty($section) || $section['status'] == 1}checked="true"{/if}>上架             
+                        </label>             
+                        <label class="button {if !empty($section) && $section['status'] == 0}active{/if}">
+                            <span class="icon icon-check"></span>
+                            <input name="status" value="0" type="radio" {if !empty($section) && $section['status'] == 0}checked="true"{/if}>下架
+                        </label>
+                    </div>       
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="label">
+                    <label></label>
+                </div>
+                <div class="field">
+					<input type="hidden" name="token" value="{$_W['token']}" />
+                    <input type="submit" name="submit" value="提交" class="button bg-main icon-check-square-o" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+
+$("#code").click(function(){
+	videourl.value = "<iframe  frameborder=0  width=100%  height=40%  src=这里替换内嵌视频地址  allowfullscreen></iframe>";
+});
+
+
+$(function() {
+	$(':radio[name="sectiontype"]').click(function() {
+		if($(this).val() == '1') {
+			//视频章节
+			$(".videoaudio").removeClass("hidden");
+			$("#scontent").addClass("hidden");
+			$("#savetype2").removeClass("hidden");
+			$("#savetype4").removeClass("hidden");
+			$("#savetype5").removeClass("hidden");
+		} else if($(this).val() == '2') {
+			//图文章节
+			$(".videoaudio").addClass("hidden");
+			$("#scontent").removeClass("hidden");
+		} else if($(this).val() == '3') {
+			//音频章节
+			$(".videoaudio").removeClass("hidden");
+			$("#scontent").addClass("hidden");
+			$("#savetype2").addClass("hidden");
+			$("#savetype4").addClass("hidden");
+			$("#savetype5").addClass("hidden");
+		}
+	});
+});
+
+function audition(type){
+	if(type==1){
+		$("#audition").removeClass("hidden");
+	}
+	if(type==2){
+		$("#audition").addClass("hidden");
+	}
+}
+</script>
+{/if}
+
+
+{template '_footer'}
