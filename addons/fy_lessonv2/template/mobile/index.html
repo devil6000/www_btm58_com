@@ -142,20 +142,22 @@ $(function() {
 	<!-- 最新课程 -->
 	{if $setting['show_newlesson'] && $newlesson}
 	<div class="course_wrap mt10">
-		<h2 class="course_hd"><span class="bor-l"></span>最新更新</h2>
+		<h2 class="course_hd"><span class="bor-l"></span>最新推荐</h2>
 		<ul class="newlesson-list" style="min-height:1px;">
 			{loop $newlesson $item}
 			<li class="lesson_list">
 				<a href="{php echo $this->createMobileUrl('lesson', array('op'=>'display', 'id'=>$item['id']));}" class="package">
 					<div class="package__cover-wrap">
 						<div class="package__cover" style="background-image: url({$_W['attachurl']}{$item['images']});">
-							<span class="package__cover-tips package__cover-tips--status">{if $item['price']>0}{php echo $item['buynum']+$item['virtual_buynum'];}{else}{php echo $item['buynum']+$item['virtual_buynum']+$item['visit_number'];}{/if}人已学习</span>
+							<!--<span class="package__cover-tips package__cover-tips--status">{if $item['price']>0}{php echo $item['buynum']+$item['virtual_buynum'];}{else}{php echo $item['buynum']+$item['virtual_buynum']+$item['visit_number'];}{/if}人已学习</span>-->
 						</div>
 					</div>
 					<div class="package__content">
 						<h3 class="package__name">{$item['bookname']}</h3>
 						<div class="package__info">
-							<span class="pink-color subhead">{$item['section']['title']}</span>
+							<!--<span class="pink-color subhead">{$item['section']['title']}</span>-->
+							<span class="grey-color">{$item['difficulty']}</span>
+							<span class="grey-color">{if $item['price']>0}{php echo $item['buynum']+$item['virtual_buynum'];}{else}{php echo $item['buynum']+$item['virtual_buynum']+$item['visit_number'];}{/if}人已学习</span>
 						</div>
 						<div class="package__info">
 							<span class="grey-color">{$item['tran_time']}更新</span>
@@ -169,6 +171,39 @@ $(function() {
 	</div>
 	{/if}
 	<!-- /最新课程 -->
+
+	<!-- 热门好课 -->
+	{if !empty($hotlesson)}
+	<div class="course_wrap mt10">
+		<h2 class="course_hd"><span class="bor-l"></span>热门好课<a class="">更多</a></h2>
+		<ul class="newlesson-list" style="min-height:1px;">
+			{loop $hotlesson $item}
+				<li class="lesson_list">
+					<a href="{php echo $this->createMobileUrl('lesson', array('op'=>'display', 'id'=>$item['id']));}" class="package">
+						<div class="package__cover-wrap">
+							<div class="package__cover" style="background-image: url({$_W['attachurl']}{$item['images']});">
+								<!--<span class="package__cover-tips package__cover-tips--status">{if $item['price']>0}{php echo $item['buynum']+$item['virtual_buynum'];}{else}{php echo $item['buynum']+$item['virtual_buynum']+$item['visit_number'];}{/if}人已学习</span>-->
+							</div>
+						</div>
+						<div class="package__content">
+							<h3 class="package__name">{$item['bookname']}</h3>
+							<div class="package__info">
+								<!--<span class="pink-color subhead">{$item['section']['title']}</span>-->
+								<span class="grey-color">{$item['difficulty']}</span>
+								<span class="grey-color">{if $item['price']>0}{php echo $item['buynum']+$item['virtual_buynum'];}{else}{php echo $item['buynum']+$item['virtual_buynum']+$item['visit_number'];}{/if}人已学习</span>
+							</div>
+							<div class="package__info">
+								<span class="grey-color">{$item['tran_time']}更新</span>
+								<div class="package__course-num"><i class="red-color">{php echo $item['price']>0?'¥'.$item['price']:'免费';}</i></div>
+							</div>
+						</div>
+					</a>
+				</li>
+			{/loop}
+		</ul>
+	</div>
+	{/if}
+	<!-- /热门好课 -->
 
 	<!-- 课程板块遍历 -->
 	{if !empty($list)} {loop $list $rec}

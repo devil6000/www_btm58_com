@@ -89,6 +89,13 @@ if($setting['show_newlesson']){
 	}
 }
 
+/* 热门好课 */
+$hotlesson = $this->readCommonCache('fy_lesson_' . $uniacid . '_index_hotlesson');
+if(empty($hotlesson)){
+    $hotlesson = pdo_fetchall('SELECT * FROM ' . tablename($this->table_lesson_parent) . ' WHERE uniacid=:uniacid AND status=1 AND ico_name=:ico ORDER BY id DESC LIMIT 0,5', array(':uniacid' => $uniacid,':ico' => 'ico-hot'));
+    cache_write('fy_lesson_' . $uniacid . '_index_hotlesson', $hotlesson);
+}
+
 /* 板块课程 */
 $list = $this->readCommonCache('fy_lesson_'.$uniacid.'_index_recommend');
 if(empty($list)){

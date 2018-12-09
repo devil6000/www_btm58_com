@@ -1,0 +1,137 @@
+{template '_headerv2'}
+<link href="{MODULE_URL}template/mobile/style/cssv2/qunService.css?v={$versions}" rel="stylesheet" />
+
+<div class="header-2 cbox">
+    <a href="javascript:history.go(-1);" class="ico go-back"></a>
+    <div class="flex title">{$title}</div>
+</div>
+
+<div class="content-inner" style="min-height:100%;">
+    <div class="">选择题</div>
+    {if $praxis['audiourl']}
+    <div class="video-wrap">
+        <link rel="stylesheet" href="{MODULE_URL}template/mobile/APlayer/APlayer.min.css?=1">
+        <script src="{MODULE_URL}template/mobile/APlayer/APlayer.min.js?v=2"></script>
+        <div id="main">
+            <div class="fylesson_audio">
+                <div id="player" class="aplayer"></div>
+            </div>
+        </div>
+        <script>
+            var ap1 = new APlayer({
+                element: document.getElementById('player'),
+                narrow: false,
+                autoplay: false,
+                showlrc: false,
+                music: {
+                    title: "点击读题",
+                    author: "",
+                    url: "{$praxis['videourl']}",
+                    pic: "{$_W['attachurl']}{php echo $section['images'] ? $section['images'] : $lesson['images'];}"
+                }
+            });
+            ap1.init();
+        </script>
+    </div>
+    {/if}
+    <div class="subject">{$praxis['subject']}</div>
+    {if $praxis['voideurl']}
+    {if $praxis['voidtype']==2}
+    {php echo htmlspecialchars_decode($praxis['videourl']);}
+    {elseif $praxis['voidtype']==4}
+        <!-- 阿里云点播 -->
+        <link rel="stylesheet" href="//g.alicdn.com/de/prismplayer/2.7.2/skins/default/aliplayer-min.css" />
+        <script type="text/javascript" src="//g.alicdn.com/de/prismplayer/2.7.2/aliplayer-min.js"></script>
+        <div class="prism-player" id="J_prismPlayer"></div>
+        <script>
+            var player = new Aliplayer({
+                id: "J_prismPlayer",
+                autoplay: false,
+                isLive:false,
+                playsinline:true,
+                width:"100%",
+                height:"240px",
+                controlBarVisibility:"click",
+                showBarTime:"3000",
+                useH5Prism:false,
+                useFlashPrism:false,
+                x5_type:"",
+                x5_video_position:"top",
+                vid: "<?php echo $praxis['videourl']; ?>",
+                playauth: "<?php echo $playAuth; ?>",
+                cover:"",
+            <?php if($audio){ ?>
+                mediaType: "audio",
+            <?php } ?>
+            });
+
+            var submiting = false;
+            var recordurl = "{php echo $this->createMobileUrl('record', array('lessonid'=>$_GPC['id'],'sectionid'=>$_GPC['sectionid'],'uid'=>$uid));}";
+            var timeUpdate = function(){
+                //每隔20秒记录一次播放时间
+                var currentTime = Math.floor(player.getCurrentTime());
+                if(currentTime!=0 && currentTime%20==0 && !submiting){
+                    submiting = true;
+                    $.get(recordurl, {currentTime:currentTime}, function (data){console.log(data);});
+                    setTimeout(function(){
+                        submiting = false;
+                    },1000);
+                }
+            }
+            player.on('timeupdate', timeUpdate);
+        </script>
+    {elseif $praxis['voidtype']==5}
+        <!-- 腾讯云点播 -->
+        <style type="text/css">
+            .video-js{width:100%;}
+        </style>
+        <link href="//imgcache.qq.com/open/qcloud/video/tcplayer/tcplayer.css" rel="stylesheet">
+        <script src="//imgcache.qq.com/open/qcloud/video/tcplayer/tcplayer.min.js"></script>
+        <video id="player-container-id" width="100%" height="240" preload="auto" playsinline webkit-playsinline></video>
+        <script type="text/javascript">
+            var player = TCPlayer('player-container-id', {
+                fileID: "<?php echo $praxis['videourl']; ?>",
+                appID : "<?php echo $qcloudvod['appid']; ?>",
+                t	  : "<?php echo $qcloudVodRes['t']; ?>",
+                us	  : "<?php echo $qcloudVodRes['us']; ?>",
+                sign  : "<?php echo $qcloudVodRes['sign']; ?>",
+                exper : "<?php echo $exper; ?>",
+                plugins:{
+                    ContinuePlay: {
+                        text:'上次播放至 ',
+                        btnText: '恢复播放'
+                    },
+                }
+            });
+        </script>
+    {/if}
+    {/if}
+    <div>
+        {if $praxis['answer_a']}
+        <div class="answer-box">
+            <div class="answer" data-answer="A">A:</div>
+            {$praxis['answer_a']}
+        </div>
+        {/if}
+        {if $praxis['answer_b']}
+        <div class="answer-box">
+            <div class="answer" data-answer="B">B:</div>
+            {$praxis['answer_b']}
+        </div>
+        {/if}
+        {if $praxis['answer_c']}
+        <div class="answer-box">
+            <div class="answer" data-answer="C">C:</div>
+            {$praxis['answer_c']}
+        </div>
+        {/if}
+        {if $praxis['answer_d']}
+        <div class="answer-box">
+            <div class="answer" data-answer="D">D:</div>
+            {$praxis['answer_d']}
+        </div>
+        {/if}
+    </div>
+    <div><a>提交</a></div>
+</div>
+{template '_footerv2'}

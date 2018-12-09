@@ -1,5 +1,5 @@
 create table `ims_fy_lesson_praxis`(
-  `id` int(11) not null auto increment,
+  `id` int(11) not null auto_increment,
   `uniacid` int(11) not null,
   `parentid` int(11) not null,
   `chapterid` int(11) not null comment '章节ID',
