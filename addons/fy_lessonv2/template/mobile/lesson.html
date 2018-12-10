@@ -365,12 +365,12 @@
 							<i class="section-state-icon">{$sec['videotime']}</i>
 						</li>
 						<li>
-							<a class="{php echo $this->createMobileUrl('lesson', array('id'=>$lesson['id'],'sectionid'=>$sec['id']));}" class="fa fa-play-circle-o">{$sec['title']}话题讨论</a>
+							<a href="{php echo $this->createMobileUrl('lesson', array('id'=>$lesson['id'],'sectionid'=>$sec['id']));}"><i class="fa fa-comments-o"></i>{$sec['title']}话题讨论</a>
 							<i class="section-state-icon"></i>
 						</li>
 						{/loop}
 						<li>
-							<a href="{php echo $this->createMobileUrl('praxis', array('pid'=>$lesson['id']));}" class="fa fa-play-circle-o">{$lesson['bookname']}测试</a>
+							<a href="{php echo $this->createMobileUrl('praxis', array('pid'=>$lesson['id']));}"><i class="fa fa-clipboard"></i>{$lesson['bookname']}测试</a>
 							<i class="section-state-icon"></i>
 						</li>
 					{else}

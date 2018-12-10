@@ -712,9 +712,11 @@ if ($operation == 'display') {
         message("该课程不存在或已被删除！", "", "error");
     }
 
-    $chapter = pdo_fetch("SELECT * FROM " . tablename($this->table_lesson_son) . " WHERE uniacid=:uniacid AND id=:id", array(':uniacid'=>$uniacid, ':id' => $cid));
-    if(empty($chapter)){
-        message("该章节不存在或已被删除！","","error");
+    if(!empty($cid)){
+        $chapter = pdo_fetch("SELECT * FROM " . tablename($this->table_lesson_son) . " WHERE uniacid=:uniacid AND id=:id", array(':uniacid'=>$uniacid, ':id' => $cid));
+        if(empty($chapter)){
+            message("该章节不存在或已被删除！","","error");
+        }
     }
 
     if (checksubmit('submit')) { /* 排序 */
@@ -777,7 +779,6 @@ if ($operation == 'display') {
     if(empty($lesson)){
         message("当前课程不存在或已被删除！", "", "error");
     }
-
 
     if(!empty($cid)){
         $section = pdo_fetch("SELECT * FROM " .tablename($this->table_lesson_son). " WHERE uniacid=:uniacid AND id=:id", array(':uniacid'=>$uniacid,':id'=>$cid));

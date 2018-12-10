@@ -66,6 +66,8 @@ class fy_lessonv2ModuleSite extends WeModuleSite {
 	public $table_core_paylog = 'core_paylog';
     public $table_users = 'users';
     public $table_lesson_praxis = 'fy_lesson_praxis';
+    public $table_discuss = 'fy_discuss';
+    public $table_discuss_content = 'fy_fiscuss_content';
 
 /***************************** 初始化 ******************************** */
     function __construct() {

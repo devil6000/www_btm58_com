@@ -1,0 +1,31 @@
+<div class="main">
+    <form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+        <div class="panel panel-default">
+            <div class="panel-heading">讨论信息</div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">当前课程</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" value="{$lesson['bookname']}" readonly/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">当前章节</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" value="{$section['title']}" readonly/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">讨论内容</label>
+                    <div class="col-sm-9">
+                        {php echo tpl_ueditor('content', $discuss['content']);}
+                        <div class="help-block">请填写讨论内容</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="cols-xs-12 col-sm-3 col-ms-2 control-label"></label>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

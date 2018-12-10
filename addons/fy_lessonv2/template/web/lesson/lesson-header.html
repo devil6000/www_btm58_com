@@ -4,6 +4,12 @@
 	{if $op=='postsection'}
 	<li class="active"><a href="{php echo $this->createWebUrl('lesson', array('op'=>'postsection','pid'=>$_GPC['pid'],'id'=>$_GPC['id']));}">{if $_GPC['id']>0}编辑{else}添加{/if}章节</a></li>
 	{/if}
+	{if $op == 'postpraxis'}
+	<li class="active"><a href="{php echo $this->createWebUrl('lesson', array('op'=>'postpraxis','pid'=>$_GPC['pid'],'id'=>$_GPC['id']));}">{if $_GPC['id'] > 0}编辑{else}添加{/if}习题</a></li>
+	{/if}
+	{if $op == 'praxis'}
+	<li class="active"><a href="{php echo $this->createWebUrl('lesson', array('op'=>'praxis', 'pid'=>$_GPC['pid']));}">习题列表</a></li>
+	{/if}
 	{if $op=='viewsection'}
 	<li class="active"><a href="{php echo $this->createWebUrl('lesson', array('op'=>'viewsection', 'pid'=>$_GPC['pid']));}">章节列表</a></li>
 	{/if}

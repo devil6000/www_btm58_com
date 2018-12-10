@@ -1,4 +1,4 @@
-{template '_headerv2'}
+<link rel="stylesheet" href="style/cssv2/teacherAccount.css">{template '_headerv2'}
 <link href="{MODULE_URL}template/mobile/style/cssv2/qunService.css?v={$versions}" rel="stylesheet" />
 
 <div class="header-2 cbox">
@@ -111,27 +111,66 @@
         <div class="answer-box">
             <div class="answer" data-answer="A">A:</div>
             {$praxis['answer_a']}
+            <div><input type="radio" name="corrent" value="A" /></div>
         </div>
         {/if}
         {if $praxis['answer_b']}
         <div class="answer-box">
             <div class="answer" data-answer="B">B:</div>
             {$praxis['answer_b']}
+            <div><input type="radio" name="corrent" value="B" /></div>
         </div>
         {/if}
         {if $praxis['answer_c']}
         <div class="answer-box">
             <div class="answer" data-answer="C">C:</div>
             {$praxis['answer_c']}
+            <div><input type="radio" name="corrent" value="C" /></div>
         </div>
         {/if}
         {if $praxis['answer_d']}
         <div class="answer-box">
             <div class="answer" data-answer="D">D:</div>
             {$praxis['answer_d']}
+            <div><input type="radio" name="corrent" value="D" /></div>
         </div>
         {/if}
     </div>
-    <div><a>提交</a></div>
+    <div id="answer_commit" data-answer="{$praxis['correct']}">提交</div>
 </div>
+
+<div>
+
+</div>
+
+<script type="text/javascript">
+$(document).ready(function () {
+    $('#answer_commit').unbind('click').on('click',function () {
+
+        var obj = $(this);
+
+        var t = obj.attr('submit');
+        if(t == 1){ return;}
+        $(this).attr('submit',1);
+
+        var current = obj.data('answer');
+        var da = '';
+        $('input[name=corrent]').each(function () {
+
+            if($(this).is(':checked')) {
+
+                da = $(this).val();
+            }
+        });
+
+        if(da != current) {
+            obj.removeAttr('submit');
+        }
+
+        if(da == current) {
+            obj.removeAttr('submit');
+        }
+    });
+});
+</script>
 {template '_footerv2'}

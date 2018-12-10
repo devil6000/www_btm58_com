@@ -406,6 +406,22 @@
 	font-size: 1.2em
 }
 
+.course-sections .fa-comments-o {
+	position: relative;
+	top: 1px;
+	margin-right: 8px;
+	color: rgba(0,0,0,.22);
+	font-size: 1.2em
+}
+
+.course-sections .fa-clipboard {
+	position: relative;
+	top: 1px;
+	margin-right: 8px;
+	color: rgba(0,0,0,.22);
+	font-size: 1.2em
+}
+
 .course-sections li {
 	position: relative;
 	height: 40px;

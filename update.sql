@@ -17,3 +17,31 @@ create table `ims_fy_lesson_praxis`(
   `addtime` int(6) null,
   primary key (`id`)
 );
+
+/**
+讨论内容表
+ */
+create table `ims_fy_discuss`(
+  `id` int(11) not null auto_increment,
+  `uniacid` int(11) not null,
+  `parentid` int(11) not null,
+  `chapterid` int(11) not null comment '章节ID',
+  `videotype` tinyint(1) default 0 comment '视频保存方式',
+  `videourl` text comment '视频地址',
+  `content` text comment '说明',
+  `addtime` int(6) default 0,
+  PRIMARY KEY (`id`)
+);
+
+/**
+讨论信息列表
+ */
+create table `ims_fy_discuss_content`(
+  `id` int(11) not null auto_increment,
+  `uniacid` int(11) not null,
+  `cid` int(11) not null comment '讨论话题ID',
+  `openid` varchar(100) not null,
+  `addtime` int(6) default 0,
+  `content` text comment '内容',
+  primary key (`id`)
+);
