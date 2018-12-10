@@ -142,7 +142,7 @@ $(function() {
 	<!-- 最新课程 -->
 	{if $setting['show_newlesson'] && $newlesson}
 	<div class="course_wrap mt10">
-		<h2 class="course_hd"><span class="bor-l"></span>最新推荐</h2>
+		<h2 class="course_hd"><span class="bor-l"></span>最新推荐<a style="display: inline-block; float: right;" href="{php echo $this->createMobileUrl('lesson', array('id' => $item['id']))}">更多</a></h2>
 		<ul class="newlesson-list" style="min-height:1px;">
 			{loop $newlesson $item}
 			<li class="lesson_list">

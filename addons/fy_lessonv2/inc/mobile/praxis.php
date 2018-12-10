@@ -103,7 +103,6 @@ if($praxis){
 
         }
     }
-
-    include $this->template('praxis');
-
 }
+
+include $this->template('praxis');

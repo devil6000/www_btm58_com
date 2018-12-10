@@ -7,7 +7,7 @@
 </div>
 
 <div class="content-inner" style="min-height:100%;">
-    <div class="">—°‘ÒÃ‚</div>
+    <div class="">ÈÄâÊã©È¢ò</div>
     {if $praxis['audiourl']}
     <div class="video-wrap">
         <link rel="stylesheet" href="{MODULE_URL}template/mobile/APlayer/APlayer.min.css?=1">
@@ -24,7 +24,7 @@
                 autoplay: false,
                 showlrc: false,
                 music: {
-                    title: "µ„ª˜∂¡Ã‚",
+                    title: "ÁÇπÂáªËØªÈ¢ò",
                     author: "",
                     url: "{$praxis['videourl']}",
                     pic: "{$_W['attachurl']}{php echo $section['images'] ? $section['images'] : $lesson['images'];}"
@@ -39,7 +39,7 @@
     {if $praxis['voidtype']==2}
     {php echo htmlspecialchars_decode($praxis['videourl']);}
     {elseif $praxis['voidtype']==4}
-        <!-- ∞¢¿Ô‘∆µ„≤• -->
+
         <link rel="stylesheet" href="//g.alicdn.com/de/prismplayer/2.7.2/skins/default/aliplayer-min.css" />
         <script type="text/javascript" src="//g.alicdn.com/de/prismplayer/2.7.2/aliplayer-min.js"></script>
         <div class="prism-player" id="J_prismPlayer"></div>
@@ -68,7 +68,7 @@
             var submiting = false;
             var recordurl = "{php echo $this->createMobileUrl('record', array('lessonid'=>$_GPC['id'],'sectionid'=>$_GPC['sectionid'],'uid'=>$uid));}";
             var timeUpdate = function(){
-                //√ø∏Ù20√Îº«¬º“ª¥Œ≤•∑≈ ±º‰
+
                 var currentTime = Math.floor(player.getCurrentTime());
                 if(currentTime!=0 && currentTime%20==0 && !submiting){
                     submiting = true;
@@ -81,7 +81,7 @@
             player.on('timeupdate', timeUpdate);
         </script>
     {elseif $praxis['voidtype']==5}
-        <!-- Ã⁄—∂‘∆µ„≤• -->
+
         <style type="text/css">
             .video-js{width:100%;}
         </style>
@@ -98,8 +98,8 @@
                 exper : "<?php echo $exper; ?>",
                 plugins:{
                     ContinuePlay: {
-                        text:'…œ¥Œ≤•∑≈÷¡ ',
-                        btnText: 'ª÷∏¥≤•∑≈'
+                        text:'‰∏äÊ¨°Êí≠ÊîæËá≥ ',
+                        btnText: 'ÊÅ¢Â§çÊí≠Êîæ'
                     },
                 }
             });
@@ -132,6 +132,6 @@
         </div>
         {/if}
     </div>
-    <div><a>Ã·Ωª</a></div>
+    <div><a>Êèê‰∫§</a></div>
 </div>
 {template '_footerv2'}

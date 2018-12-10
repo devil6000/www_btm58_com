@@ -80,7 +80,7 @@ if(empty($discount_banner)){
 if($setting['show_newlesson']){
 	$newlesson = $this->readCommonCache('fy_lesson_'.$uniacid.'_index_newlesson');
 	if(empty($newlesson)){
-		$newlesson = pdo_fetchall("SELECT id,bookname,price,images,buynum,virtual_buynum,visit_number,section_status,update_time FROM " .tablename($this->table_lesson_parent). " WHERE uniacid=:uniacid AND status=:status ORDER BY update_time DESC LIMIT 0,{$setting['show_newlesson']}", array(':uniacid'=>$uniacid, ':status'=>1));
+		$newlesson = pdo_fetchall("SELECT id,bookname,price,images,buynum,virtual_buynum,visit_number,section_status,update_time,difficulty FROM " .tablename($this->table_lesson_parent). " WHERE uniacid=:uniacid AND status=:status ORDER BY update_time DESC LIMIT 0,{$setting['show_newlesson']}", array(':uniacid'=>$uniacid, ':status'=>1));
 		foreach($newlesson as $k=>$v){
 			$newlesson[$k]['tran_time'] = $this->tranTime($v['update_time']);
 			$newlesson[$k]['section'] = pdo_fetch("SELECT title FROM " .tablename($this->table_lesson_son). " WHERE parentid=:parentid ORDER BY id DESC LIMIT 0,1", array(':parentid'=>$v['id']));
