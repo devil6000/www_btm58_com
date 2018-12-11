@@ -28,7 +28,14 @@ if($op == 'display'){
     $discuss = pdo_fetch('SELECT * FROM ' . tablename($this->table_discuss) . ' WHERE uniacid=:uniacid AND parentid=:pid AND chapterid=:cid AND id=:id LIMIT 1', array(':pid' => $pid, ':cid' => $cid, ':id' => $id));
 
     if(checksubmit('submit')){
-
+        $data = array('uniacid' => $uniacid, 'parentid' => $pid, 'chapterid' => $cid, 'content' => $_GPC['content'], 'title' => $_GPC['title'], 'addtime' => time());
+        if(empty($id)){
+            pdo_insert($this->table_discuss, $data);
+        }else{
+            unset($data['uniacid'], $data['addtime']);
+            pdo_update($this->table_discuss, $data, array('id' => $id, 'uniacid' => $uniacid));
+        }
+        message('编辑课程名称：' . $lesson['bookname'] . '章节名称：' . $section['title'] . '的话题讨论内容');
     }
 
 }

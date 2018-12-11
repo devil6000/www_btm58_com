@@ -29,6 +29,7 @@ create table `ims_fy_discuss`(
   `videotype` tinyint(1) default 0 comment '视频保存方式',
   `videourl` text comment '视频地址',
   `content` text comment '说明',
+  `title` varchar(300) null comment '标题',
   `addtime` int(6) default 0,
   PRIMARY KEY (`id`)
 );
