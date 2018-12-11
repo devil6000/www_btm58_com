@@ -67,7 +67,7 @@ if ($operation == 'display') {
 			'is_show'	   => intval($_GPC['is_show']),
 			'is_hot'	   => intval($_GPC['is_hot']),
 			'link'		   => trim($_GPC['link']),
-			'addtime'      => time(),
+			'addtime'      => time()
 		);
 
 		if (!empty($id)) {

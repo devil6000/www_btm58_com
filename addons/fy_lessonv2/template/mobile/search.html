@@ -14,13 +14,23 @@
 
 <!-- 顶部搜索框 -->
 <header class="m-header z-img-ready border-top">
+	<!--
 	<div class="header_search">
 		<div class="u-search">
 			<i class="fa fa-search"></i>
 			<input type="text" id="searchInput" class="search_input z-abled" value="{$_GPC['keyword']}" autocorrect="off" placeholder="输入课程名称进行查找">
 		</div>
 	</div>
+	-->
+	<div class="header">
+		<div class="search-box">
+			<div class="search-placeholder">
+				<input type="search" id="searchInput" value="{$_GPC['keyword']}" autocorrect="off" placeholder="输入课程名称进行查找" />
+			</div>
+		</div>
+	</div>
 </header>
+
 <!-- /顶部搜索框 -->
 
 <!-- 筛选条件 -->
@@ -227,71 +237,44 @@ $(function () {
 {elseif $op=='allcategory'}
 <link href="{MODULE_URL}template/mobile/style/cssv2/all-category.css?v={$versions}" rel="stylesheet" />
 
-<div class="header-2 cbox">
-	<a href="javascript:history.go(-1);" class="ico go-back"></a>
-	<div class="flex title" style="max-width:80%;">{$title}</div>
-</div>
-
-<!-- 分类 START-->
-<div class="fui-fullHigh-group">
-	<div class="category-inner menu">
-		<nav class="category-rec category-switch on" onclick="switchTab('rec');">推荐分类</nav>
-		{loop $categorylist $key $item}
-		<nav class="category-{$key} category-switch" onclick="switchTab({$key});">{$item['name']}</nav>
-		{/loop}
-	</div>
-	<div class="category-inner container">
-		<div class="all-category-son category-son-rec">
-			<div class="category-right">
-				<a href="{php echo $this->createMobileUrl('search');}" class="category-item">
-					<div class="icon radius">
-						<img src="{MODULE_URL}template/mobile/images/ico-allcategory.png">
-					</div>
-					<div class="text">全部课程</div>
-				</a>
-				{loop $hot_category $hot}
-				<a href="{php echo $this->createMobileUrl('search',array('cat_id'=>$hot['id']));}" class="category-item">
-					<div class="icon radius">
-						<img src="{$_W['attachurl']}{$hot['ico']}">
-					</div>
-					<div class="text">{$hot['name']}</div>
-				</a>
-				{/loop}
-			</div>
+<div class="header">
+	<div class="search-box">
+		<div class="search-placeholder">
+			<input type="search" id="keyword" placeholder="搜索课程" />
 		</div>
-
-		{loop $categorylist $key $parent}
-		<div class="all-category-son category-son-{$key}" style="display:none;">
-			<div class="category-right">
-				<a href="{php echo $parent['link'] ? $parent['link'] : $this->createMobileUrl('search', array('cat_id'=>$parent['id']));}" class="category-item">
-					<div class="icon radius">
-						<img src="{$_W['attachurl']}{$parent['ico']}">
-					</div>
-					<div class="text">{$parent['name']}</div>
-				</a>
-
-				{loop $parent['child'] $son}
-				<a href="{php echo $son['link'] ? $son['link'] : $this->createMobileUrl('search', array('cat_id'=>$son['id']));}" class="category-item">
-					<div class="icon radius">
-						<img src="{$_W['attachurl']}{$son['ico']}">
-					</div>
-					<div class="text">{$son['name']}</div>
-				</a>
-				{/loop}
-			</div>
-		</div>
-		{/loop}
 	</div>
 </div>
-<!-- 分类 END-->
+
+<span class="title-box">{$title}</span>
+
+<div class="category-list">
+	{loop $categorylist $key $item}
+		<a href="{php echo $item['link'] ? $item['link'] : $this->createMobileUrl('search', array('cat_id'=>$item['id']));}">
+		<div class="category-one bg-{$key}">
+			<img class="category-image" src="{$_W['attachurl']}{$item['ico']}">
+			<span class="title-name">{$item['name']}</span>
+			<span class="number-box">3966人关注</span>
+		</div>
+		</a>
+	{/loop}
+</div>
+
 <script type="text/javascript">
-function switchTab(key){
-	$(".category-switch").removeClass('on');
-	$(".all-category-son").hide();
-	
-	$(".category-"+key).addClass('on');
-	$(".category-son-"+key).show();
-}
+    var search = function() {
+        var keywords = $.trim($("#keyword").val());
+        if (keywords == '') {
+            searchUrl = '{php echo $this->createMobileUrl("search");}';
+        } else {
+            searchUrl = '{php echo $this->createMobileUrl("search");}&keyword=' + encodeURIComponent(keywords);
+        }
+        document.location.href = searchUrl;
+        return false;
+    };
+    $("#keyword").keydown(function(event) {
+        if (event.keyCode == 13) {
+            search();
+        }
+    });
 </script>
 
 {/if}

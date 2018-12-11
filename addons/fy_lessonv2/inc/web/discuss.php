@@ -1,13 +1,13 @@
 <?php
 /**
- * ÌÖÂÛ¹ÜÀí
+ * è®¨è®ºç®¡ç†
  * Created by PhpStorm.
  * User: appleimac
  * Date: 18/12/10
- * Time: ÏÂÎç3:46
+ * Time: 3:46
  */
 if(empty($setting)){
-    message("ÇëÏÈÅäÖÃÏà¹Ø²ÎÊı£¡", $this->createWebUrl('setting'), "error");
+    message("è¯·å…ˆé…ç½®ç›¸å…³å‚æ•°ï¼", $this->createWebUrl('setting'), "error");
 }
 
 if($op == 'display'){
@@ -17,12 +17,12 @@ if($op == 'display'){
 
     $lesson = pdo_fetch('SELECT * FROM ' . tablename($this->table_lesson_parent) . ' WHERE uniacid=:uniacid AND id=:id LIMIT 1', array(':uniacid' => $uniacid, ':id' => $pid));
     if(empty($lesson)){
-        message('¿Î³ÌÒÑÉ¾³ı»ò²»´æÔÚ£¡', '', 'error');
+        message('è¯¾ç¨‹ä¸å­˜åœ¨æˆ–å·²è¢«åˆ é™¤ï¼', '', 'error');
     }
 
     $section = pdo_fetch('SELECT * FROM ' . tablename($this->table_lesson_son) . ' WHERE uniacid=:uniacid AND id=:id LIMIT 1', array(':uniacid' => $uniacid, ':id' => $cid));
     if(empty($section)){
-        message('ÕÂ½ÚÒÑÉ¾³ı»ò²»´æÔÚ£¡', '', 'error');
+        message('ç« èŠ‚ä¸å­˜åœ¨æˆ–å·²åˆ é™¤', '', 'error');
     }
 
     $discuss = pdo_fetch('SELECT * FROM ' . tablename($this->table_discuss) . ' WHERE uniacid=:uniacid AND parentid=:pid AND chapterid=:cid AND id=:id LIMIT 1', array(':pid' => $pid, ':cid' => $cid, ':id' => $id));

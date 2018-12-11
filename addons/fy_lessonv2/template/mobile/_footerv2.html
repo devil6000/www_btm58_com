@@ -47,12 +47,20 @@
 				{/if}
 			{/if}
 
+			<a href="{php echo $config['lessons_link'] ? $config['lessons_link'] : $this->createMobileUrl('mylearning');}&status=&t={$t}" class="weui_tabbar_item {if $_GPC['do']=='mylearning'}weui_bar_item_on{/if}">
+				<div class="weui_tabbar_icon">
+					<i class="fa fa-{php echo $config['lessons_icon'] ? $config['lessons_icon'] : 'book';}"></i>
+				</div>
+				<p class="weui_tabbar_label">{php echo $config['lessons_name'] ? $config['lessons_name'] : '我的学习';}</p>
+			</a>
+			<!--
 			<a href="{php echo $config['lessons_link'] ? $config['lessons_link'] : $this->createMobileUrl('mylesson');}&status=&t={$t}" class="weui_tabbar_item {if $_GPC['do']=='mylesson'}weui_bar_item_on{/if}">
 				<div class="weui_tabbar_icon">
 					<i class="fa fa-{php echo $config['lessons_icon'] ? $config['lessons_icon'] : 'book';}"></i>
 				</div>
 				<p class="weui_tabbar_label">{php echo $config['lessons_name'] ? $config['lessons_name'] : '我的课程';}</p>
 			</a>
+			-->
 
 			<a href="{php echo $config['selfs_link'] ? $config['selfs_link'] : $this->createMobileUrl('self');}&t={$t}" class="weui_tabbar_item {if $_GPC['do']=='self'}weui_bar_item_on{/if}">
 				<div class="weui_tabbar_icon">
