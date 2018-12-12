@@ -364,15 +364,19 @@
 							<a href="{php echo $this->createMobileUrl('lesson', array('id'=>$lesson['id'],'sectionid'=>$sec['id']));}" {if $sectionid==$sec['id']}class="section-active"{/if}><i class="fa fa-play-circle-o {if $sectionid==$sec['id']}section-active{/if}"></i>{if $sec['is_free']==1}<span style="color:#128C62;">[试听]</span>{/if}{$sec['title']}</a>
 							<i class="section-state-icon">{$sec['videotime']}</i>
 						</li>
+						{if $play}
 						<li>
 							<a href="{php echo $this->createMobileUrl('lesson', array('id'=>$lesson['id'],'sectionid'=>$sec['id']));}"><i class="fa fa-comments-o"></i>{$sec['title']}话题讨论</a>
 							<i class="section-state-icon"></i>
 						</li>
+						{/if}
 						{/loop}
+						{if $play}
 						<li>
 							<a href="{php echo $this->createMobileUrl('praxis', array('pid'=>$lesson['id']));}"><i class="fa fa-clipboard"></i>{$lesson['bookname']}测试</a>
 							<i class="section-state-icon"></i>
 						</li>
+						{/if}
 					{else}
 						<li style="height:auto;padding:10%;">
 							<a style="text-align:center;">抱歉，该课程没有找到任何内容~</a>

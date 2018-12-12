@@ -23,6 +23,7 @@
                     </div>
                 </div>
 
+                <!--
                 <div class="form-group">
                     <label class="col-xs-12 col-sm-3 col-md-2 control-label">视频存储方式</label>
                     <div class="col-sm-9">
@@ -31,18 +32,19 @@
                         {/loop}
                     </div>
                 </div>
+                -->
 
                 <div class="form-group">
-                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">【视频】<br/>【点播VideoId】</label>
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">【视频】</label>
                     <div class="col-sm-9">
                         <textarea id="voideurl" name="voideurl" class="form-control" style="min-height:100px;">{$praxis['voideurl']}</textarea>
                         <div class="help-block">
-                            其他存储、七牛云存储和腾讯云存储请填写音视频url，视频请用mp4，音频请用mp3格式<br/>
-                            阿里云点播和腾讯云点播请填写VideoId
+                            请填写视频url地址，请用mp4格式
                         </div>
                     </div>
                 </div>
 
+                <!--
                 <div class="form-group">
                     <label class="col-xs-12 col-sm-3 col-md-2 control-label">音频存储方式</label>
                     <div class="col-sm-9">
@@ -51,14 +53,14 @@
                         {/loop}
                     </div>
                 </div>
+                -->
 
                 <div class="form-group">
-                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">【音频】<br/>【点播VideoId】</label>
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">【音频】</label>
                     <div class="col-sm-9">
                         <textarea id="audiourl" name="audiourl" class="form-control" style="min-height:100px;">{$praxis['audiourl']}</textarea>
                         <div class="help-block">
-                            其他存储、七牛云存储和腾讯云存储请填写音视频url，视频请用mp4，音频请用mp3格式<br/>
-                            阿里云点播和腾讯云点播请填写VideoId
+                            请填写视频url地址，请用mp3格式
                         </div>
                     </div>
                 </div>
@@ -93,6 +95,10 @@
                 <div class="form-group">
                     <label class="col-xs-12 col-sm-3 col-md-2 control-label">正确答案</label>
                     <div class="col-sm-10"><input type="text" name="correct" value="{$praxis['correct']}" class="form-control" /></div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">答案说明</label>
+                    <div class="col-sm-10"><textarea name="correct_mark" class="form-control">{$praxis['correct_mark']}</textarea></div>
                 </div>
 
                 <div class="form-group">

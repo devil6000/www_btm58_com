@@ -12,8 +12,7 @@
                     <thead class="navbar-inner">
                     <tr>
                         <th style="width:80px;text-align:center;">排序</th>
-                        <th style="width:25%;">章节名称</th>
-                        <th style="width:25%;">题目</th>
+                        <th style="width:25%;">课程名称</th>
                         <th style="width:13%;text-align:center;">添加时间</th>
                         <th style="width:12%;text-align:center;">操作</th>
                     </tr>
@@ -25,14 +24,13 @@
                             [ID:{$sec['id']}]
                             <input type="text" class="form-control" name="sectionorder[{$sec['id']}]" value="{$sec['displayorder']}" style="width:60px;">
                         </td>
-                        <td style="word-break:break-all;">{$chapter['title']}</td>
-                        <td style="word-break:break-all;">{$sec['subject']}</td>
+                        <td style="word-break:break-all;">{$lesson['bookname']}</td>
                         <td style="text-align:center;">{php echo date('Y-m-d H:i:s',$sec['addtime']);}</td>
                         <td style="text-align:center;">
                             <div class="btn-group btn-group-sm">
                                 <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="true" href="javascript:;">功能列表 <span class="caret"></span></a>
                                 <ul class="dropdown-menu dropdown-menu-left" role="menu" style="z-index:99999">
-                                    <li><a href="{php echo $this->createWebUrl('lesson', array('op'=>'postpraxis', 'id' => $sec['id'], 'cid'=>$sec['chapterid'], 'pid'=>$sec['parentid']));}"><i class="fa fa-edit"></i> 编辑习题</a></li>
+                                    <li><a href="{php echo $this->createWebUrl('lesson', array('op'=>'postpraxis', 'id' => $sec['id'], 'pid'=>$sec['parentid']));}"><i class="fa fa-edit"></i> 编辑习题</a></li>
                                     <li><a href="{php echo $this->createWebUrl('lesson', array('op'=>'delete','sid'=>$sec['id']));}" onclick="return confirm('确认删除此习题吗？');return false;"><i class="fa fa-remove"></i> &nbsp;删除习题</a></li>
                                 </ul>
                             </div>

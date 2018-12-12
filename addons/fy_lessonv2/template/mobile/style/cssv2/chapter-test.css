@@ -1,0 +1,128 @@
+
+.question-box {
+  padding-top: .84375rem;
+  background: #fff;
+  padding-bottom: 1.125rem;
+}
+.question-box .question-num {
+  display: block;
+  text-align: center;
+  font-size: 1.125rem;
+  /* margin-top: 4rem; */
+  margin-bottom: 1.78125rem;
+}
+.question-box .read-btn {
+  width: 6.25rem;
+  height: 1.75rem;
+  background: #0287C9;
+  color: #fff;
+  display: flex;
+  margin: 0 auto;
+  align-items: center;
+  justify-content: center;
+  font-size: .875rem;
+}
+.question-box .read-btn img {
+  width: 1rem;
+  height: .875rem;
+  margin-right: .375rem;
+}
+.question-box .question-text {
+  font-size: 1rem;
+  color: #333333;
+  margin:.4375rem .4375rem 0 .46875rem;
+  display:block;
+}
+.question-box video {
+  display:block;
+  margin: .90625rem 1.25rem 0 1.25rem;
+  width: calc(100% - 2.5rem);
+}
+/*答案选择  */
+.answer-select {
+  margin-bottom: 4.46875rem;
+}
+.answer-select .answer-one {
+  height: 6.25rem;
+  display: flex;
+  margin-top: .625rem;
+  align-items: center;
+  background: #fff;
+  padding: 0 .96875rem 0 1.25rem;
+  justify-content: space-between;
+  border:solid 1px #fff;
+}
+
+.trues {
+  border-color: #6aa319;
+}
+
+.answer-select .answer-one .select-img {
+  width:1.4375rem;
+  height:1.4375rem;
+}
+.answer-select img {
+  width: 8.75rem;
+  height: 5rem;
+}
+.answer-select label {
+  width:1.4375rem;
+  height:1.4375rem;
+  border: 1px solid #d3d5db;
+  border-radius: 50px;
+}
+.answer-select label.select-circle{
+  background-color: #6aa319;
+}
+
+.answer-select .submit-btn {
+  width: 21.5625rem;
+  height: 2.75rem;
+  display: flex;
+  align-items: center;
+  border: 0;
+  justify-content: center;
+  background:linear-gradient(0deg,rgba(0,189,161,1),rgba(0,205,149,1));
+  border-radius:5px;
+  margin: .84375rem auto;
+  font-weight:500;
+  font-size: 1.125rem;
+  color: #fff;
+}
+
+.bottom-dialog {
+  position: fixed;
+  padding: 1.25rem 1.0625rem 1.5625rem .96875rem;
+  bottom: 0;
+  left: 0;
+  width: calc(100% - 2.03125rem);
+  height: 150px;
+  background: #EEF6E5;
+}
+.bottom-dialog .tip-title {
+font-size: .875rem;
+color: #333333;
+margin-bottom: 1.125rem;
+}
+.bottom-dialog .tip-correct {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #259B24;
+  font-size: .875rem;
+}
+.bottom-dialog .tip-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #E51C23;
+  font-size: .875rem;
+}
+.bottom-dialog img {
+  margin-right: .40625rem;
+  height: 1.5rem;
+  width: 1.5rem;
+}
+.warn-color {
+  background: #FFDADA !important;
+}

@@ -34,75 +34,84 @@ if(empty($lesson)){
     message("该课程已下架，您可以看看其他课程~", "", "error");
 }
 
+$title = $lesson['bookname'] . '测试';
+
+$count = pdo_fetchcolumn('SELECT COUNT(id) FROM ' . tablename($this->table_lesson_praxis) . ' WHERE parentid=:pid AND uniacid=:uniacid', array(':pid' => $pid, ':uniacid' => $uniacid));
+
 $praxis = pdo_fetch('SELECT * FROM ' . tablename($this->table_lesson_praxis) . ' WHERE parentid=:pid AND uniacid=:uniacid ORDER BY id ASC LIMIT ' . ($page - 1) * $pageSize . ',' . $pageSize, array(':pid' => $pid, ':uniacid' => $uniacid));
 
-if($praxis){
-    /**
-     * 视频课程格式
-     * @savetype	0.其他存储 1.七牛存储 2.内嵌播放代码模式 3.腾讯云存储
-     */
-    if(strpos($_SERVER['HTTP_USER_AGENT'], 'iPhone')||strpos($_SERVER['HTTP_USER_AGENT'], 'iPad')){
-        $systemType = $this->checkSystenType();
-    }
+if(empty($praxis)){
+    message('课程没有习题。', referer, 'error');
+    exit;
+}
 
-    if($praxis['voideurl']){
-        if($praxis['voidtype']==1){
-            $qiniu = unserialize($setting['qiniu']);
-            if($qiniu['https']==1){
-                $praxis['videourl'] = str_replace("http://", "https://", $praxis['videourl']);
-            }
-            $praxis['videourl'] = $this->privateDownloadUrl($qiniu['access_key'],$qiniu['secret_key'],$praxis['videourl']);
+/**
+ * 视频课程格式
+ * @savetype	0.其他存储 1.七牛存储 2.内嵌播放代码模式 3.腾讯云存储
+ */
+/*
+if(strpos($_SERVER['HTTP_USER_AGENT'], 'iPhone')||strpos($_SERVER['HTTP_USER_AGENT'], 'iPad')){
+    $systemType = $this->checkSystenType();
+}
 
-        }elseif($praxis['voidtype']==3){
-            $qcloud		 = unserialize($setting['qcloud']);
-            if($qcloud['https']==1){
-                $praxis['videourl'] = str_replace("http://", "https://", $praxis['videourl']);
-            }
-            $praxis['videourl'] = $this->tencentDownloadUrl($qcloud, $praxis['videourl']);
-
-        }elseif($praxis['voidtype']==4){
-            $aliyun = unserialize($setting['aliyun']);
-            $aliyunVod = new AliyunVod($aliyun['region_id'],$aliyun['access_key_id'],$aliyun['access_key_secret']);
-
-            $file = pdo_get($this->table_aliyun_upload, array('uniacid'=>$uniacid,'videoid'=>$praxis['videourl']), array('name'));
-            $suffix = substr(strrchr($file['name'], '.'), 1);
-            $audio = strtolower($suffix)=='mp3' ? true : false;
-
-            try {
-                $response = $aliyunVod->getVideoPlayAuth($praxis['videourl']);
-                $playAuth = $response->PlayAuth;
-            } catch (Exception $e) {
-                message("播放失败，错误原因:".$e->getMessage(), "", "error");
-            }
-        }elseif($praxis['voidtype']==5){
-            $qcloudvod = unserialize($setting['qcloudvod']);
-            $newqcloudVod = new QcloudVod($qcloudvod['secret_id'], $qcloudvod['secret_key']);
-            try {
-                $exper = '';
-                $qcloudVodRes = $newqcloudVod->getPlaySign($qcloudvod['safety_key'], $qcloudvod['appid'], $praxis['videourl'], $exper);
-            } catch (Exception $e) {
-                message("播放失败，错误原因:".$e->getMessage(), "", "error");
-            }
+if($praxis['voideurl']){
+    if($praxis['voidtype']==1){
+        $qiniu = unserialize($setting['qiniu']);
+        if($qiniu['https']==1){
+            $praxis['videourl'] = str_replace("http://", "https://", $praxis['videourl']);
         }
-    }
+        $praxis['videourl'] = $this->privateDownloadUrl($qiniu['access_key'],$qiniu['secret_key'],$praxis['videourl']);
 
-    if($praxis['audiourl']){
-        if($praxis['audiotype']==1){
-            $qiniu = unserialize($setting['qiniu']);
-            if($qiniu['https']==1){
-                $praxis['audiourl'] = str_replace("http://", "https://", $praxis['audiourl']);
-            }
-            $praxis['audiourl'] = $this->privateDownloadUrl($qiniu['access_key'],$qiniu['secret_key'],$praxis['audiourl']);
+    }elseif($praxis['voidtype']==3){
+        $qcloud		 = unserialize($setting['qcloud']);
+        if($qcloud['https']==1){
+            $praxis['videourl'] = str_replace("http://", "https://", $praxis['videourl']);
+        }
+        $praxis['videourl'] = $this->tencentDownloadUrl($qcloud, $praxis['videourl']);
 
-        }elseif($praxis['audiotype']==3){
-            $qcloud		 = unserialize($setting['qcloud']);
-            if($qcloud['https']==1){
-                $praxis['audiourl'] = str_replace("http://", "https://", $praxis['audiourl']);
-            }
-            $praxis['audiourl'] = $this->tencentDownloadUrl($qcloud, $praxis['audiourl']);
+    }elseif($praxis['voidtype']==4){
+        $aliyun = unserialize($setting['aliyun']);
+        $aliyunVod = new AliyunVod($aliyun['region_id'],$aliyun['access_key_id'],$aliyun['access_key_secret']);
 
+        $file = pdo_get($this->table_aliyun_upload, array('uniacid'=>$uniacid,'videoid'=>$praxis['videourl']), array('name'));
+        $suffix = substr(strrchr($file['name'], '.'), 1);
+        $audio = strtolower($suffix)=='mp3' ? true : false;
+
+        try {
+            $response = $aliyunVod->getVideoPlayAuth($praxis['videourl']);
+            $playAuth = $response->PlayAuth;
+        } catch (Exception $e) {
+            message("播放失败，错误原因:".$e->getMessage(), "", "error");
+        }
+    }elseif($praxis['voidtype']==5){
+        $qcloudvod = unserialize($setting['qcloudvod']);
+        $newqcloudVod = new QcloudVod($qcloudvod['secret_id'], $qcloudvod['secret_key']);
+        try {
+            $exper = '';
+            $qcloudVodRes = $newqcloudVod->getPlaySign($qcloudvod['safety_key'], $qcloudvod['appid'], $praxis['videourl'], $exper);
+        } catch (Exception $e) {
+            message("播放失败，错误原因:".$e->getMessage(), "", "error");
         }
     }
 }
+
+if($praxis['audiourl']){
+    if($praxis['audiotype']==1){
+        $qiniu = unserialize($setting['qiniu']);
+        if($qiniu['https']==1){
+            $praxis['audiourl'] = str_replace("http://", "https://", $praxis['audiourl']);
+        }
+        $praxis['audiourl'] = $this->privateDownloadUrl($qiniu['access_key'],$qiniu['secret_key'],$praxis['audiourl']);
+
+    }elseif($praxis['audiotype']==3){
+        $qcloud		 = unserialize($setting['qcloud']);
+        if($qcloud['https']==1){
+            $praxis['audiourl'] = str_replace("http://", "https://", $praxis['audiourl']);
+        }
+        $praxis['audiourl'] = $this->tencentDownloadUrl($qcloud, $praxis['audiourl']);
+
+    }
+}
+*/
 
 include $this->template('praxis');

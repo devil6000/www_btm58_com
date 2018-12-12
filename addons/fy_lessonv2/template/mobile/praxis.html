@@ -1,176 +1,98 @@
-<link rel="stylesheet" href="style/cssv2/teacherAccount.css">{template '_headerv2'}
-<link href="{MODULE_URL}template/mobile/style/cssv2/qunService.css?v={$versions}" rel="stylesheet" />
+{template '_headerv2'}
 
-<div class="header-2 cbox">
-    <a href="javascript:history.go(-1);" class="ico go-back"></a>
-    <div class="flex title">{$title}</div>
-</div>
-
+<link href="{MODULE_URL}template/mobile/style/cssv2/chapter-test.css?v={$versions}" rel="stylesheet" />
 <div class="content-inner" style="min-height:100%;">
-    <div class="">选择题</div>
-    {if $praxis['audiourl']}
-    <div class="video-wrap">
-        <link rel="stylesheet" href="{MODULE_URL}template/mobile/APlayer/APlayer.min.css?=1">
-        <script src="{MODULE_URL}template/mobile/APlayer/APlayer.min.js?v=2"></script>
-        <div id="main">
-            <div class="fylesson_audio">
-                <div id="player" class="aplayer"></div>
-            </div>
-        </div>
-        <script>
-            var ap1 = new APlayer({
-                element: document.getElementById('player'),
-                narrow: false,
-                autoplay: false,
-                showlrc: false,
-                music: {
-                    title: "点击读题",
-                    author: "",
-                    url: "{$praxis['videourl']}",
-                    pic: "{$_W['attachurl']}{php echo $section['images'] ? $section['images'] : $lesson['images'];}"
-                }
-            });
-            ap1.init();
-        </script>
+    <div class="question-box">
+        <span class="question-num">{$page}选择题</span>
+        {if $praxis['audiourl']}
+        <label class="read-btn">
+            <img class="notice-image" src="{MODULE_URL}template/mobile/images/notice-white.png">点击读题</label>
+            <audio id="audio" src="http://www.bmt58.com/ddd.mp3">系统不支持 audio</audio>
+        </label>
+        {/if}
+        <span class="question-text">{php echo htmlspecialchars_decode($praxis['subject'])}</span>
+        {if $praxis['voideurl']}
+        <video src="http://wxsnsdy.tc.qq.com/105/20210/snsdyvideodownload?filekey=30280201010421301f0201690402534804102ca905ce620b1241b726bc41dcff44e00204012882540400&bizid=1023&hy=SH&fileparam=302c020101042530230204136ffd93020457e3c4ff02024ef202031e8d7f02030f42400204045a320a0201000400" controls></video>
+        {/if}
     </div>
-    {/if}
-    <div class="subject">{$praxis['subject']}</div>
-    {if $praxis['voideurl']}
-    {if $praxis['voidtype']==2}
-    {php echo htmlspecialchars_decode($praxis['videourl']);}
-    {elseif $praxis['voidtype']==4}
 
-        <link rel="stylesheet" href="//g.alicdn.com/de/prismplayer/2.7.2/skins/default/aliplayer-min.css" />
-        <script type="text/javascript" src="//g.alicdn.com/de/prismplayer/2.7.2/aliplayer-min.js"></script>
-        <div class="prism-player" id="J_prismPlayer"></div>
-        <script>
-            var player = new Aliplayer({
-                id: "J_prismPlayer",
-                autoplay: false,
-                isLive:false,
-                playsinline:true,
-                width:"100%",
-                height:"240px",
-                controlBarVisibility:"click",
-                showBarTime:"3000",
-                useH5Prism:false,
-                useFlashPrism:false,
-                x5_type:"",
-                x5_video_position:"top",
-                vid: "<?php echo $praxis['videourl']; ?>",
-                playauth: "<?php echo $playAuth; ?>",
-                cover:"",
-            <?php if($audio){ ?>
-                mediaType: "audio",
-            <?php } ?>
-            });
-
-            var submiting = false;
-            var recordurl = "{php echo $this->createMobileUrl('record', array('lessonid'=>$_GPC['id'],'sectionid'=>$_GPC['sectionid'],'uid'=>$uid));}";
-            var timeUpdate = function(){
-
-                var currentTime = Math.floor(player.getCurrentTime());
-                if(currentTime!=0 && currentTime%20==0 && !submiting){
-                    submiting = true;
-                    $.get(recordurl, {currentTime:currentTime}, function (data){console.log(data);});
-                    setTimeout(function(){
-                        submiting = false;
-                    },1000);
-                }
-            }
-            player.on('timeupdate', timeUpdate);
-        </script>
-    {elseif $praxis['voidtype']==5}
-
-        <style type="text/css">
-            .video-js{width:100%;}
-        </style>
-        <link href="//imgcache.qq.com/open/qcloud/video/tcplayer/tcplayer.css" rel="stylesheet">
-        <script src="//imgcache.qq.com/open/qcloud/video/tcplayer/tcplayer.min.js"></script>
-        <video id="player-container-id" width="100%" height="240" preload="auto" playsinline webkit-playsinline></video>
-        <script type="text/javascript">
-            var player = TCPlayer('player-container-id', {
-                fileID: "<?php echo $praxis['videourl']; ?>",
-                appID : "<?php echo $qcloudvod['appid']; ?>",
-                t	  : "<?php echo $qcloudVodRes['t']; ?>",
-                us	  : "<?php echo $qcloudVodRes['us']; ?>",
-                sign  : "<?php echo $qcloudVodRes['sign']; ?>",
-                exper : "<?php echo $exper; ?>",
-                plugins:{
-                    ContinuePlay: {
-                        text:'上次播放至 ',
-                        btnText: '恢复播放'
-                    },
-                }
-            });
-        </script>
-    {/if}
-    {/if}
-    <div>
+    <!-- 答案 -->
+    <div class="answer-select">
         {if $praxis['answer_a']}
-        <div class="answer-box">
-            <div class="answer" data-answer="A">A:</div>
-            {$praxis['answer_a']}
-            <div><input type="radio" name="corrent" value="A" /></div>
+        <div data-correct="A" class="answer-one">
+            <span>A:</span>
+            <label></label>
         </div>
         {/if}
         {if $praxis['answer_b']}
-        <div class="answer-box">
-            <div class="answer" data-answer="B">B:</div>
-            {$praxis['answer_b']}
-            <div><input type="radio" name="corrent" value="B" /></div>
+        <div data-correct="B" class="answer-one">
+            <span>B:</span>
+            <label></label>
         </div>
         {/if}
         {if $praxis['answer_c']}
-        <div class="answer-box">
-            <div class="answer" data-answer="C">C:</div>
-            {$praxis['answer_c']}
-            <div><input type="radio" name="corrent" value="C" /></div>
+        <div data-correct="C" class="answer-one">
+            <span>C:</span>
+            <label></label>
         </div>
         {/if}
         {if $praxis['answer_d']}
-        <div class="answer-box">
-            <div class="answer" data-answer="D">D:</div>
-            {$praxis['answer_d']}
-            <div><input type="radio" name="corrent" value="D" /></div>
+        <div data-correct="D" class="answer-one">
+            <span>D:</span>
+            <label></label>
         </div>
         {/if}
+        <button class="submit-btn">提交</button>
     </div>
-    <div id="answer_commit" data-answer="{$praxis['correct']}">提交</div>
 </div>
 
-<div>
-
+<div class="bottom-dialog" style="display: none;">
+    <span class="tip-title">{$praxis['correct_mark']}</span>
+    <div class="tip-correct">
+        <img src="../../images/correct.png" alt="">
+        <span>正确，继续下一节</span>
+    </div>
 </div>
 
 <script type="text/javascript">
 $(document).ready(function () {
-    $('#answer_commit').unbind('click').on('click',function () {
+    $('.read-btn').click(function (e) {
+        var aduio = $('#audio')[0];
+        if(aduio.paused){
+            aduio.play();
+        }else{
+            aduio.pause();
+        }
+    });
 
-        var obj = $(this);
+    $('.answer-one').click(function () {
+        var lab = $(this).children('label');
+        $('.answer-one').removeClass('trues').find('label').removeClass('select-circle');
+        lab.addClass('select-circle');
+        $(this).addClass('trues');
+    });
 
-        var t = obj.attr('submit');
-        if(t == 1){ return;}
-        $(this).attr('submit',1);
+    $('.submit-btn').click(function () {
+        var correct = '{$praxis["correct"]}';
+        correct = correct.toLocaleLowerCase();
 
-        var current = obj.data('answer');
-        var da = '';
-        $('input[name=corrent]').each(function () {
-
-            if($(this).is(':checked')) {
-
-                da = $(this).val();
+        var answer = '';
+        $('.answer-one').each(function () {
+            var lab = $(this).children('label');
+            if(lab.getClass() == 'select-circle'){
+                answer = lab.data('correct');
+                answer.toLocaleLowerCase();
             }
         });
 
-        if(da != current) {
-            obj.removeAttr('submit');
-        }
+        if(answer == '' || answer != correct){
+            $('.bottom-dialog').addClass('warn-color');
+            $('.bottom-dialog').find('img').attr('src','')
+            $('.bottom-dialog').show();
 
-        if(da == current) {
-            obj.removeAttr('submit');
         }
     });
 });
 </script>
+
 {template '_footerv2'}

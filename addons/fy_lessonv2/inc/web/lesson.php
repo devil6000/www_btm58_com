@@ -812,9 +812,9 @@ if ($operation == 'display') {
         $data['parentid']		= $pid;
         $data['chapterid']      = $cid;
         $data['subject']		= $_GPC['subject'];
-        $data['voidtype']		= trim($_GPC['voidtype']);
+        //$data['voidtype']		= trim($_GPC['voidtype']);
         $data['voideurl']		= trim($_GPC['voideurl']);
-        $data['audiotype']		= trim($_GPC['audiotype']);
+        //$data['audiotype']		= trim($_GPC['audiotype']);
         $data['audiourl']		= trim($_GPC['audiourl']);
         $data['displayorder']	= intval($_GPC['displayorder']);
         $data['answer_a']	    = $_GPC['answer_a'];
@@ -822,6 +822,7 @@ if ($operation == 'display') {
         $data['answer_c']	    = $_GPC['answer_c'];
         $data['answer_d']	    = $_GPC['answer_d'];
         $data['correct']	    = $_GPC['correct'];
+        $data['correct_mark']   = $_GPC['correct_mark'];
         $data['addtime']		= time();
 
         if(empty($data['parentid'])){
@@ -845,7 +846,7 @@ if ($operation == 'display') {
             //var_dump(pdo_debug());die();
             $id = pdo_insertid();
             if($id){
-                $this->addSysLog($_W['uid'], $_W['username'], 1, "课程管理->章节管理->习题管理", "新增ID:{$pid}的课程下ID:{$cid}的章节下的ID:{$id}的习题");
+                $this->addSysLog($_W['uid'], $_W['username'], 1, "课程管理->习题管理", "新增ID:{$pid}的课程下的ID:{$id}的习题");
             }
 
             message("添加习题成功！", $this->createWebUrl('lesson',array('op'=>'praxis','pid'=>$pid,'cid'=>$cid)), "success");
@@ -853,7 +854,7 @@ if ($operation == 'display') {
             unset($data['addtime']);
             $res = pdo_update($this->table_lesson_praxis, $data, array('uniacid'=>$uniacid, 'id'=>$id));
             if($res){
-                $this->addSysLog($_W['uid'], $_W['username'], 3, "课程管理->章节管理->习题管理", "编辑ID:{$pid}的课程下ID:{$cid}的章节下的ID:{$id}的习题");
+                $this->addSysLog($_W['uid'], $_W['username'], 3, "课程管理->习题管理", "编辑ID:{$pid}的课程下的ID:{$id}的习题");
             }
 
             $refurl = $_GPC['refurl']?$_GPC['refurl']:$this->createWebUrl('lesson',array('op'=>'praxis','pid'=>$pid,'cid'=>$cid));
