@@ -3,16 +3,16 @@
 <link href="{MODULE_URL}template/mobile/style/cssv2/chapter-test.css?v={$versions}" rel="stylesheet" />
 <div class="content-inner" style="min-height:100%;">
     <div class="question-box">
-        <span class="question-num">{$page}选择题</span>
+        <span class="question-num">第{$page}题/共{$count}题 (分数{$praxis['score']})</span>
         {if $praxis['audiourl']}
         <label class="read-btn">
             <img class="notice-image" src="{MODULE_URL}template/mobile/images/notice-white.png">点击读题</label>
-            <audio id="audio" src="http://www.bmt58.com/ddd.mp3">系统不支持 audio</audio>
+            <audio id="audio" src="{$praxis['audiourl']}">系统不支持 audio</audio>
         </label>
         {/if}
         <span class="question-text">{php echo htmlspecialchars_decode($praxis['subject'])}</span>
         {if $praxis['voideurl']}
-        <video src="http://wxsnsdy.tc.qq.com/105/20210/snsdyvideodownload?filekey=30280201010421301f0201690402534804102ca905ce620b1241b726bc41dcff44e00204012882540400&bizid=1023&hy=SH&fileparam=302c020101042530230204136ffd93020457e3c4ff02024ef202031e8d7f02030f42400204045a320a0201000400" controls></video>
+        <video src="{$praxis['voideurl']}" controls></video>
         {/if}
     </div>
 
@@ -42,15 +42,32 @@
             <label></label>
         </div>
         {/if}
-        <button class="submit-btn">提交</button>
+        <div class="button-box">
+            <button id="submit_btn" class="submit-btn">提交</button>
+            <button id="prev_btn" class="btn-o" style="display: none;">上一题</button>
+            <button id="resubmit_btn" class="btn-o" style="display: none;">重测</button>
+            <button id="next_btn" class="btn-o" style="display: none;">下一题</button>
+            <button id="score_btn" class="btn-o" style="display: none;">查看结果</button>
+        </div>
+        <input type="hidden" id="id" value="{$praxis['id']}" />
+        <input type="hidden" id="page" value="{$page}" data-count="{$count}" />
+        <input type="hidden" id="pid" value="{$pid}" />
     </div>
 </div>
 
-<div class="bottom-dialog" style="display: none;">
+<div id="corrent_dialog" class="bottom-dialog" style="display: none;">
     <span class="tip-title">{$praxis['correct_mark']}</span>
     <div class="tip-correct">
-        <img src="../../images/correct.png" alt="">
+        <img src="{MODULE_URL}template/mobile/images/correct.png" alt="">
         <span>正确，继续下一节</span>
+    </div>
+</div>
+
+<div id="error_dialog" class="bottom-dialog warn-color" style="display: none;">
+    <span class="tip-title">{$praxis['correct_mark']}</span>
+    <div class="tip-error">
+        <img src="{MODULE_URL}template/mobile/images/error.png" alt="">
+        <span>错误，再试一次</span>
     </div>
 </div>
 
@@ -73,26 +90,101 @@ $(document).ready(function () {
     });
 
     $('.submit-btn').click(function () {
-        var correct = '{$praxis["correct"]}';
-        correct = correct.toLocaleLowerCase();
+        var btn = $(this);
+        if(btn.attr('submit') == 1){
+            return;
+        }
+
+        $(this).attr('submit',1);
 
         var answer = '';
         $('.answer-one').each(function () {
             var lab = $(this).children('label');
-            if(lab.getClass() == 'select-circle'){
-                answer = lab.data('correct');
-                answer.toLocaleLowerCase();
+            if(lab.attr('class') == 'select-circle'){
+                answer = $(this).data('correct');
             }
         });
 
-        if(answer == '' || answer != correct){
-            $('.bottom-dialog').addClass('warn-color');
-            $('.bottom-dialog').find('img').attr('src','')
-            $('.bottom-dialog').show();
-
+        if(answer == ''){
+            alert('请选择答案!');
+            btn.removeAttr('submit');
+            return false;
         }
+
+        var page = $('#page').val();
+        var count = $('#page').data('count');
+
+        var id = $('#id').val();
+        var url = "{php echo $this->createMobileUrl('praxis', array('op' => 'ajaxpost'))}";
+        $.ajax({
+            url: url,
+            data: {'id': id,'answer': answer},
+            dataType: 'json',
+            success:function (res) {
+                if(res == 1){   //正确
+                    $('#corrent_dialog').show();
+                }else{  //错误
+                    $('#error_dialog').show();
+                }
+
+                btn.removeAttr('submit');
+                btn.hide();
+
+                if(page > count){
+                    page = count;
+                }
+
+                if(page == count){  //最后一题
+                    $('#score_btn').show();
+                    if(count > 1){
+                        $('#prev_btn').show();
+                        $('#next_btn').show();
+                    }
+                    if(res != 1){
+                        $('#resubmit_btn').show();
+                    }
+                }else{
+                   $('#score_btn').hide();
+                   if(res != 1){
+                       $('#resubmit_btn').show();
+                   }
+                   if(page > 1){
+                       $('#prev_btn').show();
+                   }
+                   if(count > 1){
+                       $('#next_btn').show();
+                   }
+                }
+            }
+        });
+    });
+
+    $('.bottom-dialog').click(function () {
+        $(this).hide();
+    });
+
+    $('#prev_btn').click(function () {
+        var page = parseInt($('#page').val()) - 1;
+        var pid = $('#pid').val();
+        window.location.href = "{php echo $this->createMobileUrl('praxis')}&page=" + page + "&pid=" + pid;
+    });
+
+    $('#next_btn').click(function () {
+        var page = parseInt($('#page').val()) + 1;
+        var pid = $('#pid').val();
+        window.location.href = "{php echo $this->createMobileUrl('praxis')}&page=" + page + "&pid=" + pid;
+    });
+    $('#resubmit_btn').click(function () {
+        var page = $('#page').val();
+        var pid = $('#pid').val();
+        window.location.href = "{php echo $this->createMobileUrl('praxis')}&page=" + page + "&pid=" + pid;
+    });
+    $('#score_btn').click(function () {
+        var pid = $('#pid').val();
+        window.location.href = "{php echo $this->createMobileUrl('praxis', array('op' => 'score'))}&pid=" + pid;
     });
 });
 </script>
+
 
 {template '_footerv2'}

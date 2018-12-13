@@ -13,6 +13,44 @@ if(empty($setting)){
 if($op == 'display'){
     $pid = intval($_GPC['pid']);
     $cid = intval($_GPC['cid']);
+
+    $lesson = pdo_fetch('SELECT * FROM ' . tablename($this->table_lesson_parent) . ' WHERE uniacid=:uniacid AND id=:id LIMIT 1', array(':uniacid' => $uniacid, ':id' => $pid));
+    if(empty($lesson)){
+        message('课程不存在或已被删除！', '', 'error');
+    }
+
+    $section = pdo_fetch('SELECT * FROM ' . tablename($this->table_lesson_son) . ' WHERE uniacid=:uniacid AND id=:id LIMIT 1', array(':uniacid' => $uniacid, ':id' => $cid));
+    if(empty($section)){
+        message('章节不存在或已删除', '', 'error');
+    }
+
+    if (checksubmit('submit')) { /* 排序 */
+        if (is_array($_GPC['sectionorder'])) {
+            foreach ($_GPC['sectionorder'] as $sid => $val) {
+                $data = array('displayorder' => intval($_GPC['sectionorder'][$sid]));
+                pdo_update($this->table_discuss, $data, array('id' => $sid));
+            }
+        }
+
+        message('操作成功!', referer, 'success');
+    }
+
+    $pindex = max(1, intval($_GPC['page']));
+    $psize = 25;
+
+    $condition = " uniacid=:uniacid AND parentid=:parentid AND chapterid=:chapterid";
+    $params[':uniacid'] = $uniacid;
+    $params[':parentid'] = $pid;
+    $params[':chapterid'] = $cid;
+
+    $discussList = pdo_fetchall('SELECT * FROM ' . tablename($this->table_discuss) . ' WHERE ' . $condition . ' ORDER BY displayorder DESC,id ASC LIMIT ' . ($pindex - 1) * $psize . ',' . $psize, $params);
+
+    $total = pdo_fetchcolumn("SELECT COUNT(id) FROM " .tablename($this->table_discuss). " WHERE {$condition}", $params);
+    $pager = pagination($total, $pindex, $psize);
+
+}elseif ($op == 'postdiscuss'){
+    $pid = intval($_GPC['pid']);
+    $cid = intval($_GPC['cid']);
     $id = intval($_GPC['id']);
 
     $lesson = pdo_fetch('SELECT * FROM ' . tablename($this->table_lesson_parent) . ' WHERE uniacid=:uniacid AND id=:id LIMIT 1', array(':uniacid' => $uniacid, ':id' => $pid));
@@ -37,7 +75,6 @@ if($op == 'display'){
         }
         message('编辑课程名称：' . $lesson['bookname'] . '章节名称：' . $section['title'] . '的话题讨论内容');
     }
-
 }
 
 include $this->template('web/discuss');

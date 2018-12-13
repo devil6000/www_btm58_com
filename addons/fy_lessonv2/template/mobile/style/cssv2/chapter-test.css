@@ -90,6 +90,21 @@
   color: #fff;
 }
 
+.answer-select .button-box .btn-o {
+  width: 21.5625rem;
+  height: 2.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:linear-gradient(0deg,rgba(0,189,161,1),rgba(0,205,149,1));
+  border-radius: 5px;
+  margin: .84375rem auto;
+  font-weight:500;
+  font-size: 1.125rem;
+  border: 0;
+  color: #fff;
+}
+
 .bottom-dialog {
   position: fixed;
   padding: 1.25rem 1.0625rem 1.5625rem .96875rem;

@@ -55,6 +55,7 @@ class Fy_lessonv2ModuleWxapp extends WeModuleWxapp {
 	public $table_core_paylog = 'core_paylog';
     public $table_users = 'users';
     public $table_lesson_praxis = 'fy_lesson_praxis';
+    public $table_praxis_score = 'fy_lesson_praxis_score';
     public $table_discuss = 'fy_discuss';
     public $table_discuss_content = 'fy_discuss_content';
 

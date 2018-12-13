@@ -8,41 +8,114 @@
  */
 
 $userAgent = $this->checkUserAgent();
+/*
 $login_visit = json_decode($setting['login_visit']);
 if((!empty($login_visit) && in_array('praxis', $login_visit)) || $userAgent){
     checkauth();
 }
-
-$uid = $_W['member']['uid'];
-$id = intval($_GPC['id']);/* 题目ID */
-$pid = intval($_GPC['pid']); /* 课程章节ID */
-$page = max(1,intval($_GPC['page'])); //页码
-$pageSize = 1;
-
-if($uid>0){
-    $member = pdo_fetch("SELECT a.*,b.follow,c.avatar,c.nickname FROM " .tablename($this->table_member). " a LEFT JOIN " .tablename($this->table_fans). " b ON a.uid=b.uid LEFT JOIN " .tablename($this->table_mc_members). " c ON a.uid=c.uid WHERE a.uid=:uid", array(':uid'=>$uid));
-}
-if(empty($member['avatar'])){
-    $avatar = MODULE_URL."template/mobile/images/default_avatar.jpg";
-}else{
-    $inc = strstr($member['avatar'], "http://") || strstr($member['avatar'], "https://");
-    $avatar = $inc ? $member['avatar'] : $_W['attachurl'].$member['avatar'];
+*/
+if($userAgent){
+    checkauth();
 }
 
-$lesson = pdo_fetch("SELECT a.*,b.teacher,b.qq,b.qqgroup,b.qqgroupLink,b.weixin_qrcode,b.teacherphoto,b.teacherdes FROM " .tablename($this->table_lesson_parent). " a LEFT JOIN " .tablename($this->table_teacher). " b ON a.teacherid=b.id WHERE a.uniacid=:uniacid AND a.id=:id AND a.status!=:status LIMIT 1", array(':uniacid'=>$uniacid, ':id'=>$pid, ':status'=>0));
-if(empty($lesson)){
-    message("该课程已下架，您可以看看其他课程~", "", "error");
-}
+if($op == 'display'){
+    $uid = $_W['member']['uid'];
+    $id = intval($_GPC['id']);/* 题目ID */
+    $pid = intval($_GPC['pid']); /* 课程章节ID */
+    $page = max(1,intval($_GPC['page'])); //页码
+    $pageSize = 1;
 
-$title = $lesson['bookname'] . '测试';
+    if($uid>0){
+        $member = pdo_fetch("SELECT a.*,b.follow,c.avatar,c.nickname FROM " .tablename($this->table_member). " a LEFT JOIN " .tablename($this->table_fans). " b ON a.uid=b.uid LEFT JOIN " .tablename($this->table_mc_members). " c ON a.uid=c.uid WHERE a.uid=:uid", array(':uid'=>$uid));
+    }
+    if(empty($member['avatar'])){
+        $avatar = MODULE_URL."template/mobile/images/default_avatar.jpg";
+    }else{
+        $inc = strstr($member['avatar'], "http://") || strstr($member['avatar'], "https://");
+        $avatar = $inc ? $member['avatar'] : $_W['attachurl'].$member['avatar'];
+    }
 
-$count = pdo_fetchcolumn('SELECT COUNT(id) FROM ' . tablename($this->table_lesson_praxis) . ' WHERE parentid=:pid AND uniacid=:uniacid', array(':pid' => $pid, ':uniacid' => $uniacid));
+    $lesson = pdo_fetch("SELECT a.*,b.teacher,b.qq,b.qqgroup,b.qqgroupLink,b.weixin_qrcode,b.teacherphoto,b.teacherdes FROM " .tablename($this->table_lesson_parent). " a LEFT JOIN " .tablename($this->table_teacher). " b ON a.teacherid=b.id WHERE a.uniacid=:uniacid AND a.id=:id AND a.status!=:status LIMIT 1", array(':uniacid'=>$uniacid, ':id'=>$pid, ':status'=>0));
+    if(empty($lesson)){
+        message("该课程已下架，您可以看看其他课程~", "", "error");
+    }
 
-$praxis = pdo_fetch('SELECT * FROM ' . tablename($this->table_lesson_praxis) . ' WHERE parentid=:pid AND uniacid=:uniacid ORDER BY id ASC LIMIT ' . ($page - 1) * $pageSize . ',' . $pageSize, array(':pid' => $pid, ':uniacid' => $uniacid));
+    $title = $lesson['bookname'] . '测试';
 
-if(empty($praxis)){
-    message('课程没有习题。', referer, 'error');
+    $count = pdo_fetchcolumn('SELECT COUNT(id) FROM ' . tablename($this->table_lesson_praxis) . ' WHERE parentid=:pid AND uniacid=:uniacid', array(':pid' => $pid, ':uniacid' => $uniacid));
+
+    if($page > $count){ $page = $count;}
+
+    if(!empty($id)){
+        $praxis = pdo_fetch('SELECT * FROM ' . tablename($this->table_lesson_praxis) . ' WHERE id=:id AND uniacid=:uniacid ', array(':id' => $id, ':uniacid' => $uniacid));
+    }else{
+        $praxis = pdo_fetch('SELECT * FROM ' . tablename($this->table_lesson_praxis) . ' WHERE parentid=:pid AND uniacid=:uniacid ORDER BY id ASC LIMIT ' . ($page - 1) * $pageSize . ',' . $pageSize, array(':pid' => $pid, ':uniacid' => $uniacid));
+    }
+
+    if(empty($praxis)){
+        message('课程没有习题。', referer, 'error');
+        exit;
+    }
+
+    $resubmit = false;
+    $prev = false;
+    $next = false;
+
+}elseif ($op == 'ajaxpost'){
+    $uid = intval($_W['member']['uid']);
+    $id = intval($_GPC['id']);
+    $answer = trim($_GPC['answer']);
+    $praxis = pdo_fetch('SELECT * FROM ' . tablename($this->table_lesson_praxis) . ' WHERE id=:id', array(':id' => $id));
+    $correct = 0;   //是否正确
+    if(strtolower($praxis['correct']) == strtolower($answer)){
+        $correct = 1;
+    }
+
+    $answers = pdo_fetch('SELECT * FROM ' . tablename($this->table_praxis_score) . ' WHERE praxisid=:pid AND uniacid=:uniacid AND uid=:uid', array(':pid' => $praxis['id'], ':uniacid' => $uniacid, ':uid' => $uid));
+
+    $answer = array(
+        'uniacid' => $uniacid,
+        'uid' => $uid,
+        'parentid' => $praxis['parentid'],
+        'chapterid' => $praxis['chapterid'],
+        'praxisid' => $praxis['id'],
+        'score' => empty($correct) ? 0 : $praxis['score'],
+        'correct' => $correct,
+        'addtime' => time()
+    );
+
+    if(empty($answers)){
+        pdo_insert($this->table_praxis_score, $answer);
+    }else{
+        unset($answer['uniacid'],$answer['addtime']);
+        pdo_update($this->table_praxis_score, $answer, array('id' => $answers['id']));
+    }
+
+    echo $correct;
     exit;
+}elseif ($op == 'score'){
+    $title = '测验结果';
+
+    $uid = intval($_W['member']['uid']);
+    $pid = intval($_GPC['pid']);
+
+    $lesson = pdo_fetch("SELECT a.*,b.teacher,b.qq,b.qqgroup,b.qqgroupLink,b.weixin_qrcode,b.teacherphoto,b.teacherdes FROM " .tablename($this->table_lesson_parent). " a LEFT JOIN " .tablename($this->table_teacher). " b ON a.teacherid=b.id WHERE a.uniacid=:uniacid AND a.id=:id AND a.status!=:status LIMIT 1", array(':uniacid'=>$uniacid, ':id'=>$pid, ':status'=>0));
+    if(empty($lesson)){
+        message("该课程已下架，您可以看看其他课程~", "", "error");
+    }
+
+    $scoreList = pdo_fetchall('SELECT * FROM ' . tablename($this->table_praxis_score) . ' WHERE parentid=:pid AND uniacid=:uniacid AND uid=:uid ORDER BY praxisid ASC', array(':pid' => $pid,':uniacid' => $uniacid, ':uid' => $uid));
+
+    $score = 0;
+    foreach ($scoreList as $item){
+        $score += $item['score'];
+    }
+}
+
+if($op == 'score'){
+    include $this->template('praxis_score');
+}else{
+    include $this->template('praxis');
 }
 
 /**
@@ -113,5 +186,3 @@ if($praxis['audiourl']){
     }
 }
 */
-
-include $this->template('praxis');

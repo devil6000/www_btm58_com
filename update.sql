@@ -19,6 +19,7 @@ create table `ims_fy_lesson_praxis`(
   `correct` varchar(2) not null comment '正确答案',
   `correct_mark` VARCHAR(500) null comment '答案说明',
   `addtime` int(6) null,
+  `score` int(4) null default 0 comment '分数',
   primary key (`id`)
 );
 /**
@@ -51,6 +52,8 @@ create table `ims_fy_discuss`(
   `content` text comment '说明',
   `title` varchar(300) null comment '标题',
   `addtime` int(6) default 0,
+  `status` tinyint(1) null default 0 comment '是否开启',
+  `displayorder` int(4) null default 0 comment '排序',
   PRIMARY KEY (`id`)
 );
 
@@ -61,7 +64,7 @@ create table `ims_fy_discuss_content`(
   `id` int(11) not null auto_increment,
   `uniacid` int(11) not null,
   `cid` int(11) not null comment '讨论话题ID',
-  `openid` varchar(100) not null,
+  `uid` int(11) not null comment '讨论会员ID',
   `addtime` int(6) default 0,
   `content` text comment '内容',
   primary key (`id`)

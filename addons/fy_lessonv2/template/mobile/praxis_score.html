@@ -1,0 +1,22 @@
+{template '_headerv2'}
+<link href="{MODULE_URL}template/mobile/style/cssv2/quiz-result.css?v={$versions}" rel="stylesheet" />
+<div class="content-inner" style="min-height:100%;">
+    <span class="title-box">{$title}</span>
+    <div class="result-box">
+        <span class="total-fraction">{$score}</span>
+        <span class="tip-box">测验得分</span>
+        <div class="result-list">
+            {loop $scoreList $key $row}
+            <div class="each-question_fraction">
+                <!-- <icon type="success" size="16" /> -->
+                {if $row['correct'] == 1}
+                <img src="{MODULE_URL}template/mobile/images/correct.png" alt="">{$key}
+                {else}
+                <img src="{MODULE_URL}template/mobile/images/error.png" alt="">{$key}
+                {/if}
+            </div>
+            {/loop}
+        </div>
+    </div>
+</div>
+{template '_footerv2'}

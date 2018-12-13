@@ -3,5 +3,7 @@
 <link href="{MODULE_URL}template/web/style/fycommon.css" rel="stylesheet">
 {if $op == 'display'}
     {template 'web/discuss/display'}
+{elseif $op == 'postdiscuss'}
+    {template 'web/discuss/postdiscuss'}
 {/if}
 {template 'common/footer'}

@@ -66,6 +66,7 @@ class fy_lessonv2ModuleSite extends WeModuleSite {
 	public $table_core_paylog = 'core_paylog';
     public $table_users = 'users';
     public $table_lesson_praxis = 'fy_lesson_praxis';
+    public $table_praxis_score = 'fy_lesson_praxis_score';
     public $table_discuss = 'fy_discuss';
     public $table_discuss_content = 'fy_fiscuss_content';
 
@@ -188,6 +189,11 @@ class fy_lessonv2ModuleSite extends WeModuleSite {
 	public function doWebQcloudvod(){
 		$this->__web(__FUNCTION__);
 	}
+
+	/* 讨论管理 */
+	public function doWebDiscuss(){
+	    $this->__Web(__FUNCTION__);
+    }
 
 /***************************** Mobile方法 ******************************** */
     /* 手机端首页 */

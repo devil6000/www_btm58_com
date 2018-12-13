@@ -824,6 +824,7 @@ if ($operation == 'display') {
         $data['correct']	    = $_GPC['correct'];
         $data['correct_mark']   = $_GPC['correct_mark'];
         $data['addtime']		= time();
+        $data['score']          = intval($_GPC['score']);
 
         if(empty($data['parentid'])){
             message("课程不存在或已被删除");
