@@ -1,0 +1,4 @@
+<ul class="nav nav-tabs">
+	<li {if $op=='display'}class="active"{/if}><a href="{php echo $this->createWebUrl('discuss', array('pid'=>$_GPC['pid'], 'cid'=>$_GPC['cid']));}">章节讨论</a></li>
+	<li {if $op=='postdiscuss'}class="active"{/if}><a href="{php echo $this->createWebUrl('discuss', array('op'=>'postdiscuss', 'pid'=>$_GPC['pid'], 'cid'=>$_GPC['cid'], 'id' => $_GPC['id']));}">{if $_GPC['id']>0}编辑{else}添加{/if}话题</a></li>
+</ul>

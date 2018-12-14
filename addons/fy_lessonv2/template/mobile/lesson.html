@@ -366,7 +366,7 @@
 						</li>
 						{if $play}
 						<li>
-							<a href="{php echo $this->createMobileUrl('lesson', array('id'=>$lesson['id'],'sectionid'=>$sec['id']));}"><i class="fa fa-comments-o"></i>{$sec['title']}话题讨论</a>
+							<a href="{php echo $this->createMobileUrl('discuss', array('pid'=>$lesson['id'],'cid'=>$sec['id']));}"><i class="fa fa-comments-o"></i>{$sec['title']}话题讨论</a>
 							<i class="section-state-icon"></i>
 						</li>
 						{/if}

@@ -44,6 +44,12 @@
                         <label class="radio-inline"><input type="radio" name="status" value="1" {if $discuss['status'] == 1}checked{/if} /> 启用</label>
                     </div>
                 </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">排序</label>
+                    <div class="col-sm-9">
+                        <input type="text" name="displayorder" class="form-control" value="{$discuss['displayorder']}" />
+                    </div>
+                </div>
                 <div class="form-group col-sm-12">
                     <input type="submit" name="submit" value="提交" class="btn btn-primary col-lg-1" />
                     <input type="hidden" name="token" value="{$_W['token']}" />

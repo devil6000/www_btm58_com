@@ -63,17 +63,26 @@ if($op == 'display'){
         message('章节不存在或已删除', '', 'error');
     }
 
-    $discuss = pdo_fetch('SELECT * FROM ' . tablename($this->table_discuss) . ' WHERE uniacid=:uniacid AND parentid=:pid AND chapterid=:cid AND id=:id LIMIT 1', array(':pid' => $pid, ':cid' => $cid, ':id' => $id));
+    $discuss = pdo_fetch('SELECT * FROM ' . tablename($this->table_discuss) . ' WHERE uniacid=:uniacid AND parentid=:pid AND chapterid=:cid AND id=:id LIMIT 1', array(':pid' => $pid, ':cid' => $cid, ':id' => $id, ':uniacid' => $uniacid));
 
     if(checksubmit('submit')){
-        $data = array('uniacid' => $uniacid, 'parentid' => $pid, 'chapterid' => $cid, 'content' => $_GPC['content'], 'title' => $_GPC['title'], 'addtime' => time());
+        $data = array('uniacid' => $uniacid, 'parentid' => $pid, 'chapterid' => $cid, 'content' => $_GPC['content'], 'videourl' => $_GPC['videourl'], 'title' => $_GPC['title'], 'status' => intval($_GPC['status']), 'addtime' => time(), 'displayorder' => intval($_GPC['']));
+        if($data['status'] == 1){
+            $tmp = pdo_fetch('SELECT * FROM ' . tablename($this->table_discuss) . ' WHERE uniacid=:uniacid AND parentid=:pid AND chapterid=:cid AND status=1', array(':pid' => $pid, ':cid' => $cid, ':uniacid' => $uniacid));
+            if(!empty($tmp)){
+                if(empty($id) || $id != $tmp['id']){
+                    message('已存在开启的话题，当前话题不能开启，请先关闭开启话题。',referer, 'error');
+                }
+            }
+        }
+
         if(empty($id)){
             pdo_insert($this->table_discuss, $data);
         }else{
             unset($data['uniacid'], $data['addtime']);
             pdo_update($this->table_discuss, $data, array('id' => $id, 'uniacid' => $uniacid));
         }
-        message('编辑课程名称：' . $lesson['bookname'] . '章节名称：' . $section['title'] . '的话题讨论内容');
+        message('新增或编辑课程名称：' . $lesson['bookname'] . '章节名称：' . $section['title'] . '的话题讨论内容成功!',referer,'success');
     }
 }
 

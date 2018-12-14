@@ -1,0 +1,167 @@
+{template '_headerv2'}
+
+<link href="{MODULE_URL}template/mobile/style/cssv2/topic-discussion.css?v={$versions}" rel="stylesheet" />
+<script src="{MODULE_URL}template/mobile/style/jsv2/ajaxfileupload.js?v={$versions}"></script>
+
+<div class="content-inner" style="min-height:100%; padding-bottom: 50px;">
+    <span class="title-box">{$discuss['title']}</span>
+    <div class="shared-vidio">
+        {if $discuss['videourl']}
+        <video src="{$discuss['videourl']}" controls>当前系统不支持video</video>
+        {/if}
+        <span class="detail-box">{php echo htmlspecialchars_decode($discuss['content'])}</span>
+        <div class="shareing-box">
+            <span class="tip-text">参与话题讨论可获得积分，积分在购买课程时可抵消费用</span>
+            <div class="shared-btn">
+                分享：
+                <img src="{MODULE_URL}template/mobile/images/wx.png">
+                <img src="{MODULE_URL}template/mobile/images/qq.png">
+                <img src="{MODULE_URL}template/mobile/images/circle-friends.png">
+                <img src="{MODULE_URL}template/mobile/images/micro-blog.png">
+            </div>
+        </div>
+    </div>
+    <div class="discuss-box">
+        <div class="discuss-box">
+            <span class="totel-box">2个讨论</span>
+            <div class="discuss-one">
+                <div class="info-box">
+                    <img src="../../images/my-sharing.png">
+                    <span class="name-text">我的昵称</span>
+                    <span class="time-text">2018-10-20 16:36</span>
+                </div>
+                <span class="remark-box">今天我们学习了剑龙的概况，下面是剑龙的样子</span>
+                <div class="images-list">
+                    <img src="../../images/my-sharing.png">
+                    <img src="../../images/my-sharing.png">
+                </div>
+            </div>
+        </div>
+    </div>
+    <button class="comment-box"><img src="{MODULE_URL}template/mobile/images/info-icon.png">发表评论</button>
+    <div class="dialog-content" style="display: none" data-id="{$discuss['id']}">
+        <div class="form-group"><textarea class="content" placeholder="说点什么～"></textarea></div>
+        <div class="line">
+            <div class="pic">
+                晒图(最多5张)
+                <div class="plus" style="position:relative">
+                    <i class="fa fa-plus" style="position:absolute;"></i>
+                    <input type="file" name="imgFile{$discuss['id']}" id="imgFile{$discuss['id']}" style="position:absolute;width:30px;height:30px;-webkit-tap-highlight-color: transparent;filter:alpha(Opacity=0); opacity: 0;" />
+                </div>
+                <div class="images"></div>
+            </div>
+        </div>
+        <div class="submit-btn">发表</div>
+    </div>
+</div>
+
+<div class="bottom-dialog" style="display: none;">
+    <span class="dialog-title">发表评论</span>
+    <div class="dialog-content" data-id="0">
+        <div class="form-group"><textarea class="content" placeholder="说点什么～"></textarea></div>
+        <div class="line">
+            <div class="pic">
+                晒图(最多5张)
+                <div class="plus" style="position:relative">
+                    <i class="fa fa-plus" style="position:absolute;"></i>
+                    <input type="file" name='imgFile0' id='imgFile0' style="position:absolute;width:30px;height:30px;-webkit-tap-highlight-color: transparent;filter:alpha(Opacity=0); opacity: 0;" />
+                </div>
+                <div class="images"></div>
+            </div>
+        </div>
+        <div class="submit-btn">发表</div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function () {
+    var cid = "{$discuss['id']}";
+
+    $('.comment-box').click(function () {
+        $('.bottom-dialog').show();
+    });
+
+    $('.plus input').change(function () {
+        var comment = $(this).closest('.dialog-content');
+        var id = comment.data('id');
+        var url = "{php echo $this->createMobileUrl('discuss', array('op'=>'uploader'))}&file=imgFile" + id;
+        $.ajaxFileUpload({
+            url: url,
+            secureuri: false,
+            fileElementId: 'imgFile'+ id,
+            dataType: 'json',
+            success:function (res,status) {
+                var html = "<div class='img' data-img='" + res.filename + "'>";
+                html += " <img src='" + res.url + "' />";
+                html += "<div class='minus'><i class='fa fa-minus-circle'></i></div>";
+                html += "</div>";
+                $('.images',comment).append(html);
+                $('.minus',comment).unbind('click').on('click', function () {
+                    $.get(
+                        "{php echo $this->createMobileUrl('discuss', array('op'=>'remove'))}",
+                        {file: $(html).data("img")},
+                        function (t) {
+                            if(t == 1){
+                                $(html).remove();
+                                $('.plus',comment).show();
+                            }
+                        }
+                    );
+                });
+
+                if ($('.img',comment).length >= 5) {
+                    $('.plus',comment).hide();
+                }
+
+            },error:function (res,status,e) {
+                alert("上传失败");
+            }
+        });
+
+    });
+
+    $('.submit-btn').click(function () {
+        if ($(this).attr('saving') == '1') {
+            return;
+        }
+        if($.trim( $("#content").val() )==''){
+            alert('你不说点什么～');
+            $('#content').focus();
+            return;
+        }
+        $(this).html('正在处理...').attr('saving', 1);
+        var c0 = $('.dialog-content[data-id=0]');
+        var cimages = [];
+        c0.find(".img").each(function(){
+            cimages.push($(this).data('img'));
+        });
+        var comments = [];
+
+        $('.dialog-content[data-id!=0]').each(function(){
+            var content = $(this).find('textarea').val();
+            if(content==''){
+                content = c0.find('textarea').val();
+            }
+            var images = [];
+            $(this).find('.img').each(function(){
+                images.push($(this).data('img'));
+            });
+            if(images.length<=0){
+                images = cimages;
+            }
+            comments.push({id:$(this).data('id'),content:content,images:images});
+        });
+
+        $.ajax({
+            url: "{php echo $this->createMobileUrl('discuss')}",
+            data: {'op':'save','cid':cid, 'comments':comments},
+            method:'POST',
+            dataType:'json',
+            success:function (res) {
+
+            }
+        });
+    });
+});
+</script>
+{template '_footerv2'}

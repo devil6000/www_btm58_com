@@ -16,6 +16,12 @@
 	{if $op == 'postpraxis'}
 	<li class="active"><a href="{php echo $this->createWebUrl('lesson', array('op'=>'postpraxis','pid'=>$_GPC['pid'],'cid'=>$_GPC['cid'], 'id' => $_GPC['id']));}">{if $_GPC['id']>0}编辑{else}添加{/if}习题</a></li>
 	{/if}
+	{if $_W['do'] == 'discuss'}
+	<li class="active"><a href="{php echo $this->createWebUrl('discuss', array('pid'=>$_GPC['pid'], 'cid'=>$_GPC['cid']));}">章节讨论</a></li>
+	{/if}
+	{if $op == 'postdiscuss'}
+	<li class="active"><a href="{php echo $this->createWebUrl('discuss', array('op'=>'postdiscuss', 'pid'=>$_GPC['pid'], 'cid'=>$_GPC['cid'], 'id' => $_GPC['id']));}">{if $_GPC['id']>0}编辑{else}添加{/if}话题</a></li>
+	{/if}
 	<li {if $op=='record'}class="active"{/if}><a href="{php echo $this->createWebUrl('lesson', array('op'=>'record'));}">学习记录</a></li>
 	<li {if $op=='inform'}class="active"{/if}><a href="{php echo $this->createWebUrl('lesson', array('op'=>'inform'));}">开课提醒</a></li>
 	<li {if $op=='updomain'}class="active"{/if}><a href="{php echo $this->createWebUrl('lesson', array('op'=>'updomain'));}">更新音视频域名</a></li>

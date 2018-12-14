@@ -431,6 +431,11 @@ class fy_lessonv2ModuleSite extends WeModuleSite {
 	    $this->__mobile(__FUNCTION__);
     }
 
+    /* 话题讨论 */
+    public function doMobileDiscuss(){
+        $this->__mobile(__FUNCTION__);
+    }
+
 /************************************************ 公共方法 ************************************ */
     public function __web($f_name) {
         global $_W, $_GPC;
