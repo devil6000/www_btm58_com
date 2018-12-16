@@ -175,7 +175,7 @@ function file_upload($file, $type = 'image', $name = '', $compress = false) {
 	if (empty($file)) {
 		return error(-1, '没有上传内容');
 	}
-	if (!in_array($type, array('image', 'thumb', 'voice', 'video', 'audio'))) {
+	if (!in_array($type, array('image', 'thumb', 'voice', 'video', 'audio', 'material'))) {
 		return error(-2, '未知的上传类型');
 	}
 	global $_W;
@@ -197,8 +197,12 @@ function file_upload($file, $type = 'image', $name = '', $compress = false) {
 			$allowExt = array('rm', 'rmvb', 'wmv', 'avi', 'mpg', 'mpeg', 'mp4');
 			$limit = $setting['upload']['audio']['limit'];
 			break;
+
 	}
-	$type = $type == 'image' ? 'image' : 'audio';
+	if($type == 'material'){
+    }else{
+        $type = $type == 'image' ? 'image' : 'audio';
+    }
 	$setting = $_W['setting']['upload'][$type];
 
 	if (!empty($setting['extentions'])) {

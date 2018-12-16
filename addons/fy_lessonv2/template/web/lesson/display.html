@@ -121,6 +121,7 @@
 										<li><a href="{php echo $this->createWebUrl('lesson', array('op'=>'postlesson', 'id'=>$parent['id'],'refurl'=>$_W['siteurl']));}"><i class="fa fa-edit"></i> 编辑课程</a></li>
 										<li><a href="{php echo $this->createWebUrl('lesson', array('op'=>'viewsection','pid'=>$parent['id']));}"><i class="fa fa-plus"></i> &nbsp;章节管理</a></li>
 										<li><a href="{php echo $this->createWebUrl('lesson', array('op'=>'praxis', 'pid'=>$parent['id']));}"><i class="fa fa-plus"></i> 习题管理</a></li>
+										<li><a href="{php echo $this->createWebUrl('lesson', array('op'=>'material', 'pid'=>$parent['id']));}"><i class="fa fa-plus"></i> 素材管理</a></li>
 										<li><a href="{php echo $this->createWebUrl('lesson', array('op'=>'informStudent','lessonid'=>$parent['id']));}"><i class="fa fa-volume-up"></i> &nbsp;开课提醒</a></li>
 										<li><a href="{php echo $this->createWebUrl('lesson', array('op'=>'qrcode','lessonid'=>$parent['id']));}"><i class="fa fa-download"></i> 下载二维码</a></li>
 										<li><a href="{php echo $this->createWebUrl('lesson', array('op'=>'delete','pid'=>$parent['id']));}" onclick="return confirm('确认删除此课程吗？');return false;"><i class="fa fa-remove"></i> &nbsp;删除课程</a></li>

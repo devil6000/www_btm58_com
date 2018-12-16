@@ -312,6 +312,9 @@ foreach($evaluate_list as $key=>$value){
 
 $total = pdo_fetchcolumn("SELECT COUNT(*) FROM " . tablename($this->table_evaluate) . " WHERE lessonid=:lessonid AND status=:status", array(':lessonid'=>$id,':status'=>1));
 
+/* 下载列表 */
+$material = pdo_fetchall("SELECT * FROM " . tablename($this->table_lesson_material) . " WHERE parentid=:pid AND uniacid=:uniacid", array(':pid' => $lesson['id'], ':uniacid' => $uniacid));
+
 if($op=='display'){
 	/* 评价开关 */
 	if($isbuy['status']==1){
@@ -375,7 +378,41 @@ if($op=='display'){
 }elseif($op=='ajaxgetlist'){
 	echo json_encode($evaluate_list);
 	exit();
-}
+}elseif($op == 'download'){
+    $did = intval($_GET['did']);
+    $m = pdo_fetch('SELECT * FROM ' . tablename($this->table_lesson_material) . ' WHERE id=:did', array(':did' => $did));
+    if(empty($m)){
+        message('要下载的素材不存在或已删除', '', 'error');
+    }
 
+    if($play == false){
+        message('请购买后再下载', '', 'error');
+    }
+
+    $update['down_num'] = $m['down_num'] + 1;
+    pdo_update($this->table_lesson_material, $update, array('id' => $did));
+
+    $insertdata = array(
+        'uniacid' => $uniacid,
+        'uid' => intval($_W['member']['uid']),
+        'materialid' => $m['id'],
+        'addtime' => time()
+    );
+
+    pdo_insert($this->table_material_downlaod, $insertdata);
+
+    $path = ATTACHMENT_ROOT . '/' . $m['url'];
+    if(file_exists($path)){
+        header( "Content-type: application/octet-stream" );
+        header( "Content-Disposition: attachment; filename=" . $m['filename']);
+        header('Pragma: cache');
+        header('Cache-Control: public, must-revalidate, max-age=0');
+        readfile($path);
+        //file_get_contents($path);
+        //header('location: ' . $_W['siteroot'] . 'attachment/' . $m['url']);
+    }else{
+        header('HTTP/1.1 404 Not Found');
+    }
+}
 
 ?>

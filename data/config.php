@@ -47,6 +47,8 @@ $config['upload']['image']['limit'] = 5000;
 $config['upload']['attachdir'] = 'attachment';
 $config['upload']['audio']['extentions'] = array('mp3');
 $config['upload']['audio']['limit'] = 5000;
+$config['upload']['material']['extentions'] = array('pdf','txt','doc');
+$config['upload']['material']['limit'] = 5000;
 
 // --------------------------  CONFIG MEMCACHE  --------------------------- //
 $config['setting']['memcache']['server'] = '';

@@ -1,0 +1,54 @@
+<div class="main">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <a class="btn btn-primary" href="{php echo $this->createWebUrl('lesson', array('op'=>'postmaterial','pid'=>$lesson['id']));}"><i class="fa fa-plus"></i> 添加下载素材</a>&nbsp;&nbsp;&nbsp;&nbsp;
+        </div>
+    </div>
+    <form action="" method="post" class="form-horizontal form">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <table class="table table-hover">
+                    <thead class="navbar-inner">
+                    <tr>
+                        <th style="width:80px;text-align:center;">排序</th>
+                        <th style="width:25%;">课程名称</th>
+                        <th style="width:20%;">素材名称</th>
+                        <th style="width:10%;">素材类型</th>
+                        <th style="width:13%;text-align:center;">添加时间</th>
+                        <th style="width:12%;text-align:center;">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {loop $list $key $row}
+                    <tr>
+                        <td style="text-align:center;">
+                            [ID:{$row['id']}]
+                        </td>
+                        <td style="word-break:break-all;">{$lesson['bookname']}</td>
+                        <td style="word-break:break-all;">{$row['title']}</td>
+                        <td style="text-align:center;">
+                            {if $row['types'] == 0}
+                                文档
+                            {elseif $row['types'] == 1}
+                                视频
+                            {/if}
+                        </td>
+                        <td style="text-align:center;">{php echo date('Y-m-d H:i:s',$row['addtime']);}</td>
+                        <td style="text-align:center;">
+                            <div class="btn-group btn-group-sm">
+                                <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="true" href="javascript:;">功能列表 <span class="caret"></span></a>
+                                <ul class="dropdown-menu dropdown-menu-left" role="menu" style="z-index:99999">
+                                    <li><a href="{php echo $this->createWebUrl('lesson', array('op'=>'postmaterial', 'id' => $row['id'], 'pid'=>$row['parentid']));}"><i class="fa fa-edit"></i> 编辑素材</a></li>
+                                    <li><a href="{php echo $this->createWebUrl('lesson', array('op'=>'delete','mid'=>$row['id']));}" onclick="return confirm('确认删除此素材吗？');return false;"><i class="fa fa-remove"></i> &nbsp;删除素材</a></li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                    {/loop}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {$pager}
+    </form>
+</div>

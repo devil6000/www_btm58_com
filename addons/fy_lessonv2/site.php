@@ -68,7 +68,9 @@ class fy_lessonv2ModuleSite extends WeModuleSite {
     public $table_lesson_praxis = 'fy_lesson_praxis';
     public $table_praxis_score = 'fy_lesson_praxis_score';
     public $table_discuss = 'fy_discuss';
-    public $table_discuss_content = 'fy_fiscuss_content';
+    public $table_discuss_content = 'fy_discuss_content';
+    public $table_lesson_material = 'fy_lesson_material';
+    public $table_material_downlaod = 'fy_material_download';
 
 /***************************** 初始化 ******************************** */
     function __construct() {

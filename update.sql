@@ -67,5 +67,34 @@ create table `ims_fy_discuss_content`(
   `uid` int(11) not null comment '讨论会员ID',
   `addtime` int(6) default 0,
   `content` text comment '内容',
+  `imgs` text comment '上传图片',
   primary key (`id`)
+);
+
+/**
+资料上传表
+ */
+create table `ims_fy_lesson_material`(
+  `id` int(11) not null auto_increment,
+  `uniacid` int(11) not null,
+  `parentid` int(11) not null comment '课程ID',
+  `types` tinyint(1) null default 0 comment '素材类型0文档，1视频',
+  `url` text comment '路径',
+  `title` varchar(300) not null comment '素材标题',
+  `addtime` int(6) null,
+  `down_num` int(10) null default 0 comment '下载次数',
+  `filename` varchar(300) not null comment '素材名称',
+  primary key(`id`)
+);
+
+/**
+已下载素材
+ */
+create table `ims_fy_material_download`(
+  `id` int(11) not null auto_increment,
+  `uid` int(11) not null,
+  `uniacid` int(11) not null,
+  `materialid` int(11) not null,
+  `addtime` int(6) not null,
+  primary key(`id`)
 );

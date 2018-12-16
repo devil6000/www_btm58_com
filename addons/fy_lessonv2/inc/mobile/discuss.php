@@ -35,6 +35,38 @@ if($op == 'display'){
         message("该章节的讨论话题不存在或已删除，您可以看看其他话题", "", "error");
     }
 
+    $count = pdo_fetchcolumn('SELECT COUNT(id) FROM ' . tablename($this->table_discuss_content) . ' WHERE cid=:cid AND uniacid=:uniacid', array(':cid' => $discuss['id'], ':uniacid' => $uniacid));
+
+    $list = pdo_fetchall('SELECT * FROM ' . tablename($this->table_discuss_content) . ' WHERE uniacid=:uniacid AND cid=:cid ORDER BY addtime DESC', array(':uniacid' => $uniacid, ':cid' => $discuss['id']));
+    if($list){
+        foreach ($list as $key => $item){
+            if($item['uid']){
+                $member = pdo_fetch('SELECT * FROM' . tablename($this->table_mc_members) . ' WHERE uid=:uid AND uniacid=:uniacid', array(':uid' => $item['uid'], ':uniacid' => $uniacid));
+                if(empty($member)) {
+                    $item['avatar'] = MODULE_URL."template/mobile/images/default_avatar.jpg";
+                    $item['nickname'] = '游客';
+                }else{
+                    $inc = strstr($member['avatar'], "http://") || strstr($member['avatar'], "https://");
+                    $avatar = $inc ? $member['avatar'] : $_W['attachurl'].$member['avatar'];
+                    $item['avatar'] = $avatar;
+                    $item['nickname'] = $member['nickname'];
+                }
+            }else{
+                $item['avatar'] = MODULE_URL."template/mobile/images/default_avatar.jpg";
+                $item['nickname'] = '游客';
+            }
+
+            if(!empty($item['imgs'])){
+                $images = unserialize($item['imgs']);
+                if(!empty($images)){
+                    $item['images'] = $images;
+                }
+            }
+
+            $list[$key] = $item;
+        }
+    }
+
 }elseif($op == 'uploader'){
     load()->func('file');
     $field = $_GPC["file"];
@@ -96,18 +128,54 @@ if($op == 'display'){
 }elseif ($op == 'save'){
     $uid = intval($_W['member']['uid']);
     $cid = intval($_GPC['cid']);
-    $comments = $_GPC['comments'];
+    $comments = $_GPC['comments'][0];
 
     $insert_data = array(
         'uniacid' => $uniacid,
         'uid' => $uid,
+        'cid' => $cid,
         'content' => $comments['content'],
         'addtime' => time(),
         'imgs' => serialize($comments['images'])
     );
 
     pdo_insert($this->table_discuss_content,$insert_data);
+
+    //评论获取积分
+    $update['credit1'] = 5;
+    pdo_update($this->table_mc_members, $update,array('uid' => $uid, 'uniacid' => $uniacid));
+
     echo 1;
+    exit;
+}elseif($op == 'discuss_list'){
+    $id = intval($_GPC['id']);
+    $page = max(1,intval($_GPC['page']));
+    $pageCount = 6;
+
+    $list = pdo_fetchall('SELECT * FROM ' . tablename($this->table_discuss_content) . ' WHERE uniacid=:uniacid AND cid=:cid ORDER BY addtime DESC LIMIT ' . ($page -1) * $pageCount . ',' . $pageCount, array(':uniacid' => $uniacid, ':cid' => $id));
+    if($list){
+        foreach ($list as $key => $item){
+            if($item['uid']){
+                $member = pdo_fetch('SELECT * FROM' . tablename($this->table_mc_members) . ' WHERE uid=:uid AND uniacid=:uniacid', array(':uid' => $item['uid'], ':uniacid' => $uniacid));
+                if(empty($member)) {
+                    $item['avatar'] = MODULE_URL."template/mobile/images/default_avatar.jpg";
+                    $item['nickname'] = '游客';
+                }else{
+                    $inc = strstr($member['avatar'], "http://") || strstr($member['avatar'], "https://");
+                    $avatar = $inc ? $member['avatar'] : $_W['attachurl'].$member['avatar'];
+                    $item['avatar'] = $avatar;
+                    $item['nickname'] = $member['nickname'];
+                }
+            }else{
+                $item['avatar'] = MODULE_URL."template/mobile/images/default_avatar.jpg";
+                $item['nickname'] = '游客';
+            }
+
+            $list[$key] = $item;
+        }
+    }
+
+    print(json_encode(array('status' => 'success','pagecount' => $pageCount, 'list' => $list)));
     exit;
 }
 

@@ -21,24 +21,28 @@
         {if $praxis['answer_a']}
         <div data-correct="A" class="answer-one">
             <span>A:</span>
+            <span class="answer-text">{php echo htmlspecialchars_decode($praxis['answer_a'])}</span>
             <label></label>
         </div>
         {/if}
         {if $praxis['answer_b']}
         <div data-correct="B" class="answer-one">
             <span>B:</span>
+            <span class="answer-text">{php echo htmlspecialchars_decode($praxis['answer_b'])}</span>
             <label></label>
         </div>
         {/if}
         {if $praxis['answer_c']}
         <div data-correct="C" class="answer-one">
             <span>C:</span>
+            <span class="answer-text">{php echo htmlspecialchars_decode($praxis['answer_c'])}</span>
             <label></label>
         </div>
         {/if}
         {if $praxis['answer_d']}
         <div data-correct="D" class="answer-one">
             <span>D:</span>
+            <span class="answer-text">{php echo htmlspecialchars_decode($praxis['answer_d'])}</span>
             <label></label>
         </div>
         {/if}

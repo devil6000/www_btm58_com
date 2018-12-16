@@ -53,6 +53,15 @@
   border:solid 1px #fff;
 }
 
+.answer-select .answer-one .answer-text {
+  height: 5rem;
+  padding: 0 1.25rem;
+  font-size: .875rem;
+  display: flex;
+  color: #333333;
+  align-items: center;
+}
+
 .trues {
   border-color: #6aa319;
 }

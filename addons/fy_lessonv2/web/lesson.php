@@ -757,6 +757,24 @@ if ($operation == 'display') {
         }
     }
 
+}elseif($op == 'material'){
+    //素材上传
+    $pid = intval($_GPC['pid']);
+    $pindex = max(1,intval($_GPC['page']));
+    $psize = 20;
+
+    $lesson = pdo_fetch("SELECT id,bookname FROM " .tablename($this->table_lesson_parent). " WHERE uniacid=:uniacid AND id=:id", array(':uniacid'=>$uniacid,':id'=>$pid));
+    if(empty($lesson)){
+        message("当前课程不存在或已被删除！", "", "error");
+    }
+
+    $condition = 'uniacid=:uniacid AND parentid=:pid';
+    $params = array(':uniacid' => $uniacid, ':pid' => $pid);
+
+    $total = pdo_fetchcolumn('SELECT COUNT(id) FROM '. tablename($this->table_lesson_material) . ' WHERE ' . $condition, $params);
+    $pager = pagination($total, $pindex, $psize);
+
+    $list = pdo_fetchall('SELECT * FROM ' . tablename($this->table_lesson_material) . ' WHERE ' . $condition . ' ORDER BY id DESC LIMIT ' . ($pindex - 1) * $psize . ',' . $psize, $params);
 }
 
 include $this->template('lesson');

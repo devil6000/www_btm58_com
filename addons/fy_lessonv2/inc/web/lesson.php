@@ -507,6 +507,7 @@ if ($operation == 'display') {
 	$pid = intval($_GPC['pid']);
 	$cid = intval($_GPC['cid']);
 	$sid = intval($_GPC['sid']);
+	$mid = intval($_GPC['mid']);
 	if($pid>0){
 		$lesson = pdo_fetch("SELECT id FROM " .tablename($this->table_lesson_parent). " WHERE uniacid=:uniacid AND id=:id", array(':uniacid'=>$uniacid, ':id'=>$pid));
 		if(empty($lesson)){
@@ -516,6 +517,7 @@ if ($operation == 'display') {
 		pdo_delete($this->table_lesson_son, array('uniacid'=>$uniacid, 'parentid'=>$pid));
 		pdo_delete($this->table_lesson_parent, array('uniacid'=>$uniacid, 'id'=>$pid));
 		pdo_delete($this->table_lesson_praxis, array('uniacid' => $uniacid, 'parentid' => $pid));
+		pdo_delete($this->table_lesson_material, array('uniacid' => $uniacid, 'parentid' => $pid));
 
 		$this->addSysLog($_W['uid'], $_W['username'], 2, "课程管理", "删除ID:{$pid}的课程及所有章节");
 		message("删除课程成功！", referer, "success");
@@ -546,6 +548,21 @@ if ($operation == 'display') {
 	        $this->addSysLog($_W['uid'], $_W['username'], 2, "习题管理", "删除ID:{$sid}的习题");
         }
         message("删除习题成功！", referer, "success");
+    }
+
+    if($mid > 0){
+	    $material = pdo_fetch('SELECT * FROM '. tablename($this->table_lesson_material) . ' WHERE uniacid=:uniacid AND id=:id', array(':uniacid' => $uniacid, ':id' => $mid));
+	    if(empty($material)){
+            message("该素材不存在或已删除！", referer, "error");
+        }
+
+        $res = pdo_delete($this->table_lesson_material, array('uniacid' => $uniacid, 'id' => $mid));
+	    if($res){
+            $this->addSysLog($_W['uid'], $_W['username'], 2, "素材管理", "删除ID:{$mid}的素材");
+        }
+
+        unlink($material['url']);
+        message("删除素材成功！", referer, "success");
     }
 
 }elseif($operation=='record'){
@@ -863,6 +880,89 @@ if ($operation == 'display') {
         }
     }
 
+}elseif($op == 'material'){
+    //素材上传
+    $pid = intval($_GPC['pid']);
+    $pindex = max(1,intval($_GPC['page']));
+    $psize = 20;
+
+    $lesson = pdo_fetch("SELECT id,bookname FROM " .tablename($this->table_lesson_parent). " WHERE uniacid=:uniacid AND id=:id", array(':uniacid'=>$uniacid,':id'=>$pid));
+    if(empty($lesson)){
+        message("当前课程不存在或已被删除！", "", "error");
+    }
+
+    $condition = 'uniacid=:uniacid AND parentid=:pid';
+    $params = array(':uniacid' => $uniacid, ':pid' => $pid);
+
+    $total = pdo_fetchcolumn('SELECT COUNT(id) FROM '. tablename($this->table_lesson_material) . ' WHERE ' . $condition, $params);
+    $pager = pagination($total, $pindex, $psize);
+
+    $list = pdo_fetchall('SELECT * FROM ' . tablename($this->table_lesson_material) . ' WHERE ' . $condition . ' ORDER BY id DESC LIMIT ' . ($pindex - 1) * $psize . ',' . $psize, $params);
+
+}elseif($op == 'postmaterial'){
+    $pid = intval($_GPC['pid']);
+    $id = intval($_GPC['id']);
+
+    $lesson = pdo_fetch("SELECT id,bookname FROM " .tablename($this->table_lesson_parent). " WHERE uniacid=:uniacid AND id=:id", array(':uniacid'=>$uniacid,':id'=>$pid));
+    if(empty($lesson)){
+        message("当前课程不存在或已被删除！", "", "error");
+    }
+
+    $material = pdo_fetch('SELECT * FROM '. tablename($this->table_lesson_material) . ' WHERE uniacid=:uniacid AND id=:id', array(':uniacid' => $uniacid, ':id' => $id));
+    if(checksubmit('submit')){
+        //上传文件
+        load()->func('file');
+
+        $insert = array(
+            'uniacid' => $uniacid,
+            'parentid' => $pid,
+            'title' => $_GPC['title'],
+            'addtime' => time(),
+            'down_num' => 0,
+            'types' => intval($_GPC['types'])
+        );
+
+        $upload = false;
+        if(empty($id)){ $upload = true;}
+
+        if(!$upload && !empty($_FILES['file']['name'])){
+            $upload = true;
+        }
+
+        if($upload){
+            if(empty($_FILES['file']['name'])){
+                message('请选择要上传的素材压缩文件', referer, 'error');
+            }
+
+            if($_FILES['file']['error']){
+                message('上传失败,请重试！', referer, 'error');
+            }
+            $filename = $_FILES['file']['name'];
+
+            $_W["uploadsetting"]                        = array();
+            $_W["uploadsetting"]["material"]["folder"]     = $dir;
+            $_W["uploadsetting"]["material"]["extentions"] = $_W["config"]["upload"]["material"]["extentions"];
+            $_W["uploadsetting"]["material"]["limit"]      = $_W["config"]["upload"]["material"]["limit"];
+
+            $file = file_upload($_FILES['file'],'material');
+            if (is_error($file)){
+                message($file['message'], referer, 'error');
+            }
+
+            $insert['url'] = $file['path'];
+            $insert['filename'] = $filename;
+
+        }
+
+        if(empty($id)){
+            pdo_insert($this->table_lesson_material, $insert);
+        }else{
+            unset($insert['down_num'],$insert['addtime']);
+            pdo_update($this->table_lesson_material, $insert, array('id' => $id, 'uniacid' => $uniacid));
+        }
+
+        message('添加或编辑素材成功!', $this->createWebUrl('lesson',array('op'=>'material','pid'=>$pid)), 'success');
+    }
 }
 
 

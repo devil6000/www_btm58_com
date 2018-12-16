@@ -389,6 +389,7 @@
 		<!-- 章节目录 E -->
 
 		<!-- 评价列表 S -->
+		<!--
 		<div class="js-tab" style="transform-origin: 0px 0px 0px; opacity: 1; transform: scale(1, 1); display: none;">
 			<div class="swiper-slide swiper-slide-active" style="height:auto;">
                 <div class="details-con shadow" id="comments_box">
@@ -409,7 +410,23 @@
 				<a href="javascript:void(0);" id="btn_Page"><i class="fa fa-arrow-circle-down"></i> 加载更多</a>
 			</div>
 		</div>
+		-->
 		<!-- 评价列表 E -->
+
+		<!-- 下载列表 S -->
+		<div class="js-tab" style="transform-origin: 0px 0px 0px; opacity: 1; transform: scale(1, 1); display: none;">
+			<ul class="course-sections">
+				{if !empty($material)}
+				{loop $material $row}
+				<li>
+					{$row['title']}
+					<i class="section-state-icon"><a href="{php echo $this->createMobileUrl('lesson', array('op'=>'download', 'did'=>$row['id'], 'id' => $lesson['id']));}">下载</a></i>
+				</li>
+				{/loop}
+				{/if}
+			</ul>
+		</div>
+		<!-- 下载列表 E -->
 	</div>
 	{if !empty($advs)}
 	<div style="margin-top: 10px;;">
@@ -418,7 +435,7 @@
 	{/if}
 	
 	<footer>
-	    <a href="{php echo $this->createMobileUrl('index', array('t'=>1));}">{$setting['copyright']}</a>
+	    <a target="_blank" href="{php echo $this->createMobileUrl('index', array('t'=>1));}">{$setting['copyright']}</a>
 	</footer>
 </div>
 {template 'quicknav'}
@@ -640,7 +657,7 @@ $(function () {
        
     } 
     //初始化加载第一页数据  
-    getData(1);
+    //getData(1);
 
     //生成数据html,append到div中  
     function insertDiv(result) {  
