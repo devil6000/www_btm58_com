@@ -98,3 +98,41 @@ create table `ims_fy_material_download`(
   `addtime` int(6) not null,
   primary key(`id`)
 );
+
+/**
+我的学习
+ */
+create table `ims_fy_mystudy`(
+  `id` int(11) not null auto_increment,
+  `uniacid` int(11) not null,
+  `uid` int(11) not null,
+  `lessonid` int(11) not null comment '课程id',
+  `addtime` int(6) null,
+  primary key(`id`)
+);
+
+/**
+学习进度
+ */
+create table `ims_fy_mystudy_rate`(
+  `id` int(11) not null auto_increment,
+  `uniacid` int(11) not null,
+  `studyid` int(11) not null,
+  `uid` int(11) not null,
+  `sectionid` int(11) not null,
+  `status` tinyint(1) null default 0 comment '学习状态0未学习',
+  `addtime` int(6) null,
+  primary key(`id`)
+);
+
+/**
+参与的讨论
+ */
+create table `ims_fy_mydiscuss`(
+  `id` int(11) not null auto_increment,
+  `uniacid` int(11) not null,
+  `discussid` int(11) not null,
+  `uid` int(11) not null,
+  `addtime` int(6) null,
+  primary key(`id`)
+);

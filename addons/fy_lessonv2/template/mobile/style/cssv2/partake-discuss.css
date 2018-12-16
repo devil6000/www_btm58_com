@@ -1,0 +1,81 @@
+/* .header-box {
+  height: 102rpx;
+  display: flex;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 10;
+  width:calc(100% - 40rpx);
+  background: linear-gradient(190deg, rgba(12, 198, 152, 1), rgba(0, 121, 212, 1));
+  align-items: flex-end;
+  padding: 0 20rpx;
+  padding-bottom: 26rpx;
+}
+
+.header-box .back-btn {
+  display: flex;
+  position: absolute;
+  bottom: 26rpx;
+  left: 20rpx;
+  align-items: center;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.header-box .title {
+  display: block;
+  text-align: center;
+  color: #fff;
+  width: 100%;
+  font-size: 36rpx;
+  font-family: PingFang-SC-Bold;
+  font-weight: bold;
+}
+
+.header-box .back-btn .back {
+  font-size: 1rem;
+  color: #fff;
+}
+
+.header-box .back-btn image {
+  width: 20rpx;
+  height: 35rpx;
+  margin-right: 15rpx;
+} */
+
+/* .discuss-list { */
+  /* margin-top: 128rpx; */
+/* } */
+body {
+  margin: 0;
+  overflow-x: hidden;
+  background: #f1f1f1;
+}
+.discuss-list .discuss-one {
+  height: 2.375rem;
+  display: flex;
+  margin-bottom: .625rem;
+  background: #fff;
+  padding: .84375rem .96875rem;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.discuss-list .discuss-one .title-box {
+  font-size: 1rem;
+  font-family: PingFang-SC-Medium;
+  font-weight: 500;
+  color: #333;
+  margin-bottom:.65625rem;
+}
+
+.discuss-list .discuss-one .my-info {
+  font-size: .875rem;
+  font-family: PingFang-SC-Medium;
+  font-weight: 500;
+  color: #666;
+}
+
+.discuss-list .discuss-one .my-info .time-box {
+  margin-left: 1.15625rem;
+}

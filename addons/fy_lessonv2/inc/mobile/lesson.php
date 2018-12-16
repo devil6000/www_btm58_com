@@ -192,6 +192,38 @@ if($sectionid>0){
 		message("请先购买课程后再学习！", $this->createMobileUrl('lesson', array('id'=>$id)), "warning");
 	}
 
+	//判断是否可以添加到我的学习中
+    $study = pdo_fetch('SELECT * FROM ' . tablename($this->table_mystudy) . ' WHERE uniacid=:uniacid AND uid=:uid AND lessonid=:pid', array(':uniacid' => $uniacid, ':uid' => $uid, ':pid' => $id));
+    if(empty($study)){
+        $study_data = array(
+            'uniacid' => $uniacid,
+            'uid' => $uid,
+            'lessonid' => $id,
+            'addtime' => time()
+        );
+        pdo_insert($this->table_mystudy, $study_data);
+        $i = pdo_insertid();
+        //保存课程下的所有章节
+        foreach ($section_list as $item){
+            $rate_data = array('uniacid' => $uniacid, 'studyid' => $i, 'uid' => $uid, 'sectionid' => $item['id'], 'status' => 0, 'addtime' => time());
+            pdo_insert($this->table_mystudy_rate, $rate_data);
+            unset($rate_data);
+        }
+
+        $studyId = $i;
+    }else{
+        $studyId = $study['id'];
+    }
+    //判断是否有新的章节
+    $study_rate = pdo_fetch('SELECT * FROM ' . tablename($this->table_mystudy_rate) . ' WHERE sectionid=:sid AND uid=:uid AND studyid=:studyid', array(':sid' => $sectionid, ':uid' => $uid, ':studyid' => $studyId));
+    if(empty($study_rate)){
+        $rate_data = array('uniacid' => $uniacid, 'studyid' => $studyId, 'uid' => $uid, 'sectionid' => $item['id'], 'status' => 1, 'addtime' => time());
+        pdo_insert($this->table_mystudy_rate, $rate_data);
+    }else{
+        pdo_update($this->table_mystudy_rate, array('status' => 1), array('sectionid' => $sectionid, 'uid' => $uid, 'studyid' => $studyId));
+    }
+
+
 	/**
 	 * 视频课程格式
 	 * @sectiontype 1.视频章节 2.图文章节 3.音频课程 4、外链章节

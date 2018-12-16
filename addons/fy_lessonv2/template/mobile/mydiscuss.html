@@ -1,0 +1,80 @@
+{template '_headerv2'}
+<link href="{MODULE_URL}template/mobile/style/cssv2/partake-discuss.css?v={$versions}" rel="stylesheet" />
+
+<div class="header-2 cbox">
+    <a href="javascript:history.go(-1);" class="ico go-back"></a>
+    <div class="flex title">{$title}</div>
+</div>
+
+<div class="content-inner" style="min-height:100%;">
+    <div class="discuss-list"></div>
+    <div id="loading_div" class="loading_div">
+        <a href="javascript:void(0);" id="btn_Page"><i class="fa fa-arrow-circle-down"></i> 加载更多</a>
+    </div>
+</div>
+
+<script type="text/javascript">
+var ajaxurl = "{php echo $this->createMobileUrl('mydiscuss', array('op'=>'ajaxgetlist'));}";
+
+$(function () {
+    var nowPage = 1; //设置当前页数，全局变量
+    function getData(page) {
+        nowPage++; //页码自动增加，保证下次调用时为新的一页
+        $.get(ajaxurl, {page: page}, function (data) {
+            if (data.length > 0) {
+                var jsonObj = JSON.parse(data);
+                insertDiv(jsonObj);
+            }
+        });
+    }
+
+    getData(1);
+
+    //生成数据html,append到div中
+    function insertDiv(result) {
+        var mainDiv =$(".discuss-list");
+        var chtml = '';
+        for (var j = 0; j < result.length; j++) {
+            chtml += '<div class="discuss-one">';
+            chtml += '	<span class="title-box">' + result[j].title + '</span>';
+            chtml += '  <span class="my-info">' + result[j].nickname + '<span class="time-box">' + result[j].addtime + '</span></span>';
+            chtml += '</div>';
+        }
+        mainDiv.append(chtml);
+        if(result.length==0){
+            document.getElementById("loading_div").innerHTML='<div class="loading_bd">没有了，已经到底了</div>';
+        }
+    }
+
+    //==============核心代码=============
+    var winH = $(window).height(); //页面可视区域高度
+
+    var scrollHandler = function () {
+        var pageH = $(document.body).height();
+        var scrollT = $(window).scrollTop(); //滚动条top
+        var aa = (pageH - winH - scrollT) / winH;
+        if (aa < 0.02) {
+            if (nowPage % 1 === 0) {
+                getData(nowPage);
+                $(window).unbind('scroll');
+                $("#btn_Page").show();
+            } else {
+                getData(nowPage);
+                $("#btn_Page").hide();
+            }
+        }
+    }
+
+    //定义鼠标滚动事件
+    $(window).scroll(scrollHandler);
+
+    //继续加载按钮事件
+    $("#btn_Page").click(function () {
+        getData(nowPage);
+        $(window).scroll(scrollHandler);
+    });
+
+});
+</script>
+
+{template '_footerv2'}

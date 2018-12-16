@@ -1,13 +1,16 @@
 {template '_headerv2'}
+<link href="{MODULE_URL}template/mobile/style/cssv2/my-center.css?v={$versions}" rel="stylesheet" />
 
 <div class="header">
     <div class="info-box">
-        <img class="header-image" src="https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2022913879,2521037350&fm=200&gp=0.jpg">
-        <span class="name-box">Anatta</span>
+        <img class="header-image" src="{$avatar}">
+        <span class="name-box">{php echo $memberinfo['nickname'] ? $memberinfo['nickname'] : '未设置';}</span>
         <div class="right-box">
             <div class="information-box">
+                <!--
                 <img src="../../images/information.png">
                 <label class="num-box">8</label>
+                -->
             </div>
             <span class="already-num">已学6门课程</span>
         </div>
@@ -16,47 +19,109 @@
 
 <!-- 便捷入口 -->
 <div class="convenient-btn">
-    <label class="label-box">
-        <img class="convenient-image" src="../../images/recharge.png">
+    <label class="label-box" onclick="location.href='{php echo url('mc/bond/credits', array('credittype' => 'credit2', 'type' => 'record', 'period' => '1'))}'">
+        <img class="convenient-image" src="{MODULE_URL}template/mobile/images/recharge.png">
         <span class="label-text">充值</span>
     </label>
-    <label class="label-box middle-border">
-        <img class="convenient-image" src="../../images/balance.png">
-        <span class="label-text">余额 <span class="gery-box">128元</span></span>
+    <label class="label-box middle-border" onclick="location.href='{php echo url('mc/bond/credits', array('credittype' => 'credit2', 'type' => 'record', 'period' => '1'))}'">
+        <img class="convenient-image" src="{MODULE_URL}template/mobile/images/balance.png">
+        <span class="label-text">余额 <span class="gery-box">￥{$memberinfo['credit2']}</span></span>
     </label>
-    <label class="label-box">
-        <img class="convenient-image" src="../../images/integral.png">
-        <span class="label-text">积分 <span class="gery-box">68</span></span>
+    <label class="label-box" onclick="location.href='{php echo url('mc/bond/credits', array('credittype' => 'credit1', 'type' => 'record', 'period' => '1'))}'">
+        <img class="convenient-image" src="{MODULE_URL}template/mobile/images/integral.png">
+        <span class="label-text">积分 <span class="gery-box">{$memberinfo['credit1']}</span></span>
     </label>
 </div>
 
 <div class="line-list">
-    <div class="line-box" bindtap="goPurchasedCourses">
-        <img class="left-icon" src="../../images/already-purchased.png">
+    {if $memberListCount || (!$memberListCount && $memberVipCount) || in_array('vip',$self_item)}
+    <div class="line-box">
+        <i class="fa fa-orange fa-diamond"></i>
+        <span>VIP服务</span>
+        <img class="right-icon" src="{MODULE_URL}template/mobile/images/right.png">
+    </div>
+    {/if}
+    {if in_array('history',$self_item)}
+    <div class="line-box">
+        <i class="fa fa-blue fa-hourglass-half"></i>
+        <span>我的足迹</span>
+        <img class="right-icon" src="{MODULE_URL}template/mobile/images/right.png">
+    </div>
+    {/if}
+    {if in_array('lesson',$self_item)}
+    <div class="line-box">
+        <i class="fa fa-red fa-heart"></i>
+        <span>收藏课程</span>
+        <img class="right-icon" src="{MODULE_URL}template/mobile/images/right.png">
+    </div>
+    {/if}
+    {if in_array('teacher',$self_item)}
+    <div class="line-box">
+        <i class="fa fa-red fa-gratipay"></i>
+        <span>收藏讲师</span>
+        <img class="right-icon" src="{MODULE_URL}template/mobile/images/right.png">
+    </div>
+    {/if}
+    {if in_array('teachercenter',$self_item) || !empty($teacher)}
+    <div class="line-box">
+        <i class="fa fa-orange fa-free-code-camp"></i>
+        <span>讲师中心</span>
+        <img class="right-icon" src="{MODULE_URL}template/mobile/images/right.png">
+    </div>
+    {/if}
+    <div class="line-box">
+        <a href="{php echo $this->createMobileUrl('mylesson', array('status'=>1));}">
+        <img class="left-icon" src="{MODULE_URL}template/mobile/images/already-purchased.png">
         <span>已购买课程</span>
-        <img class="right-icon" src="../../images/right.png">
-    </div>
-    <div class="line-box" bindtap="goPartakeDiscuss">
-        <img class="left-icon" src="../../images/participate-discussion.png">
-        <span>我参与的讨论</span>
-        <img class="right-icon" src="../../images/right.png">
-    </div>
-    <div class="line-box" bindtap="goMySharing">
-        <img class="left-icon" src="../../images/my-sharing.png">
-        <span>我的分享</span>
-        <img class="right-icon" src="../../images/right.png">
+        <img class="right-icon" src="{MODULE_URL}template/mobile/images/right.png">
+        </a>
     </div>
     <div class="line-box">
+        <a href="{php echo $this->createMobileUrl('mydiscuss')}">
+        <img class="left-icon" src="{MODULE_URL}template/mobile/images/participate-discussion.png">
+        <span>我参与的讨论</span>
+        <img class="right-icon" src="{MODULE_URL}template/mobile/images/right.png">
+        </a>
+    </div>
+    <!--
+    <div class="line-box" bindtap="goMySharing">
+        <a href="{php echo $this->createMobileUrl('order')}">
+        <img class="left-icon" src="../../images/my-sharing.png">
+        <span>我的分享</span>
+        <img class="right-icon" src="{MODULE_URL}template/mobile/images/right.png">
+        </a>
+    </div>
+    -->
+    <!--
+    <div class="line-box">
+        <a href="{php echo $this->createMobileUrl('order')}">
         <img class="left-icon" src="../../images/set-up.png">
         <span>设置</span>
-        <img class="right-icon" src="../../images/right.png">
+        <img class="right-icon" src="{MODULE_URL}template/mobile/images/right.png">
+        </a>
     </div>
+    -->
 </div>
 
+<!--
 <div class="line-box top-distance">
     <img class="left-icon" src="../../images/share-icon.png">
     <span>分享给朋友</span>
     <img class="right-icon" src="../../images/right.png">
 </div>
+-->
+
+<script type="text/javascript">
+$('.header-image').click(function () {
+    var agent = {$agent};
+    if(!agent){
+        return;
+    }
+    if(!confirm('更新头像信息?')){
+        return;
+    }
+    location.href = "{php echo $this->createMobileUrl('self', array('updateInfo'=>1));}";
+});
+</script>
 
 {template '_footerv2'}

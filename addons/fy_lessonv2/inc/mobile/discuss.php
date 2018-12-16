@@ -6,11 +6,9 @@
  * Date: 18/12/14
  * Time: 上午9:52
  */
+checkauth();
 
 if($op == 'display'){
-
-    checkauth();
-
     $uid = intval($_W['member']['uid']);
     $pid = intval($_GPC['pid']);
     $cid = intval($_GPC['cid']);
@@ -140,6 +138,17 @@ if($op == 'display'){
     );
 
     pdo_insert($this->table_discuss_content,$insert_data);
+
+    $mydiscuss = pdo_fetch('SELECT * FROM ' . tablename($this->table_mydiscuss) . ' WHERE uniacid=:uniacid AND discussid=:id AND uid=:uid', array(':uniacid' => $uniacid, ':id' => $cid, ':uid' => $uid));
+    if(empty($mydiscuss)){
+        $mydiscuss_data = array(
+            'uniacid' => $uniacid,
+            'uid' => $uid,
+            'discussid' => $cid,
+            'addtime' => time()
+        );
+        pdo_insert($this->table_mydiscuss, $mydiscuss_data);
+    }
 
     //评论获取积分
     $update['credit1'] = 5;

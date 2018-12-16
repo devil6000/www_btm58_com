@@ -96,6 +96,8 @@ if($_GPC['updateInfo']){
 
 
 
-include $this->template('new_self');
+//include $this->template('new_self');
+
+include $this->template('member_center');
 
 ?>

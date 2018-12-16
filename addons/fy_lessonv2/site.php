@@ -71,6 +71,9 @@ class fy_lessonv2ModuleSite extends WeModuleSite {
     public $table_discuss_content = 'fy_discuss_content';
     public $table_lesson_material = 'fy_lesson_material';
     public $table_material_downlaod = 'fy_material_download';
+    public $table_mystudy = 'fy_mystudy';
+    public $table_mystudy_rate = 'fy_mystudy_rate';
+    public $table_mydiscuss = 'fy_mydiscuss';
 
 /***************************** 初始化 ******************************** */
     function __construct() {
@@ -435,6 +438,11 @@ class fy_lessonv2ModuleSite extends WeModuleSite {
 
     /* 话题讨论 */
     public function doMobileDiscuss(){
+        $this->__mobile(__FUNCTION__);
+    }
+
+    /* 我参与的讨论 */
+    public function doMobileMydiscuss(){
         $this->__mobile(__FUNCTION__);
     }
 
