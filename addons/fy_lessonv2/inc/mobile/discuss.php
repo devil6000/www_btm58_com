@@ -101,6 +101,7 @@ if($op == 'display'){
         $result["error"]    = 0;
         $result["filename"] = $file["path"];
         $result["url"]      = '/attachment/' . $result['filename'];
+        /*
         pdo_insert("core_attachment", array(
             "uniacid" => $uniacid,
             "uid" => $_W["member"]["uid"],
@@ -110,6 +111,7 @@ if($op == 'display'){
             "createtime" => time(),
             "group_id" => -1
         ));
+        */
         print(json_encode($result));
         exit;
     }else{

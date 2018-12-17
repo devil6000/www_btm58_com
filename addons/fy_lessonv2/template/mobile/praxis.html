@@ -1,6 +1,12 @@
 {template '_headerv2'}
 
 <link href="{MODULE_URL}template/mobile/style/cssv2/chapter-test.css?v={$versions}" rel="stylesheet" />
+
+<div class="header-2 cbox">
+    <a href="javascript:history.go(-1);" class="ico go-back"></a>
+    <div class="flex title">{$title}</div>
+</div>
+
 <div class="content-inner" style="min-height:100%;">
     <div class="question-box">
         <span class="question-num">第{$page}题/共{$count}题 (分数{$praxis['score']})</span>
@@ -51,7 +57,7 @@
             <button id="prev_btn" class="btn-o" style="display: none;">上一题</button>
             <button id="resubmit_btn" class="btn-o" style="display: none;">重测</button>
             <button id="next_btn" class="btn-o" style="display: none;">下一题</button>
-            <button id="score_btn" class="btn-o" style="display: none;">查看结果</button>
+            <button id="score_btn" class="btn-o" {if $resubmit == false}style="display: none;"{/if}>查看结果</button>
         </div>
         <input type="hidden" id="id" value="{$praxis['id']}" />
         <input type="hidden" id="page" value="{$page}" data-count="{$count}" />

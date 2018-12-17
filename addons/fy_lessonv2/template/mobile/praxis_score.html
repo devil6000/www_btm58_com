@@ -1,18 +1,24 @@
 {template '_headerv2'}
 <link href="{MODULE_URL}template/mobile/style/cssv2/quiz-result.css?v={$versions}" rel="stylesheet" />
+
+<div class="header-2 cbox">
+    <a href="javascript:history.go(-1);" class="ico go-back"></a>
+    <div class="flex title">{$title}</div>
+</div>
+
 <div class="content-inner" style="min-height:100%;">
-    <span class="title-box">{$title}</span>
     <div class="result-box">
         <span class="total-fraction">{$score}</span>
         <span class="tip-box">测验得分</span>
         <div class="result-list">
             {loop $scoreList $key $row}
+            {php $i = $key + 1;}
             <div class="each-question_fraction">
                 <!-- <icon type="success" size="16" /> -->
                 {if $row['correct'] == 1}
-                <img src="{MODULE_URL}template/mobile/images/correct.png" alt="">{$key}
+                <img src="{MODULE_URL}template/mobile/images/correct.png" alt="">{$i}
                 {else}
-                <img src="{MODULE_URL}template/mobile/images/error.png" alt="">{$key}
+                <img src="{MODULE_URL}template/mobile/images/error.png" alt="">{$i}
                 {/if}
             </div>
             {/loop}

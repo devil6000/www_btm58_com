@@ -7,16 +7,7 @@
  * Time: 22:32
  */
 
-$userAgent = $this->checkUserAgent();
-/*
-$login_visit = json_decode($setting['login_visit']);
-if((!empty($login_visit) && in_array('praxis', $login_visit)) || $userAgent){
-    checkauth();
-}
-*/
-if($userAgent){
-    checkauth();
-}
+checkauth();
 
 if($op == 'display'){
     $uid = $_W['member']['uid'];
@@ -60,6 +51,12 @@ if($op == 'display'){
     $resubmit = false;
     $prev = false;
     $next = false;
+
+    //判断是否已经测试
+    $ceshi = pdo_fetch('SELECT * FROM ' . tablename($this->table_praxis_score) . ' WHERE uid=:uid AND praxisid=:pid', array(':uid' => $uid, ':pid' => $praxis['id']));
+    if(!empty($ceshi)){
+        $resubmit = true;
+    }
 
 }elseif ($op == 'ajaxpost'){
     $uid = intval($_W['member']['uid']);

@@ -1,30 +1,39 @@
 {template '_headerv2'}
 <link href="{MODULE_URL}template/mobile/style/cssv2/my-study.css?v={$versions}" rel="stylesheet" />
 
-<div class="tab-box">
-    <div class="tab-label">
-        <label class="{if $_GPC['status']==''}select-c{/if}"><a href="{php echo $this->createMobileUrl('mylearning');}&status=">学习中</a></label>
-        <label class="{if $_GPC['status']=='1'}select-c{/if}"><a href="{php echo $this->createMobileUrl('mylearning');}&status=1">已学完</a></label>
+<div class="header-2 cbox">
+    <a href="javascript:history.go(-1);" class="ico go-back"></a>
+    <div class="flex title">{$title}</div>
+</div>
+
+<div class="content-inner" style="min-height:100%;">
+    <div class="tab-box">
+        <div class="tab-label">
+            <label class="{if $_GPC['status']==''}select-c{/if}"><a href="{php echo $this->createMobileUrl('mylearning');}&status=">学习中</a></label>
+            <label class="{if $_GPC['status']=='1'}select-c{/if}"><a href="{php echo $this->createMobileUrl('mylearning');}&status=1">已学完</a></label>
+        </div>
     </div>
-</div>
-<!-- 订单列表  -->
-{if !empty($mylearninglist)}
-<div class="study-list"></div>
-{else}
-<div class="my_empty">
-    <div class="empty_bd  my_course_empty">
-        <h3>没有找到任何课程~</h3>
-        <p><a href="{php echo $this->createMobileUrl('index', array('t'=>1));}">到首页去看看</a></p>
+    <!-- 订单列表  -->
+    {if !empty($mylearninglist)}
+    <div id="study-list" class="study-list"></div>
+    {else}
+    <div class="study-list" style="padding-top: .9375rem;">
+        <div class="my_empty">
+            <div class="empty_bd  my_course_empty" style="position: inherit; top: 0px; margin-top: 0px;">
+                <h3>没有找到任何课程~</h3>
+                <p><a href="{php echo $this->createMobileUrl('index', array('t'=>1));}">到首页去看看</a></p>
+            </div>
+        </div>
     </div>
+    {/if}
+    <div id="loading_div" class="loading_div">
+        <a href="javascript:void(0);" id="btn_Page"><i class="fa fa-arrow-circle-down"></i> 加载更多</a>
+    </div>
+    <footer>
+        <a href="{php echo $this->createMobileUrl('index', array('t'=>1));}">{$setting['copyright']}</a>
+    </footer>
+    <div id="loading" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:999999999;"><div class="spinner"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div></div>
 </div>
-{/if}
-<div id="loading_div" class="loading_div">
-    <a href="javascript:void(0);" id="btn_Page"><i class="fa fa-arrow-circle-down"></i> 加载更多</a>
-</div>
-<footer>
-    <a href="{php echo $this->createMobileUrl('index', array('t'=>1));}">{$setting['copyright']}</a>
-</footer>
-<div id="loading" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:999999999;"><div class="spinner"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div></div>
 <script type="text/javascript">
     function GetQueryString(name) {
         var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
@@ -34,12 +43,12 @@
     }
     var status = GetQueryString('status');
     var is_verify = GetQueryString('is_verify');
-    var ajaxUrl = "{php echo $this->createMobileUrl('mylesson', array('op'=>'ajaxgetlist'));}";
+    var ajaxUrl = "{php echo $this->createMobileUrl('mylearning', array('op'=>'ajaxgetlist'));}";
     var attachUrl = "{php echo $_W['attachurl'];}";
     var payUrl = "{php echo $this->createMobileUrl('pay');}";
     var cancleUrl = "{php echo $this->createMobileUrl('mylesson', array('op'=>'cancle'));}";
     var eUrl = "{php echo $this->createMobileUrl('evaluate');}";
-    var orderUrl = "{php echo $this->createMobileUrl('orderdetail');}";
+    var orderUrl = "{php echo $this->createMobileUrl('lesson');}";
     var loading = document.getElementById("loading");
 
     $(function () {
@@ -64,16 +73,21 @@
 
         //生成数据html,append到div中
         function insertDiv(result) {
-            var mainDiv = $("#order-list");
+            var mainDiv = $("#study-list");
             var chtml = '';
             for(var j = 0; j < result.length; j++) {
-                chtml += '<div class="box-one" onclick="goLesson('+ result[j].id +')">';
+                chtml += '<div class="box-one" onclick="goLesson('+ result[j].lessonid +')">';
                 chtml += '	<img class="box-left" src="' + attachUrl+result[j].images + '" alt="' + result[j].bookname + '">';
                 chtml += '	<div class="box-right">';
                 chtml += '		<span class="top-text">' + result[j].bookname + '</span>';
                 chtml += '      <span class="middle-text">' + result[j].difficulty + '  ' + result[j].virtual_buynum + '</span>';
-                chtml += '      <span class="bottom-text text-learning">' + 已学习80% + '</span>';
-                chtml += '      <label class="btn-box btn-learning">继续学习</label>';
+                if(result[j].status == 0){
+                    chtml += '      <span class="bottom-text text-learning">已学习' + result[j].rate + '%</span>';
+                    chtml += '      <label class="btn-box btn-learning">继续学习</label>';
+                }else{
+                    chtml += '      <span class="bottom-text text-learning">' + 已学完 + '</span>';
+                    chtml += '      <label class="btn-box btn-learning">复习</label>';
+                }
                 chtml += '  </div>';
                 chtml += '</div>';
             }
@@ -112,7 +126,7 @@
     });
 
     function goLesson(id){
-        var url = orderUrl + "&orderid="+id;
+        var url = orderUrl + "&id="+id;
         location.href = url;
     }
 

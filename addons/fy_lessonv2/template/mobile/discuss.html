@@ -48,21 +48,42 @@
     <button class="comment-box"><img src="{MODULE_URL}template/mobile/images/info-icon.png">发表评论</button>
 </div>
 
+<div class="mask-box" style="display: none;"></div>
+<!--
+<div class="dialog-bottom" style="display: none;">
+    <div class="discuss-input" data-id="0">
+        <div class="line-box">
+            <span>发表评论</span>
+            <img class="close-img" src="{MODULE_URL}template/mobile/images/close.png" alt="">
+        </div>
+        <textarea type="text" id='content' placeholder="说点什么~"></textarea>
+        <div class="line-box border-style">
+            <span>晒图（最多5张）</span>
+            <img class="add-img" src="../../images/add-img.png" alt="">
+        </div>
+        <label id="submit-btn" class="publish-btn">发表</label>
+    </div>
+</div>
+-->
+
 <div class="bottom-dialog" style="display: none;">
-    <span class="dialog-title">发表评论</span>
+    <div class="dialog-title">
+        <span>发表评论</span>
+        <img class="close-img" src="{MODULE_URL}template/mobile/images/close.png" alt="">
+    </div>
     <div class="dialog-content" data-id="0">
-        <div class="form-group"><textarea id='content' class="content" placeholder="说点什么～"></textarea></div>
+        <textarea id='content' class="content" placeholder="说点什么～"></textarea>
         <div class="line">
             <div class="pic">
                 晒图(最多5张)
                 <div class="plus" style="position:relative">
                     <i class="fa fa-plus" style="position:absolute;"></i>
-                    <input type="file" name='imgFile0' id='imgFile0' style="position:absolute;width:30px;height:30px;-webkit-tap-highlight-color: transparent;filter:alpha(Opacity=0); opacity: 0;" />
+                    <input type="file" name='imgFile0' id='imgFile0' class="plus-file" />
                 </div>
                 <div class="images"></div>
             </div>
         </div>
-        <div class="submit-btn">发表</div>
+        <label id="submit-btn" class="publish-btn">发表</label>
     </div>
 </div>
 
@@ -70,14 +91,91 @@
 $(document).ready(function () {
     var cid = "{$discuss['id']}";
 
-    $('.comment-box').click(function () {
-        $('.bottom-dialog').show();
+    $('.close-img').click(function () {
+        $('.bottom-dialog').hide();
+        $('.mask-box').hide();
     });
 
+    $('.comment-box').click(function () {
+        $('.bottom-dialog').show();
+        $('.mask-box').show();
+    });
     $('.plus input').change(function () {
         var comment = $(this).closest('.dialog-content');
         var id = comment.data('id');
+        getImage(id);
+    });
+
+    function getImage(id) {
+        var comment = $('.plus input').closest('.dialog-content');
         var url = "{php echo $this->createMobileUrl('discuss', array('op'=>'uploader'))}&file=imgFile" + id;
+        var obj = $('#imgFile' + id);
+        $.ajaxFileUpload({
+            url: url,
+            secureuri: false,
+            fileElementId: 'imgFile'+ id,
+            dataType: 'json',
+            success:function (res,status) {
+                var html = "<div class='img' data-img='" + res.filename + "'>";
+                html += " <img src='" + res.url + "' />";
+                html += "<div class='minus'><i class='fa fa-minus-circle'></i></div>";
+                html += "</div>";
+                $('.images',comment).append(html);
+                var img = $(html,comment).data('img');
+                $('.minus').off('click');
+                $('.minus', comment).on('click', function () {
+                    var minus = $(this);
+                    $.get(
+                        "{php echo $this->createMobileUrl('discuss', array('op'=>'remove'))}",
+                        {file: minus.parent().data('img')},
+                        function (t) {
+                            if(t == 1){
+                                minus.parent().remove();
+                                $('.plus',comment).show();
+                            }
+                        }
+                    );
+                });
+
+                /*
+                $('.minus', comment).on('click',function () {
+                    var minus = $(this);
+                    $.get(
+                        "{php echo $this->createMobileUrl('discuss', array('op'=>'remove'))}",
+                        {file: _obj.data("img")},
+                        function (t) {
+                            if(t == 1){
+                                minus.parent().remove();
+                                $('.plus',comment).show();
+                            }
+                        }
+                    );
+                });
+                */
+
+                if ($('.img',comment).length >= 5) {
+                    $('.plus',comment).hide();
+                }
+
+            },
+            complete:function () {
+                obj.replaceWith('<input type="file" name="imgFile' + id + '" id="imgFile' + id + '" class="plus-file" />');
+                $('#imgFile' + id).on('change', function () {
+                    getImage(id);
+                });
+            },
+            error:function (res,status,e) {
+                alert("上传失败");
+            }
+        });
+    }
+
+    /*
+    $('.plus input').unbind('change').on('change',function () {
+        var comment = $(this).closest('.dialog-content');
+        var id = comment.data('id');
+        var url = "{php echo $this->createMobileUrl('discuss', array('op'=>'uploader'))}&file=imgFile" + id;
+        var obj = $(this);
         $.ajaxFileUpload({
             url: url,
             secureuri: false,
@@ -106,14 +204,18 @@ $(document).ready(function () {
                     $('.plus',comment).hide();
                 }
 
-            },error:function (res,status,e) {
+            },
+            complete:function () {
+                obj.replaceWith('<input type="file" name="imgFile0" id="imgFile0" class="plus-file" />');
+            },
+            error:function (res,status,e) {
                 alert("上传失败");
             }
         });
-
     });
+    */
 
-    $('.submit-btn').click(function () {
+    $('#submit-btn').click(function () {
         if ($(this).attr('saving') == '1') {
             return;
         }

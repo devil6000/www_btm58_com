@@ -108,6 +108,7 @@ create table `ims_fy_mystudy`(
   `uid` int(11) not null,
   `lessonid` int(11) not null comment '课程id',
   `addtime` int(6) null,
+  `status` tinyint(1) null default 0 comment '状态0学习中，1已学完',
   primary key(`id`)
 );
 
