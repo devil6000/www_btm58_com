@@ -20,6 +20,12 @@ $uid = $_W['member']['uid'];
 $id = intval($_GPC['id']);/* 课程id */
 $sectionid = intval($_GPC['sectionid']);/* 点播章节id */
 
+/* 判断是否为分享 */
+$share_uid = intval($_GPC['uid']);
+if($share_uid){
+
+}
+
 if($uid>0){
 	$member = pdo_fetch("SELECT a.*,b.follow,c.avatar,c.nickname FROM " .tablename($this->table_member). " a LEFT JOIN " .tablename($this->table_fans). " b ON a.uid=b.uid LEFT JOIN " .tablename($this->table_mc_members). " c ON a.uid=c.uid WHERE a.uid=:uid", array(':uid'=>$uid));
 }

@@ -137,3 +137,29 @@ create table `ims_fy_mydiscuss`(
   `addtime` int(6) null,
   primary key(`id`)
 );
+
+/**
+分享表
+ */
+create table `ims_fy_lesson_share`(
+  `id` int(11) not null auto_increment,
+  `uniacid` int(11) not null,
+  `lessonid` int(11) not null,
+  `uid` int(11) not null comment '分享ID',
+  `mid` int(11) not null comment '会员ID',
+  `addtime` int(6) null default 0,
+  `status` tinyint(1) null default 0 comment '购买状态0未购买',
+  primary key(`id`)
+);
+
+/**
+分享购买次数
+ */
+create table `ims_fy_lesson_share_userd`(
+  `id` int(11) not null auto_increment,
+  `uniacid` int(11) not null,
+  `lessonid` int(11) not null,
+  `uid` int(11) not null,
+  `addtime` tinyint(6) default 0,
+  primary key(`id`)
+);
