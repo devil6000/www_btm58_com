@@ -76,22 +76,30 @@ $(function() {
 
 	<!-- 分类 -->
 	<div class="convenient-btn">
+		<a class="convenient-href" href="#">
 			<label class="label-box">
 				<img class="convenient-img" src="{MODULE_URL}template/mobile/images/vidio.png">
 				<span class="label-span">短片推荐</span>
 			</label>
+		</a>
+		<a class="convenient-href" href="#">
 			<label class="label-box">
 				<img class="convenient-img" src="{MODULE_URL}template/mobile/images/off-line-activity.png">
 				<span class="label-span">线下活动</span>
 			</label>
-		<label class="label-box">
-			<img class="convenient-img" src="{MODULE_URL}template/mobile/images/define-navigation.png">
-			<span class="label-span">定义导航</span>
-		</label>
-		<label class="label-box">
-			<img class="convenient-img" src="{MODULE_URL}template/mobile/images/course-classification.png">
-			<span class="label-span">课程分类</span>
-		</label>
+		</a>
+		<a class="convenient-href" href="#">
+			<label class="label-box">
+				<img class="convenient-img" src="{MODULE_URL}template/mobile/images/define-navigation.png">
+				<span class="label-span">定义导航</span>
+			</label>
+		</a>
+		<a class="convenient-href" href="{php echo $this->createMobileUrl('search', array('op' => 'allcategory'))}">
+			<label class="label-box">
+				<img class="convenient-img" src="{MODULE_URL}template/mobile/images/course-classification.png">
+				<span class="label-span">课程分类</span>
+			</label>
+		</a>
 	</div>
 	<!-- /分类 -->
 	
@@ -133,14 +141,16 @@ $(function() {
 	<div class="classification-list">
 		<div class="box-title">
 			<span class="box-top">最新推荐</span>
+			<a href="">
 			<div class="more-btn">更多
 				<img class="box-img" src="{MODULE_URL}template/mobile/images/right-arrow.png">
 			</div>
+			</a>
 		</div>
 		<!--课程列表  -->
 		<div class="list-box">
 			{loop $newlesson $item}
-			<div class="box-one">
+			<div class="box-one" onclick="location.href='{php echo $this->createMobileUrl('lesson', array('id'=>$item['id']));}'">
 				<img class="box-left" src="{$_W['attachurl']}{$item['images']}">
 				<div class="box-right">
 					<span class="top-span">{$item['bookname']}</span>
@@ -159,27 +169,26 @@ $(function() {
 	<div class="classification-list">
 		<div class="box-title">
 			<span class="box-top">热门好课</span>
+			<a href="">
 			<div class="more-btn">更多
 				<img class="box-img" src="{MODULE_URL}template/mobile/images/right-arrow.png">
 			</div>
+			</a>
 		</div>
 		<!--类别窗口  -->
 		<div class="classification-box">
-			<div class="classification-one  frist-bg">
-				<span class="box-top">植物</span>
-				<span class="box-middle">我是标题，我喜欢恐龙和 大自然植物</span>
-				<span class="box-bottom">¥399</span>
+			{loop $category_list $key $item}
+			<div class="classification-one  {if $key % 2 == 0}frist-bg{else}second-bg{/if}" onclick="location.href='{php echo $this->createMobileUrl('lesson', array('id'=>$item['id']));}'">
+				<span class="box-top">{$item['name']}</span>
+				<span class="box-middle"></span>
+				<span class="box-bottom"></span>
 			</div>
-			<div class="classification-one second-bg">
-				<span class="box-top">动物</span>
-				<span class="box-middle">我是标题，我喜欢恐龙和 大自然植物</span>
-				<span class="box-bottom">¥399</span>
-			</div>
+			{/loop}
 		</div>
 		<!--课程列表  -->
 		<div class="list-box">
 			{loop $hotlesson $item}
-			<div class="box-one">
+			<div class="box-one" onclick="location.href='{php echo $this->createMobileUrl('lesson', array('cat_id'=>$item['id']));}'">
 				<img class="box-left" src="{$_W['attachurl']}{$item['images']}">
 				<div class="box-right">
 					<span class="top-span">{$item['bookname']}</span>

@@ -74,6 +74,8 @@ class fy_lessonv2ModuleSite extends WeModuleSite {
     public $table_mystudy = 'fy_mystudy';
     public $table_mystudy_rate = 'fy_mystudy_rate';
     public $table_mydiscuss = 'fy_mydiscuss';
+    public $table_lesson_share = 'fy_lesson_share';
+    public $table_lesson_share_userd = 'fy_lesson_share_userd';
 
 /***************************** 初始化 ******************************** */
     function __construct() {
@@ -446,6 +448,11 @@ class fy_lessonv2ModuleSite extends WeModuleSite {
         $this->__mobile(__FUNCTION__);
     }
 
+    /* 我的分享 */
+    public function doMobileMyshare(){
+        $this->__mobile(__FUNCTION__);
+    }
+
 /************************************************ 公共方法 ************************************ */
     public function __web($f_name) {
         global $_W, $_GPC;
@@ -619,6 +626,9 @@ class fy_lessonv2ModuleSite extends WeModuleSite {
 
 					/* 给用户发放优惠券 */
 					$this->sendCouponByBuyLesson($lessonmember, $setting);
+
+					/* 判断是否分享订单 */
+                    $this->share_order($uniacid, $lessonorder['uid'], $lessonorder['lessonid']);
                 }
             }
 
@@ -2441,6 +2451,15 @@ class fy_lessonv2ModuleSite extends WeModuleSite {
 		}
 		return $rgb;
 	}
+
+	/* 是否分享订单 */
+    private function share_order($uniacid, $uid, $lessonid){
+        $share_info_userd = pdo_fetch('SELECT * FROM ' . tablename($this->table_lesson_share) . ' WHERE uniacid=:uniacid AND mid=:mid AND lessonid=:lid AND status=0', array(':uniacid' => $uniacid, ':mid' => $uid, ':lid' => $lessonid));
+        if($share_info_userd){
+            $update = array('status' => 1);
+            pdo_update($this->table_lesson_share, $update, array('id' => $share_info_userd['id']));
+        }
+    }
  
 }
 

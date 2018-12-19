@@ -1,0 +1,120 @@
+{template '_headerv2'}
+
+<link href="{MODULE_URL}template/mobile/style/cssv2/my-sharing.css?v={$versions}" rel="stylesheet" />
+
+<div class="header-2 cbox">
+    <a href="javascript:history.go(-1);" class="ico go-back"></a>
+    <div class="flex title" style="max-width:80%;">{$title}</div>
+</div>
+
+<div class="content-inner" style="min-height:100%;">
+    <div class="change-total">
+        <span class="explain-box">把课程分享给朋友后，如果朋友成功购买了您分享的课程，您将获得一次免费兑换下列课程的奖励，比如邀请10人就可以获取免费10次选择课程的奖励。</span>
+        <div class="label-box">
+            <label class="right-distance">已经兑换{$count}次</label>
+            <label>剩余{$residue}次兑换</label>
+        </div>
+    </div>
+
+    <div class="exchange-list"  {if empty($list)}style="padding-top: .9375rem;"{/if}>
+        {if empty($list)}
+        <div class="my_empty">
+            <div class="empty_bd  my_course_empty" style="position: inherit; top: 0px; margin-top: 0px;">
+                <h3>没有找到任何课程~</h3>
+                <p><a href="{php echo $this->createMobileUrl('index', array('t'=>1));}">到首页去看看</a></p>
+            </div>
+        </div>
+        {/if}
+    </div>
+    <div id="loading_div" class="loading_div">
+        <a href="javascript:void(0);" id="btn_Page"><i class="fa fa-arrow-circle-down"></i> 加载更多</a>
+    </div>
+    <footer>
+        <a href="{php echo $this->createMobileUrl('index', array('t'=>1));}">{$setting['copyright']}</a>
+    </footer>
+    <div id="loading" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:999999999;"><div class="spinner"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div></div>
+</div>
+
+<script type="text/javascript">
+    var ajaxUrl = "{php echo $this->createMobileUrl('myshare', array('op'=>'ajaxgetlist'));}";
+    var attachUrl = "{php echo $_W['attachurl'];}";
+    var loading = document.getElementById("loading");
+    var orderUrl = "{php echo $this->createMobileUrl('myshare', array('op' => 'exchange'));}";
+$(function () {
+    var nowPage = 1; //设置当前页数，全局变量
+    function getData(page) {
+        nowPage++; //页码自动增加，保证下次调用时为新的一页。
+        $.get(ajaxUrl, {
+            page: page
+        }, function(data) {
+            if(data.length > 0) {
+                loading.style.display = 'none';
+                var jsonObj = JSON.parse(data);
+                insertDiv(jsonObj);
+            }
+        });
+    }
+    //初始化加载第一页数据
+    getData(1);
+    //生成数据html,append到div中
+    function insertDiv(result) {
+        var mainDiv = $(".exchange-list");
+        var chtml = '';
+        for(var j = 0; j < result.length; j++) {
+            chtml += '<div class="box-one">';
+            chtml += '	<img class="box-left" src="' + attachUrl+result[j].images + '" alt="' + result[j].bookname + '">';
+            chtml += '	<div class="box-right">';
+            chtml += '		<span class="top-text">' + result[j].bookname + '</span>';
+            chtml += '      <span class="middle-text">' + result[j].difficulty + '</span>';
+            chtml += '      <span class="bottom-text">¥ ' + result[j].price + '</span>';
+            if(result[j].share_flag == 0){
+                chtml += '      <label class="btn-box not-exchange" onclick="exchange(' + result[j].id + ')">免费兑换</label>';
+            }else if(result[j].share_flag == 1){
+                chtml += '      <label class="have-exchange btn-box ">已兑换</label>';
+            }else if(result[j].share_flag == 2){
+                chtml += '      <label class="have-exchange btn-box ">已购买</label>';
+            }
+            chtml += '  </div>';
+            chtml += '</div>';
+        }
+        mainDiv.append(chtml);
+        if(result.length == 0) {
+            document.getElementById("loading_div").innerHTML='<div class="loading_bd">没有了，已经到底啦</div>';
+        }
+    }
+
+    //==============核心代码=============
+    var winH = $(window).height(); //页面可视区域高度
+
+    var scrollHandler = function() {
+        var pageH = $(document.body).height();
+        var scrollT = $(window).scrollTop(); //滚动条top
+        var aa = (pageH - winH - scrollT) / winH;
+        if(aa < 0.02) {
+            if(nowPage % 1 === 0) {
+                getData(nowPage);
+                $(window).unbind('scroll');
+                $("#btn_Page").show();
+            } else {
+                getData(nowPage);
+                $("#btn_Page").hide();
+            }
+        }
+    }
+    //定义鼠标滚动事件
+    $(window).scroll(scrollHandler);
+    //继续加载按钮事件
+    $("#btn_Page").click(function() {
+        loading.style.display = 'block';
+        getData(nowPage);
+        $(window).scroll(scrollHandler);
+    });
+});
+
+function exchange(id) {
+    var url = orderUrl + "&id="+id;
+    location.href = url;
+}
+</script>
+
+{template '_footerv2'}

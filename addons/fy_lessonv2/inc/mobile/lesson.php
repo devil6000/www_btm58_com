@@ -21,9 +21,22 @@ $id = intval($_GPC['id']);/* 课程id */
 $sectionid = intval($_GPC['sectionid']);/* 点播章节id */
 
 /* 判断是否为分享 */
-$share_uid = intval($_GPC['uid']);
-if($share_uid){
-
+if($uid > 0){
+    $share_uid = intval($_GPC['uid']);
+    if($share_uid){
+        $info = pdo_fetch('SELECT * FROM ' . tablename($this->table_lesson_share) . ' WHERE uniacid=:uniacid AND mid=mid AND lessonid=:lid', array(':uniacid' => $uniacid, ':mid' => $uid, ':lid' => $id));
+        if(empty($info)){
+            $share_insert = array(
+                'uniacid' => $uniacid,
+                'uid' => $share_uid,
+                'mid' => $uid,
+                'lessonid' => $id,
+                'status' => 0,
+                'addtime' => time()
+            );
+            pdo_insert($this->table_lesson_share, $share_insert);
+        }
+    }
 }
 
 if($uid>0){
@@ -86,8 +99,11 @@ if($uid>0){
 
 	/* 查询是否购买该课程 */
 	$isbuy = pdo_fetch("SELECT * FROM " .tablename($this->table_order). " WHERE uid=:uid AND lessonid=:lessonid AND status>=:status AND paytime>:paytime AND is_delete=:is_delete ORDER BY id DESC LIMIT 1", array(':uid'=>$uid,':lessonid'=>$id,':status'=>1,':paytime'=>0,':is_delete'=>0));
+
+    /* 查看是否已经兑换该课程 */
+    $isshare = pdo_fetch('SELECT * FROM ' . tablename($this->table_lesson_share_userd) . ' WHERE uid=:uid AAND lessonid=:lessonid LIMIT 1', array(':uid'=>$uid,':lessonid'=>$id));
 }
-if(empty($isbuy) && $lesson['status']=='-1'){
+if(empty($isbuy) && empty($isshare) && $lesson['status']=='-1'){
 	message("该课程已下架，您可以看看其他课程~");
 }
 
@@ -162,6 +178,11 @@ if($isbuy){
 			$show_isbuy = true;
 		}
 	}
+}
+if($isshare){
+    $play = true;
+    $plays = true;
+    $show_isbuy = true;
 }
 /* 讲师自己课程免费 */
 $teacher = pdo_fetch("SELECT id FROM " .tablename($this->table_teacher). " WHERE uid=:uid", array(':uid'=>$uid));

@@ -65,8 +65,9 @@ if(!empty($setting['category_ico'])){
 }
 $category_list = $this->readCommonCache('fy_lesson_'.$uniacid.'_index_category');
 if(empty($category_list)){
-	$category_list = pdo_fetchall("SELECT * FROM " .tablename($this->table_category). " WHERE uniacid=:uniacid AND parentid=:parentid AND is_show=:is_show ORDER BY displayorder DESC LIMIT {$cat_num}", array(':uniacid'=>$uniacid,':parentid'=>0,':is_show'=>1));
-	cache_write('fy_lesson_'.$uniacid.'_index_category', $category_list);
+	//$category_list = pdo_fetchall("SELECT * FROM " .tablename($this->table_category). " WHERE uniacid=:uniacid AND parentid=:parentid AND is_show=:is_show ORDER BY displayorder DESC LIMIT {$cat_num}", array(':uniacid'=>$uniacid,':parentid'=>0,':is_show'=>1));
+    $category_list = pdo_fetchall("SELECT * FROM " .tablename($this->table_category). " WHERE uniacid=:uniacid AND parentid=:parentid AND is_show=:is_show ORDER BY displayorder DESC LIMIT 2", array(':uniacid'=>$uniacid,':parentid'=>0,':is_show'=>1));
+    cache_write('fy_lesson_'.$uniacid.'_index_category', $category_list);
 }
 
 /* 限时折扣 */
@@ -114,6 +115,7 @@ if(empty($list)){
 	}
 	cache_write('fy_lesson_'.$uniacid.'_index_recommend', $list);
 }
+
 
 /* 绑定手机号码 */
 if(checksubmit('modify_mobile')){
