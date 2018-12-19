@@ -12,7 +12,7 @@
                 <label class="num-box">8</label>
                 -->
             </div>
-            <span class="already-num">已学6门课程</span>
+            <span class="already-num">已学{$member_learn}门课程</span>
         </div>
     </div>
 </div>
@@ -34,6 +34,7 @@
 </div>
 
 <div class="line-list">
+    <!--
     {if $memberListCount || (!$memberListCount && $memberVipCount) || in_array('vip',$self_item)}
     <div class="line-box">
         <i class="fa fa-orange fa-diamond"></i>
@@ -69,6 +70,7 @@
         <img class="right-icon" src="{MODULE_URL}template/mobile/images/right.png">
     </div>
     {/if}
+    -->
     <div class="line-box">
         <a href="{php echo $this->createMobileUrl('mylesson', array('status'=>1));}">
         <img class="left-icon" src="{MODULE_URL}template/mobile/images/already-purchased.png">
@@ -86,21 +88,19 @@
     <!--
     <div class="line-box" bindtap="goMySharing">
         <a href="{php echo $this->createMobileUrl('order')}">
-        <img class="left-icon" src="../../images/my-sharing.png">
+        <img class="left-icon" src="{MODULE_URL}template/mobile/images/my-sharing.png">
         <span>我的分享</span>
         <img class="right-icon" src="{MODULE_URL}template/mobile/images/right.png">
         </a>
     </div>
     -->
-    <!--
     <div class="line-box">
-        <a href="{php echo $this->createMobileUrl('order')}">
-        <img class="left-icon" src="../../images/set-up.png">
+        <a href="{php echo $this->createMobileUrl('mc/profile')}">
+        <img class="left-icon" src="{MODULE_URL}template/mobile/images/set-up.png">
         <span>设置</span>
         <img class="right-icon" src="{MODULE_URL}template/mobile/images/right.png">
         </a>
     </div>
-    -->
 </div>
 
 <!--

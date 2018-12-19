@@ -45,6 +45,8 @@ if(empty($memberinfo['avatar'])){
 	$avatar = $inc ? $memberinfo['avatar'] : $_W['attachurl'].$memberinfo['avatar'];
 }
 
+/* 已学习的课程 */
+$member_learn = pdo_fetchcolumn("SELECT COUNT(id) FROM" . tablename($this->table_mystudy) . " WHERE uniacid=:uniacid AND uid=:uid", array(':uniacid' => $uniacid, ':uid' => $memberid));
 
 /* VIP等级数量 */
 $memberListCount = pdo_fetchcolumn("SELECT COUNT(*) FROM " .tablename($this->table_vip_level). " WHERE uniacid=:uniacid AND is_show=:is_show", array(':uniacid'=>$uniacid,':is_show'=>1));
