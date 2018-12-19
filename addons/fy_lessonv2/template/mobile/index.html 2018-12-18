@@ -12,7 +12,6 @@
 .weui_tab_bd{height: auto; padding-bottom: 0;}
 </style>
 <script src="{MODULE_URL}template/mobile/style/jsv2/BreakingNews.js?v={$versions}"></script>
-<link href="{MODULE_URL}template/mobile/style/cssv2/imooc-home.css?v={$versions}" rel="stylesheet" />
 <script type="text/javascript">
 $(function() {
 	$('#breakingnews').BreakingNews({
@@ -42,56 +41,68 @@ $(function() {
 {/if}
 
 <div class="weui_tab_bd" id="weui_tab_div">
-	<!--搜索框  -->
-	<div class="header">
-		<!-- <div class="header-box">
-            <span class="title">一站博物</span>
-        </div> -->
-		<div class="search-box">
-			<div class='search-placeholder'>
-				<input type="text" id="searchInput" class="search_input z-abled" value="" autocorrect="off" placeholder="输入课程名称进行查找">
-			</div>
-			<!-- <input wx:if="{{condition}}"> -->
+	<!-- 搜索框 -->
+	<div class="index-header-search {php echo $search_box['isshow'] ? '' : 'hide';}" style="top:{$search_box['top']}px;left:{$search_box['left']}px;">
+		<div class="u-search">
+			<i class="fa fa-search"></i>
+			<input type="text" id="searchInput" class="search_input z-abled" value="" autocorrect="off" placeholder="输入课程名称进行查找">
 		</div>
 	</div>
+	<!-- /搜索框 -->
 
 	<!-- 广告轮播图 -->
 	{if !empty($banner)}
-	<div class="swiper-box">
-		<div class="swiper-container">
-			<div class="swiper-wrapper">
-				{loop $banner $item}
-				<div class="swiper-slide">
-					<a href="{$item['link']}">
-						<img class="swiper-lazy" src="{$_W['attachurl']}{$item['picture']}">
-					</a>
-				</div>
-				{/loop}
+	<div class="swiper-container">
+		<div class="swiper-wrapper">
+			<!--图片一-->
+			{loop $banner $item}
+			<div class="swiper-slide">
+				<a href="{$item['link']}">
+					<img class="swiper-lazy" src="{$_W['attachurl']}{$item['picture']}">
+				</a>
 			</div>
-			<div class="swiper-pagination"></div>
+			{/loop}
+			<!--图片一end-->
 		</div>
+		<div class="swiper-pagination"></div>
 	</div>
 	{/if}
 	<!-- /广告轮播图 -->
 
 	<!-- 分类 -->
-	<div class="convenient-btn">
-			<label class="label-box">
-				<img class="convenient-img" src="{MODULE_URL}template/mobile/images/vidio.png">
-				<span class="label-span">短片推荐</span>
-			</label>
-			<label class="label-box">
-				<img class="convenient-img" src="{MODULE_URL}template/mobile/images/off-line-activity.png">
-				<span class="label-span">线下活动</span>
-			</label>
-		<label class="label-box">
-			<img class="convenient-img" src="{MODULE_URL}template/mobile/images/define-navigation.png">
-			<span class="label-span">定义导航</span>
-		</label>
-		<label class="label-box">
-			<img class="convenient-img" src="{MODULE_URL}template/mobile/images/course-classification.png">
-			<span class="label-span">课程分类</span>
-		</label>
+	<div class="grid_wrap bor_no">
+		<a class="grid_item uc-flex1" href="{php echo $item['link'] ? $item['link'] : $this->createMobileUrl('search', array('cat_id'=>$item['id']));}">
+			<div class="grid_hd">
+				<img src="{$_W['attachurl']}{$item['ico']}" alt="{$item['name']}" />
+			</div>
+			<div class="grid_bd">
+				<p>短片推荐</p>
+			</div>
+		</a>
+		<a class="grid_item uc-flex1" href="{php echo $item['link'] ? $item['link'] : $this->createMobileUrl('search', array('cat_id'=>$item['id']));}">
+			<div class="grid_hd">
+				<img src="{$_W['attachurl']}{$item['ico']}" alt="{$item['name']}" />
+			</div>
+			<div class="grid_bd">
+				<p>线下活动</p>
+			</div>
+		</a>
+		<a class="grid_item uc-flex1" href="{php echo $item['link'] ? $item['link'] : $this->createMobileUrl('search', array('cat_id'=>$item['id']));}">
+			<div class="grid_hd">
+				<img src="{$_W['attachurl']}{$item['ico']}" alt="{$item['name']}" />
+			</div>
+			<div class="grid_bd">
+				<p>定义导航</p>
+			</div>
+		</a>
+		<a class="grid_item uc-flex1" href="{php echo $item['link'] ? $item['link'] : $this->createMobileUrl('search', array('cat_id'=>$item['id']));}">
+			<div class="grid_hd">
+				<img src="{$_W['attachurl']}{$item['ico']}" alt="{$item['name']}" />
+			</div>
+			<div class="grid_bd">
+				<p>课程分类</p>
+			</div>
+		</a>
 	</div>
 	<!-- /分类 -->
 	
@@ -130,65 +141,66 @@ $(function() {
 	
 	<!-- 最新课程 -->
 	{if $setting['show_newlesson'] && $newlesson}
-	<div class="classification-list">
-		<div class="box-title">
-			<span class="box-top">最新推荐</span>
-			<div class="more-btn">更多
-				<img class="box-img" src="{MODULE_URL}template/mobile/images/right-arrow.png">
-			</div>
-		</div>
-		<!--课程列表  -->
-		<div class="list-box">
+	<div class="course_wrap mt10">
+		<h2 class="course_hd"><span class="bor-l"></span>最新推荐<a style="display: inline-block; float: right;" href="{php echo $this->createMobileUrl('lesson', array('id' => $item['id']))}">更多</a></h2>
+		<ul class="newlesson-list" style="min-height:1px;">
 			{loop $newlesson $item}
-			<div class="box-one">
-				<img class="box-left" src="{$_W['attachurl']}{$item['images']}">
-				<div class="box-right">
-					<span class="top-span">{$item['bookname']}</span>
-					<span class="middle-span">{$item['difficulty']}    {if $item['price']>0}{php echo $item['buynum']+$item['virtual_buynum'];}{else}{php echo $item['buynum']+$item['virtual_buynum']+$item['visit_number'];}{/if}人已学习</span>
-					<span class="bottom-span">{php echo $item['price']>0?'¥'.$item['price']:'免费';}</span>
-				</div>
-			</div>
+			<li class="lesson_list">
+				<a href="{php echo $this->createMobileUrl('lesson', array('op'=>'display', 'id'=>$item['id']));}" class="package">
+					<div class="package__cover-wrap">
+						<div class="package__cover" style="background-image: url({$_W['attachurl']}{$item['images']});">
+							<!--<span class="package__cover-tips package__cover-tips--status">{if $item['price']>0}{php echo $item['buynum']+$item['virtual_buynum'];}{else}{php echo $item['buynum']+$item['virtual_buynum']+$item['visit_number'];}{/if}人已学习</span>-->
+						</div>
+					</div>
+					<div class="package__content">
+						<h3 class="package__name">{$item['bookname']}</h3>
+						<div class="package__info">
+							<!--<span class="pink-color subhead">{$item['section']['title']}</span>-->
+							<span class="grey-color">{$item['difficulty']}</span>
+							<span class="grey-color">{if $item['price']>0}{php echo $item['buynum']+$item['virtual_buynum'];}{else}{php echo $item['buynum']+$item['virtual_buynum']+$item['visit_number'];}{/if}人已学习</span>
+						</div>
+						<div class="package__info">
+							<span class="grey-color">{$item['tran_time']}更新</span>
+							<div class="package__course-num"><i class="red-color">{php echo $item['price']>0?'¥'.$item['price']:'免费';}</i></div>
+						</div>
+					</div>
+				</a>
+			</li>
 			{/loop}
-		</div>
+		</ul>
 	</div>
 	{/if}
 	<!-- /最新课程 -->
 
 	<!-- 热门好课 -->
 	{if !empty($hotlesson)}
-	<div class="classification-list">
-		<div class="box-title">
-			<span class="box-top">热门好课</span>
-			<div class="more-btn">更多
-				<img class="box-img" src="{MODULE_URL}template/mobile/images/right-arrow.png">
-			</div>
-		</div>
-		<!--类别窗口  -->
-		<div class="classification-box">
-			<div class="classification-one  frist-bg">
-				<span class="box-top">植物</span>
-				<span class="box-middle">我是标题，我喜欢恐龙和 大自然植物</span>
-				<span class="box-bottom">¥399</span>
-			</div>
-			<div class="classification-one second-bg">
-				<span class="box-top">动物</span>
-				<span class="box-middle">我是标题，我喜欢恐龙和 大自然植物</span>
-				<span class="box-bottom">¥399</span>
-			</div>
-		</div>
-		<!--课程列表  -->
-		<div class="list-box">
+	<div class="course_wrap mt10">
+		<h2 class="course_hd"><span class="bor-l"></span>热门好课<a class="">更多</a></h2>
+		<ul class="newlesson-list" style="min-height:1px;">
 			{loop $hotlesson $item}
-			<div class="box-one">
-				<img class="box-left" src="{$_W['attachurl']}{$item['images']}">
-				<div class="box-right">
-					<span class="top-span">{$item['bookname']}</span>
-					<span class="middle-span">{$item['difficulty']}    {if $item['price']>0}{php echo $item['buynum']+$item['virtual_buynum'];}{else}{php echo $item['buynum']+$item['virtual_buynum']+$item['visit_number'];}{/if}人已学习</span>
-					<span class="bottom-span">{php echo $item['price']>0?'¥'.$item['price']:'免费';}</span>
-				</div>
-			</div>
+				<li class="lesson_list">
+					<a href="{php echo $this->createMobileUrl('lesson', array('op'=>'display', 'id'=>$item['id']));}" class="package">
+						<div class="package__cover-wrap">
+							<div class="package__cover" style="background-image: url({$_W['attachurl']}{$item['images']});">
+								<!--<span class="package__cover-tips package__cover-tips--status">{if $item['price']>0}{php echo $item['buynum']+$item['virtual_buynum'];}{else}{php echo $item['buynum']+$item['virtual_buynum']+$item['visit_number'];}{/if}人已学习</span>-->
+							</div>
+						</div>
+						<div class="package__content">
+							<h3 class="package__name">{$item['bookname']}</h3>
+							<div class="package__info">
+								<!--<span class="pink-color subhead">{$item['section']['title']}</span>-->
+								<span class="grey-color">{$item['difficulty']}</span>
+								<span class="grey-color">{if $item['price']>0}{php echo $item['buynum']+$item['virtual_buynum'];}{else}{php echo $item['buynum']+$item['virtual_buynum']+$item['visit_number'];}{/if}人已学习</span>
+							</div>
+							<div class="package__info">
+								<span class="grey-color">{$item['tran_time']}更新</span>
+								<div class="package__course-num"><i class="red-color">{php echo $item['price']>0?'¥'.$item['price']:'免费';}</i></div>
+							</div>
+						</div>
+					</a>
+				</li>
 			{/loop}
-		</div>
+		</ul>
 	</div>
 	{/if}
 	<!-- /热门好课 -->
