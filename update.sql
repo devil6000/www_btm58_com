@@ -163,3 +163,80 @@ create table `ims_fy_lesson_share_userd`(
   `addtime` tinyint(6) default 0,
   primary key(`id`)
 );
+
+
+/**
+会员管理
+ */
+insert into `ims_modules_bindings`(`module`,`entry`,`title`,`do`,`direct`,`displayorder`) values('fy_lessonv2','menu','会员管理','member',0,0);
+
+/**
+课程分类
+ */
+alter table `ims_fy_lesson_son` add `rid` int(11) not null default 0 comment '章节分类ID';
+
+/**
+章节分类
+ */
+create table `ims_fy_lesson_reclassify`(
+  `id` int(11) not null auto_increment,
+  `uniacid` int(4) null,
+  `name` varchar(100) not null,
+  `addtime` int(6) null,
+  primary key(`id`)
+);
+
+
+/**
+同时购
+*/
+create table `ims_fy_lesson_meanwhile`(
+  `id` int(11) not null auto_increment,
+  `uniacid` int(4) not null,
+  `title` varchar(200) null,
+  `price` decimal(10,2) not null,
+  `displayorder` int(4) null default 0 comment '排序',
+  `status` tinyint(1) null default 0,
+  `addtime` int(6) null,
+  primary key(`id`)
+);
+
+/**
+ 同时购课程
+ */
+create table `ims_fy_lesson_meanwhile_lesson`(
+  `id` int(11) not null auto_increment,
+  `uniacid` int(4) not null,
+  `meanwhileid` int(11) not null,
+  `lesson_id` int(11) not null,
+  `addtime` int(6) null,
+  `spec_id` int(11) null default 0,
+  `prce` decimal(10,2) null,
+  primary key(`id`)
+);
+
+/**
+订单商品
+ */
+create table `ims_fy_lesson_order_parent`(
+  `id` int(11) not null auto_increment,
+  `uniacid` int(4) null,
+  `order_id` int(11) not null,
+  `lessonid` int(11) not null,
+  `bookname` varchar(255) not null,
+  `marketprice` decimal(10,2) not null,
+  `price` decimal(10,2) not null,
+  `spec_day` int(4) null,
+  `teacherid` int(11) null,
+  `validity` int(11) not null,
+  `lesson_type` tinyint(1) not null,
+  `appoint_info` text,
+  `spec_name` varchar(255) null,
+  primary key(`id`)
+);
+
+/**
+订单
+ */
+alter table `ims_fy_lesson_order` add `is_meanwhile` tinyint(1) null default 0 comment '是否同时购订单1是';
+alter table `ims_fy_lesson_order` add `lesson_ids` varchar(255) not null comment '课程ID列表；用，隔开';

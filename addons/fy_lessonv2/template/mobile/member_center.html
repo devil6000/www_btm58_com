@@ -2,7 +2,7 @@
 <link href="{MODULE_URL}template/mobile/style/cssv2/my-center.css?v={$versions}" rel="stylesheet" />
 
 <div class="header">
-    <div class="info-box">
+    <div class="info-box" style="height: 6rem; display: flex; align-items: center;">
         <img class="header-image" src="{$avatar}">
         <span class="name-box">{php echo $memberinfo['nickname'] ? $memberinfo['nickname'] : '未设置';}</span>
         <div class="right-box">
@@ -12,14 +12,14 @@
                 <label class="num-box">8</label>
                 -->
             </div>
-            <span class="already-num">已学{$member_learn}门课程</span>
+            <span class="already-num">已学 {$member_learn} 门课程</span>
         </div>
     </div>
 </div>
 
 <!-- 便捷入口 -->
 <div class="convenient-btn">
-    <label class="label-box" onclick="location.href='{php echo url('mc/bond/credits', array('credittype' => 'credit2', 'type' => 'record', 'period' => '1'))}'">
+    <label class="label-box" onclick="location.href='{php echo $this->createMobileUrl('recharge')}'">
         <img class="convenient-image" src="{MODULE_URL}template/mobile/images/recharge.png">
         <span class="label-text">充值</span>
     </label>
@@ -42,6 +42,8 @@
         <img class="right-icon" src="{MODULE_URL}template/mobile/images/right.png">
     </div>
     {/if}
+    -->
+    <!--
     {if in_array('history',$self_item)}
     <div class="line-box">
         <i class="fa fa-blue fa-hourglass-half"></i>
@@ -49,13 +51,22 @@
         <img class="right-icon" src="{MODULE_URL}template/mobile/images/right.png">
     </div>
     {/if}
+    -->
     {if in_array('lesson',$self_item)}
-    <div class="line-box">
-        <i class="fa fa-red fa-heart"></i>
+    <div class="line-box" onclick="location.href='{php echo $this->createMobileUrl('collect', array('ctype'=>1));}'">
+        <img class="left-icon" src="{MODULE_URL}template/mobile/images/shoucang.png">
         <span>收藏课程</span>
         <img class="right-icon" src="{MODULE_URL}template/mobile/images/right.png">
     </div>
     {/if}
+    {if in_array('coupon',$self_item)}
+    <div class="line-box" onclick="location.href='{php echo $this->createMobileUrl('coupon');}'">
+        <img class="left-icon" src="{MODULE_URL}template/mobile/images/youhuiquan.png">
+        <span>优惠券</span>
+        <img class="right-icon" src="{MODULE_URL}template/mobile/images/right.png">
+    </div>
+    {/if}
+    <!--
     {if in_array('teacher',$self_item)}
     <div class="line-box">
         <i class="fa fa-red fa-gratipay"></i>
@@ -71,34 +82,26 @@
     </div>
     {/if}
     -->
-    <div class="line-box">
-        <a href="{php echo $this->createMobileUrl('mylesson', array('status'=>1));}">
+    <div class="line-box" onclick="location.href='{php echo $this->createMobileUrl('mylesson', array('status'=>1));}'">
         <img class="left-icon" src="{MODULE_URL}template/mobile/images/already-purchased.png">
         <span>已购买课程</span>
         <img class="right-icon" src="{MODULE_URL}template/mobile/images/right.png">
-        </a>
     </div>
-    <div class="line-box">
-        <a href="{php echo $this->createMobileUrl('mydiscuss')}">
+    <div class="line-box" onclick="location.href='{php echo $this->createMobileUrl('mydiscuss')}'">
         <img class="left-icon" src="{MODULE_URL}template/mobile/images/participate-discussion.png">
         <span>我参与的讨论</span>
         <img class="right-icon" src="{MODULE_URL}template/mobile/images/right.png">
-        </a>
     </div>
 
-    <div class="line-box">
-        <a href="{php echo $this->createMobileUrl('myshare')}">
+    <div class="line-box" onclick="location.href='{php echo $this->createMobileUrl('myshare')}'">
         <img class="left-icon" src="{MODULE_URL}template/mobile/images/my-sharing.png">
         <span>我的分享</span>
         <img class="right-icon" src="{MODULE_URL}template/mobile/images/right.png">
-        </a>
     </div>
-    <div class="line-box">
-        <a href="{php echo $this->createMobileUrl('mc/profile')}">
+    <div class="line-box" onclick="location.href='{php echo url('mc/profile')}'">
         <img class="left-icon" src="{MODULE_URL}template/mobile/images/set-up.png">
         <span>设置</span>
         <img class="right-icon" src="{MODULE_URL}template/mobile/images/right.png">
-        </a>
     </div>
 </div>
 
@@ -112,14 +115,7 @@
 
 <script type="text/javascript">
 $('.header-image').click(function () {
-    var agent = {$agent};
-    if(!agent){
-        return;
-    }
-    if(!confirm('更新头像信息?')){
-        return;
-    }
-    location.href = "{php echo $this->createMobileUrl('self', array('updateInfo'=>1));}";
+    location.href = "{php echo url('mc/profile');}";
 });
 </script>
 

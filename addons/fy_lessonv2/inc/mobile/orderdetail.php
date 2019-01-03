@@ -25,6 +25,8 @@ if($op == 'display'){
 		message("订单不存在!");
 	}
 
+	$order_parent = pdo_fetchall('SELECT a.*,b.images FROM ' . tablename($this->table_lesson_order_parent) . ' a LEFT JOIN ' . tablename($this->table_lesson_parent) . ' b ON a.lessonid=b.id WHERE a.order_id=:id', array(':id' => $order['id']));
+
 	/* 报名课程信息 */
 	$appoint_info = json_decode($order['appoint_info'], true);
 

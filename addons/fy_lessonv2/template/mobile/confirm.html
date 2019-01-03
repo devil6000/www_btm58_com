@@ -22,31 +22,33 @@
 	<form id="orderForm" method="post" action="{php echo $this->createMobileUrl('addtoorder');}">
 	<!-- 课程订单信息 -->
 	<div class="confirm-order">
+		{loop $lessons $item}
 		<div class="addorder_good ">
-			<div class="ico"><img src="{$teacherphoto}" /></div>
-			<div class="shop">{$lesson['teacher']}讲师</div>
+			<div class="ico"><img src="{$item['teacherphoto']}" /></div>
+			<div class="shop">{$item['teacher']}讲师</div>
 			<div class="good">
-				<div class="img" onclick="location.href = '{$lessonurl}'">
-					<img src="{$_W['attachurl']}{$lesson['images']}" alt=""/>
+				<div class="img" onclick="location.href = '{$item['lessonurl']}'">
+					<img src="{$_W['attachurl']}{$item['images']}" alt=""/>
 				</div>
-				<div class="info" onclick="location.href = '{$lessonurl}'">
+				<div class="info" onclick="location.href = '{$item['lessonurl']}'">
 					<div class="inner">
-						<div class="name">{$lesson['bookname']}</div>
+						<div class="name">{$item['bookname']}</div>
 						<p style="font-size:12px;color:#B3B3B3;">
 							已选：
-							{if $lesson['lesson_type']=='0'}
-								{php echo $spec['spec_day']==-1 ? '长期有效' : '有效期'.$spec['spec_day'].'天';}
+							{if $item['lesson_type']=='0'}
+								{php echo $item['spec']['spec_day']==-1 ? '长期有效' : '有效期'.$item['spec']['spec_day'].'天';}
 							{else}
-								{$spec['spec_name']}
+								{$item['spec']['spec_name']}
 							{/if}
 						</p>
 					</div>
 				</div>
 				<div class="price">
-					<div class="pnum">￥<span class="marketprice">{$spec['spec_price']}</span></div>
+					<div class="pnum">￥<span class="marketprice">{$item['spec']['spec_price']}</span></div>
 				</div>
 			</div>
 		</div>
+		{/loop}
 		
 		<div class="addorder_price sel_coupon" style="margin-top:16px;">
 			<div class="price" style="border:none;">
@@ -93,7 +95,7 @@
 			<div class="price" style="border:none;">
 				<div class="line">
 					课程金额
-					<span>￥<span class="goodsprice">{$spec['spec_price']}</span></span>
+					<span>￥<span class="goodsprice">{$lesson_price}</span></span>
 				</div>
 				{if $vipCoupon>0}
 				<div class="line">
@@ -118,13 +120,14 @@
 				{/if}
 				<div class="line" style="color:#f23030;">
 					应付金额
-					<span class="total" id="total" style="font-size:18px;">{$price}</span>
+					<span class="total" id="total" style="font-size:18px;">{$order_price}</span>
 				</div>
 			</div>
 		</div>
-		<input type="hidden" name="id" value="{$lesson['id']}"/>
-		<input type="hidden" name="spec_id" value="{$spec_id}"/>
+		<input type="hidden" name="id" value="{$lesson_id}"/>
+		<input type="hidden" name="spec_id" value="{$lesson_spec}"/>
 		<input type="hidden" name="coupon_id" id="coupon_id" value="0"/>
+		<input type="hidden" name="meanwhile_id" value="{$meanwhile_id}" />
 		<input type="hidden" id="couponMoney" value="0"/>
 		<input type="hidden" id="deducMoney" value="0"/>
 		<div class="paysub" onclick="subForm()">立即支付</div>

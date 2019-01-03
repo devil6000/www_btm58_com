@@ -1,0 +1,62 @@
+{template 'common/header'}
+<ul class="nav nav-tabs">
+    <li {if $op=='display'}class="active"{/if}><a href="{php echo $this->createWebUrl('reclassify');}">章节分类列表</a></li>
+    <li {if $op=='post'}class="active"{/if}><a href="{php echo $this->createWebUrl('reclassify', array('op'=>'post', 'id'=>$_GPC['id']));}">{if $_GPC['id']>0}编辑{else}添加{/if}章节分类</a></li>
+</ul>
+{if $operation == 'display'}
+<link rel="stylesheet" type="text/css" href="{MODULE_URL}template/style/category.css">
+<div class="main">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <table class="table table-hover">
+                <thead class="navbar-inner">
+                <tr>
+                    <th style="width:25%;">分类名称</th>
+                    <th style="width:9%;text-align:center;">操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {loop $list $row}
+                <tr>
+                    <td>{$row['name']}</td>
+                    <td style="text-align:center;">
+                        <div class="btn-group btn-group-sm">
+                            <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="true" href="javascript:;">功能列表 <span class="caret"></span></a>
+                            <ul class="dropdown-menu dropdown-menu-left" role="menu" style="z-index:99999">
+                                <li><a href="{php echo $this->createWebUrl('reclassify', array('op'=>'post', 'id'=>$row['id']));}"><i class="fa fa-edit"></i> 编辑分类</a></li>
+                                <li><a href="{php echo $this->createWebUrl('reclassify', array('op'=>'delete','id'=>$row['id']));}" onclick="return confirm('确认删除此分类吗？');return false;"><i class="fa fa-remove"></i> &nbsp;删除分类</a></li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+                {/loop}
+                </tbody>
+            </table>
+            {$pager}
+        </div>
+    </div>
+</div>
+{elseif $op == 'post'}
+<div class="main">
+    <div class="panel panel-default">
+        <div class="panel-heading">分类信息</div>
+        <div class="panel-body">
+            <form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">分类名称</label>
+                    <div class="col-sm-9">
+                        <input type="text" name="name" class="form-control" value="{$reclassify['name']}" />
+                    </div>
+                </div>
+                <div class="form-group col-sm-12">
+                    <input type="submit" name="submit" value="保存" class="btn btn-primary col-lg-1" />
+                    <input type="hidden" name="token" value="{$_W['token']}" />
+                    <input type="hidden" name="id" value="{$id}" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{/if}
+
+{template 'common/footer'}

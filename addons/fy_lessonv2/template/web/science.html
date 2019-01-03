@@ -1,0 +1,14 @@
+{template 'common/header'}
+<ul class="nav nav-tabs">
+    <li {if $op=='display'}class="active"{/if}><a href="{php echo $this->createWebUrl('science');}">科普列表</a></li>
+    <li {if $op=='postscience'}class="active"{/if}><a href="{php echo $this->createWebUrl('science', array('op'=>'postscience'));}">{if $_GPC['id']>0}编辑{else}添加{/if}科普</a></li>
+</ul>
+<link href="{MODULE_URL}template/web/style/fycommon.css" rel="stylesheet">
+
+{if $op == 'display'}
+    {template 'web/science/display'}
+{elseif $operation == 'postscience'}
+    {template 'web/science/postscience'}
+{/if}
+
+{template 'common/footer'}

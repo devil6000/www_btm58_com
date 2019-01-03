@@ -77,11 +77,24 @@ if(empty($discount_banner)){
 	cache_write('fy_lesson_'.$uniacid.'_index_discount_banner', $discount_banner);
 }
 
+/* 同时购 */
+$meanwhile_banner = $this->readCommonCache('fy_lesson_' . $uniacid . '_index_meanwhile_banner');
+if(empty($meanwhile_banner)){
+    $meanwhile = pdo_fetchall('SELECT * FROM ' . tablename($this->table_lesson_meanwhile) . ' WHERE uniacid=:uniacid ORDER BY displayorder DESC, id DESC LIMIT 1', array(':uniacid' => $uniacid));
+    if($meanwhile){
+        foreach($meanwhile as $key => $item){
+            $meanwhile_banner[$key]['meanwhile'] = $item;
+            $meanwhile_banner[$key]['list'] = pdo_fetchall('SELECT p.bookname,p.price,c.name,s.spec_price,m.spec_id FROM ' . tablename($this->table_meanwhile_lesson) . ' m LEFT JOIN ' . tablename($this->table_lesson_parent) . ' p ON m.lesson_id=p.id LEFT JOIN ' . tablename($this->table_category) . ' c ON p.pid=c.id LEFT JOIN ' . tablename($this->table_lesson_spec) . ' s ON m.spec_id=s.spec_id WHERE m.meanwhileid=:id', array(':id' => $item['id']));
+        }
+        cache_write('fy_lesson_'.$uniacid.'_index_meanwhile_banner', $meanwhile_banner);
+    }
+}
+
 /* 最新课程 */
 if($setting['show_newlesson']){
 	$newlesson = $this->readCommonCache('fy_lesson_'.$uniacid.'_index_newlesson');
 	if(empty($newlesson)){
-		$newlesson = pdo_fetchall("SELECT id,bookname,price,images,buynum,virtual_buynum,visit_number,section_status,update_time,difficulty FROM " .tablename($this->table_lesson_parent). " WHERE uniacid=:uniacid AND status=:status ORDER BY update_time DESC LIMIT 0,{$setting['show_newlesson']}", array(':uniacid'=>$uniacid, ':status'=>1));
+		$newlesson = pdo_fetchall("SELECT id,bookname,price,images,buynum,virtual_buynum,visit_number,section_status,update_time,difficulty FROM " .tablename($this->table_lesson_parent). " WHERE uniacid=:uniacid AND status=:status AND ico_name=:icon ORDER BY update_time DESC LIMIT 0,{$setting['show_newlesson']}", array(':uniacid'=>$uniacid, ':status'=>1, ':icon' => 'ico-new'));
 		foreach($newlesson as $k=>$v){
 			$newlesson[$k]['tran_time'] = $this->tranTime($v['update_time']);
 			$newlesson[$k]['section'] = pdo_fetch("SELECT title FROM " .tablename($this->table_lesson_son). " WHERE parentid=:parentid ORDER BY id DESC LIMIT 0,1", array(':parentid'=>$v['id']));

@@ -322,6 +322,7 @@
 							{php echo htmlspecialchars_decode($lesson['descript']);}
 						</div>
 					</li>
+				    <!--
 					<li>
 						<h2 class="chapter-title">讲师</h2>
 						<p class="teacher-intro">
@@ -329,6 +330,7 @@
 							{php echo htmlspecialchars_decode($lesson['teacherdes']);}
 						</p>
 					</li>
+					-->
 				{else}
 					<li>
 						<h2 class="chapter-title">章节内容</h2>
@@ -345,7 +347,7 @@
 		<div class="js-tab" style="transform-origin:0px 0px 0px;opacity:1;transform:scale(1,1); {if empty($sectionid) && $setting['lesson_show']==0}display:none;{/if}">
 			<ul class="course-chapter">
 				<li>
-					<h2 class="chapter-title" onclick="location.href='{php echo $this->createMobileUrl('lesson', array('id'=>$lesson['id']));}'"><i></i>{$lesson['bookname']}[共{php echo count($section_list);}节课]</h2>
+					<h2 class="chapter-title" onclick="location.href='{php echo $this->createMobileUrl('lesson', array('id'=>$lesson['id']));}'"><i></i>{$lesson['bookname']}[共{$section_total}节课]</h2>
 					{if $setting['stock_config']==1 && empty($isbuy) && $lesson['price']>0 && $buybtn !='close'}
 					<div>
 						<div class="stock-info">
@@ -359,17 +361,29 @@
 					{/if}
 					<ul class="course-sections">
 					{if !empty($section_list)}
-						{loop $section_list $sec}
-						<li>
-							<a href="{php echo $this->createMobileUrl('lesson', array('id'=>$lesson['id'],'sectionid'=>$sec['id']));}" {if $sectionid==$sec['id']}class="section-active"{/if}><i class="fa fa-play-circle-o {if $sectionid==$sec['id']}section-active{/if}"></i>{if $sec['is_free']==1}<span style="color:#128C62;">[试听]</span>{/if}{$sec['title']}</a>
-							<i class="section-state-icon">{$sec['videotime']}</i>
-						</li>
-						{if $play}
-						<li>
-							<a href="{php echo $this->createMobileUrl('discuss', array('pid'=>$lesson['id'],'cid'=>$sec['id']));}"><i class="fa fa-comments-o"></i>{$sec['title']}话题讨论</a>
-							<i class="section-state-icon"></i>
-						</li>
-						{/if}
+						{loop $section_list $list}
+							{if $list['name']}
+							<li>
+								<a href="javascript:void(0);">{$list['name']}</a>
+								<i class="section-state-icon"></i>
+							</li>
+							{/if}
+							{loop $list['list'] $sec}
+								<li>
+									<a href="{php echo $this->createMobileUrl('lesson', array('id'=>$lesson['id'],'sectionid'=>$sec['id']));}" {if $sectionid==$sec['id']}class="section-active"{/if}><i class="fa fa-play-circle-o {if $sectionid==$sec['id']}section-active{/if}"></i>{if $sec['is_free']==1}<span style="color:#128C62;">[试听]</span>{/if}{$sec['title']}</a>
+									<i class="section-state-icon">{$sec['videotime']}</i>
+								</li>
+								{if $play}
+								<li>
+									<a href="{php echo $this->createMobileUrl('discuss', array('pid'=>$lesson['id'],'cid'=>$sec['id']));}"><i class="fa fa-comments-o"></i>{$sec['title']}话题讨论</a>
+									<i class="section-state-icon"></i>
+								</li>
+								<li>
+									<a href="{php echo $this->createMobileUrl('praxis', array('pid'=>$lesson['id'],'cid'=>$sec['id']));}"><i class="fa fa-clipboard"></i>{$sec['title']}测试</a>
+									<i class="section-state-icon"></i>
+								</li>
+								{/if}
+							{/loop}
 						{/loop}
 						{if $play}
 						<li>
@@ -558,9 +572,9 @@
 <!--课程规格end-->
 
 <ul class="d-buynow">
-	<li class="btn-qq"><a href="{php echo $config['service_url'] ? $config['service_url'] : 'javascript:;';}" id="{php echo $config['service_url'] ? 'all-consult' : 'btn-qq';}"><i class="ico ico-lessonqq"></i>咨询</a></li>
+	<li class="btn-qq"><a href="{php echo $config['service_url'] ? $config['service_url'] : 'javascript:;';}" id="{php echo $config['service_url'] ? 'all-consult' : 'btn-qq';}"><i class="ico ico-lessonqq"></i>分享</a></li>
 	<li class="btn-collect" id="btn-collect"><a href="javascript:;" {if !empty($collect)}class="cur"{/if}><i class="ico ico-collect"></i>收藏</a></li>
-	<li class="btn-phone" id="btn-lxb" style="display: none;"><a href="javascript:;"><i class="ico ico-phone"></i>咨询</a></li>
+	<li class="btn-phone" id="btn-lxb" style="display: none;"><a href="javascript:;"><i class="ico ico-phone"></i>分享</a></li>
 	{if empty($section_list)}
 		<li class="btn-buy"><a href="javascript:;" class="buy buy_now gray"><p class="num"><em class="money"></em>未完善</p></a></li>
 	{else}
@@ -791,8 +805,9 @@ $(".course-tab").on("click", 'li', function() {
 
 //展开QQ咨询
 $("#btn-qq").click(function() {
-	$("#bottom-contact").removeClass("hide");
-	$("#layer-bg").removeClass("hide");
+	// $("#bottom-contact").removeClass("hide");
+	// $("#layer-bg").removeClass("hide");
+	alert("点击右上角的“...”分享");
 });
 //关闭QQ咨询
 $(".layer-close").click(function() {

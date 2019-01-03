@@ -58,6 +58,13 @@ foreach($mylessonlist as $key=>$value){
 		$mylessonlist[$key]['validity'] = date('Y-m-d H:i:s', $value['validity']);
 	}
 	$mylessonlist[$key]['addtime'] = date('Y-m-d H:i', $value['addtime']);
+
+    $order_parent = pdo_fetchall('SELECT a.*,b.images FROM ' . tablename($this->table_lesson_order_parent) . ' a LEFT JOIN ' . tablename($this->table_lesson_parent) . ' b ON a.lessonid=b.id WHERE a.order_id=:id', array(':id' => $value['id']));
+    foreach($order_parent as $k => $v){
+        $tmp = $value['paytime'] + $v['validity'] * 24 * 3600;
+        $order_parent[$k]['validity'] = date('Y-m-d H:i', $tmp);
+    }
+    $mylessonlist[$key]['list'] = $order_parent;
 }
 
 /* 检查超时未评价课程 */

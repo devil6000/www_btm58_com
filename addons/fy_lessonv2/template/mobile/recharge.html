@@ -1,0 +1,33 @@
+{template '_headerv2'}
+
+<style type="text/css">
+    .recharge-box { display: flex; width: calc(100% - 0.69rem); padding: 0.25rem 0.345rem; flex-direction: column; margin-top: 0.45rem; background: #ffffff;}
+    .recharge-box .line-box { flex: 1; border-bottom: solid 1px #dedede; display: flex; align-items: center; height: 3rem;}
+    .recharge-box .line-box span { flex: 1; font-size: 1rem; color: #666666;}
+    .recharge-box .line-box div { flex: 3;}
+    .recharge-box .line-box .money { width: 80%; font-size: 1rem; padding: 0.13rem 0.1rem; margin-left: 0.3rem}
+    .submit-btn { width: calc(100% - 0.64rem); font-size: 1rem; padding: 0.345rem 0; color: #ffffff; background: #00A388; border-radius: 0.3rem; margin: 0.32rem 0.32rem 0 0.32rem;}
+</style>
+
+<div class="header-2 cbox">
+    <a href="javascript:history.go(-1);" class="ico go-back"></a>
+    <div class="flex title" style="max-width:80%;">{$title}</div>
+</div>
+
+<div class="content-inner" style="min-height:100%;">
+    <form method="post" action="{php echo $this->createMobileUrl('recharge', array('op' => 'recharge'))}">
+        <div class="recharge-box">
+            <div class="line-box">
+                <span>当前余额</span>
+                <div class="static-input">&yen; {$credit2}</div>
+            </div>
+            <div class="line-box" style="border-bottom: none;">
+                <span>充值金额</span>
+                <div class="input">&yen;<input type="text" id="money" name="money" class="money" /></div>
+            </div>
+        </div>
+        <button type="submit" class="submit-btn">充值</button>
+    </form>
+</div>
+
+{template '_footerv2'}

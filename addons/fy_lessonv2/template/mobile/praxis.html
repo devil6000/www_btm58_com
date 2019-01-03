@@ -62,6 +62,7 @@
         <input type="hidden" id="id" value="{$praxis['id']}" />
         <input type="hidden" id="page" value="{$page}" data-count="{$count}" />
         <input type="hidden" id="pid" value="{$pid}" />
+        <input type="hidden" id="cid" value="{$cid}" />
     </div>
 </div>
 
@@ -176,22 +177,26 @@ $(document).ready(function () {
     $('#prev_btn').click(function () {
         var page = parseInt($('#page').val()) - 1;
         var pid = $('#pid').val();
-        window.location.href = "{php echo $this->createMobileUrl('praxis')}&page=" + page + "&pid=" + pid;
+        var cid = $('#cid').val();
+        window.location.href = "{php echo $this->createMobileUrl('praxis')}&page=" + page + "&pid=" + pid + "&cid=" + cid;
     });
 
     $('#next_btn').click(function () {
         var page = parseInt($('#page').val()) + 1;
         var pid = $('#pid').val();
-        window.location.href = "{php echo $this->createMobileUrl('praxis')}&page=" + page + "&pid=" + pid;
+        var cid = $('#cid').val();
+        window.location.href = "{php echo $this->createMobileUrl('praxis')}&page=" + page + "&pid=" + pid + "&cid=" + cid;
     });
     $('#resubmit_btn').click(function () {
         var page = $('#page').val();
         var pid = $('#pid').val();
-        window.location.href = "{php echo $this->createMobileUrl('praxis')}&page=" + page + "&pid=" + pid;
+        var cid = $('#cid').val();
+        window.location.href = "{php echo $this->createMobileUrl('praxis')}&page=" + page + "&pid=" + pid + "&cid=" + cid;
     });
     $('#score_btn').click(function () {
         var pid = $('#pid').val();
-        window.location.href = "{php echo $this->createMobileUrl('praxis', array('op' => 'score'))}&pid=" + pid;
+        var cid = $('#cid').val();
+        window.location.href = "{php echo $this->createMobileUrl('praxis', array('op' => 'score'))}&pid=" + pid + "&cid=" + cid;
     });
 });
 </script>

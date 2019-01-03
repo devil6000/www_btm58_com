@@ -54,7 +54,7 @@
 									<ul class="dropdown-menu dropdown-menu-left" role="menu" style="z-index:99999">
 										<li><a href="{php echo $this->createWebUrl('lesson', array('op'=>'postsection', 'id'=>$sec['id'], 'pid'=>$sec['parentid']));}"><i class="fa fa-edit"></i> 编辑章节</a></li>
 										<li><a href="{php echo $this->createWebUrl('discuss', array('cid'=>$sec['id'], 'pid'=>$sec['parentid']));}"><i class="fa fa-plus"></i> 讨论管理</a></li>
-										<!-- <li><a href="{php echo $this->createWebUrl('lesson', array('op'=>'praxis', 'cid'=>$sec['id'], 'pid'=>$sec['parentid']));}"><i class="fa fa-plus"></i> 习题管理</a></li> -->
+										<li><a href="{php echo $this->createWebUrl('lesson', array('op'=>'praxis', 'cid'=>$sec['id'], 'pid'=>$sec['parentid']));}"><i class="fa fa-plus"></i> 习题管理</a></li>
 										<li><a href="{php echo $this->createWebUrl('lesson', array('op'=>'informStudent','sectionid'=>$sec['id']));}"><i class="fa fa-volume-up"></i> 开课提醒</a></li>
 										<li><a href="{php echo $this->createWebUrl('lesson', array('op'=>'delete','cid'=>$sec['id']));}" onclick="return confirm('确认删除此章节吗？');return false;"><i class="fa fa-remove"></i> &nbsp;删除章节</a></li>
 									</ul>

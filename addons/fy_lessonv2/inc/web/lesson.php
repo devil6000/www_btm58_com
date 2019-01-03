@@ -280,6 +280,9 @@ if ($operation == 'display') {
 		$sectionUrl = $_W['siteroot'].'app/'.str_replace("./", "", $this->createMobileUrl('lesson', array('id'=>$lesson['id'])))."&amp;sectionid=".$id;
 	}
 
+	/* 章节分类 */
+    $reclassifys = pdo_fetchall('SELECT * FROM ' . tablename('fy_lesson_reclassify') . ' WHERE uniacid=:uniacid', array(':uniacid' => $uniacid));
+
 	/* 存储方式 */
 	$qiniu = unserialize($setting['qiniu']);
 	if(substr($qiniu['url'],0,7)!='http://'){
@@ -309,6 +312,7 @@ if ($operation == 'display') {
 		$data['show_time']		= strtotime($_GPC['show_time']);
 		$data['test_time']		= intval($_GPC['test_time']);
 		$data['addtime']		= time();
+		$data['rid']            = intval($_GPC['reclassifyid']);
 
 		if(empty($data['parentid'])){
 			message("课程不存在或已被删除");

@@ -58,6 +58,8 @@ class Fy_lessonv2ModuleWxapp extends WeModuleWxapp {
     public $table_praxis_score = 'fy_lesson_praxis_score';
     public $table_discuss = 'fy_discuss';
     public $table_discuss_content = 'fy_discuss_content';
+    public $table_recharge_order = 'fy_recharge_order';
+    public $table_lesson_meanwhile = 'fy_lesson_meanwhile';
 
 
 /***************************** 私有方法 ******************************** */
@@ -168,13 +170,15 @@ class Fy_lessonv2ModuleWxapp extends WeModuleWxapp {
 		
 	/* 首页 */
 	public function doPageIndex() {
-		global $_W;
+		global $_W,$_GPC;
 		$comsetting = $this->readCache(2);
+
+		$state = $_GPC['state'];
 
 		if($comsetting['hidden_sale']){
 			$url = "";
 		}else{
-			$url = $_W['siteroot'].'app/'.str_replace("./", "", $this->createMobileUrl('index'));
+			$url = $_W['siteroot'].'app/'.str_replace("./", "", $this->createMobileUrl('index', array('state' => $state)));
 		}
 		
 		return $this->result(0, '', $url);
@@ -219,7 +223,14 @@ class Fy_lessonv2ModuleWxapp extends WeModuleWxapp {
         $viporder = pdo_fetch("SELECT * FROM " .tablename($this->table_member_order). " WHERE id=:id", array(':id'=>$orderid));
         /* 购买课程订单 */
         $lessonorder = pdo_fetch("SELECT * FROM " .tablename($this->table_order). " WHERE id=:id", array(':id'=>$orderid));
+        /* 充值订单 */
+        $rechargeorder = pdo_fetch('SELECT * FROM ' . tablename($this->table_recharge_order) . ' WHERE id=:id', array(':id' => $orderid));
+
 		$fee = !empty($viporder) ? $viporder['vipmoney'] : $lessonorder['price'];
+
+        if(empty($fee)){
+            $fee = $rechargeorder['money'];
+        }
 
 		if(is_numeric($_W['openid'])){
 			load()->model('mc');
@@ -242,9 +253,15 @@ class Fy_lessonv2ModuleWxapp extends WeModuleWxapp {
         if (is_error($pay_params)) {
             return $this->result(1, $pay_params);
         }
-		$pay_params['order_type'] = !empty($viporder) ? '1' : '2'; /* 订单类型 1.vip订单 2.课程订单 */
+
+        if(!empty($rechargeorder)){
+            $pay_params['order_type'] = 1; //充值
+        }else{
+            $pay_params['order_type'] = !empty($viporder) ? '1' : '2'; /* 订单类型 1.vip订单 2.课程订单 */
+        }
         return $this->result(0, '', $pay_params);
     }
+
 
 	/* 支付返回确认 */
     public function payResult($params) {
@@ -255,6 +272,9 @@ class Fy_lessonv2ModuleWxapp extends WeModuleWxapp {
         $viporder = pdo_fetch("SELECT * FROM " .tablename($this->table_member_order). " WHERE id=:id", array(':id'=>$orderid));
         /* 购买课程订单 */
         $lessonorder = pdo_fetch("SELECT * FROM " .tablename($this->table_order). " WHERE id=:id", array(':id'=>$orderid));
+        /* 充值订单 */
+        $rechargeorder = pdo_fetch('SELECT * FROM ' . tablename($this->table_recharge_order) . ' WHERE id=:id', array(':id' => $orderid));
+
         $uniacid = $viporder['uniacid'] ? $viporder['uniacid'] : $lessonorder['uniacid'];
 		$uid = $viporder['uid'] ? $viporder['uid'] : $lessonorder['uid'];
 		
@@ -383,6 +403,41 @@ class Fy_lessonv2ModuleWxapp extends WeModuleWxapp {
 
             if ($params['from'] == 'return') {
                 message("购买课程成功！", $this->createMobileUrl('lesson', array('id'=>$lessonorder['lessonid'], 'ispay'=>1)), 'success');
+            }
+        } elseif (!empty($rechargeorder)){
+            if ((($params['result'] == 'success' && $params['from'] == 'notify') || $params['type'] == 'credit') && $viporder['status'] == 0){
+                $uid = $rechargeorder['uid'];
+                /* 支付成功逻辑操作 */
+                $data = array('status' => $params['result'] == 'success' ? 1 : 0);
+                if(!empty($params['type'])){
+                    $data['paytype'] = $params['type'];
+                }else{
+                    $data['paytype'] = $params['trade_type'] ? 'wxapp' : '';
+                }
+
+                $data['paytime'] = time();
+                if (pdo_update($this->table_recharge_order, $data, array('id' => $orderid))) {
+                    $mc = pdo_fetch('SELECT * FROM ' . tablename($this->table_mc_members) . ' WHERE uid=:id', array(':id' => $uid));
+                    $mc_data = array('credit2' => ($mc['credit2'] + $rechargeorder['money']));
+                    pdo_update($this->table_mc_members, $mc_data, array('uid' => $uid));
+
+                    $record = array(
+                        'uid' => $uid,
+                        'uniacid' => $_W['uniacid'],
+                        'credittype' => 'credit2',
+                        'num' => $rechargeorder['money'],
+                        'operator' => $uid,
+                        'module' => '',
+                        'clerk_id' => 1,
+                        'store_id' => 0,
+                        'clerk_type' => 2,
+                        'createtime' => time(),
+                        'remark' => '会员余额充值：' . $rechargeorder['money'] . ' 元',
+                        'real_uniacid' => $_W['uniacid']
+                    );
+
+                    pdo_insert('mc_credits_record', $record);
+                }
             }
         }
     }

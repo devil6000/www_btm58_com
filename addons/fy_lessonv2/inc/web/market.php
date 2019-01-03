@@ -396,42 +396,42 @@ if($op=='display'){
 
 /* 删除限时折扣活动 */
 }elseif($op=='delDiscount'){
-	$discount_id = intval($_GPC['discount_id']);
-	$discount = pdo_get($this->table_discount, array('uniacid'=>$uniacid, 'discount_id'=>$discount_id));
-	if(empty($discount)){
-		message('该限时折扣活动不存在');
-	}
-	
-	pdo_begin();
-	try{
-		pdo_delete($this->table_discount, array('discount_id'=>$discount_id));
-		pdo_delete($this->table_discount_lesson, array('discount_id'=>$discount_id));
-		pdo_commit();
+    $discount_id = intval($_GPC['discount_id']);
+    $discount = pdo_get($this->table_discount, array('uniacid'=>$uniacid, 'discount_id'=>$discount_id));
+    if(empty($discount)){
+        message('该限时折扣活动不存在');
+    }
 
-		message("删除成功", $this->createWebUrl('market', array('op'=>'discount')), "success");
-	}catch(Exception $e){
-		pdo_rollback();
-		message("删除失败，错误信息:".print_r($e, true), "", "error");
-	}	
+    pdo_begin();
+    try{
+        pdo_delete($this->table_discount, array('discount_id'=>$discount_id));
+        pdo_delete($this->table_discount_lesson, array('discount_id'=>$discount_id));
+        pdo_commit();
 
-/* 限时折扣活动课程列表 */
+        message("删除成功", $this->createWebUrl('market', array('op'=>'discount')), "success");
+    }catch(Exception $e){
+        pdo_rollback();
+        message("删除失败，错误信息:".print_r($e, true), "", "error");
+    }
+
+    /* 限时折扣活动课程列表 */
 }elseif($op=='discountLesson'){
-	$discount_id = intval($_GPC['discount_id']);
-	$discount = pdo_get($this->table_discount, array('uniacid'=>$uniacid, 'discount_id'=>$discount_id));
-	if(empty($discount)){
-		message('该限时折扣活动不存在');
-	}
+    $discount_id = intval($_GPC['discount_id']);
+    $discount = pdo_get($this->table_discount, array('uniacid'=>$uniacid, 'discount_id'=>$discount_id));
+    if(empty($discount)){
+        message('该限时折扣活动不存在');
+    }
 
-	$condition = " b.uniacid=:uniacid AND b.discount_id=:discount_id";
-	$params[':uniacid'] = $uniacid;
-	$params[':discount_id'] = $discount_id;
+    $condition = " b.uniacid=:uniacid AND b.discount_id=:discount_id";
+    $params[':uniacid'] = $uniacid;
+    $params[':discount_id'] = $discount_id;
 
-	$list = pdo_fetchall("SELECT a.id,a.bookname,a.price,b.discount,b.starttime,b.endtime FROM " .tablename($this->table_lesson_parent). " a LEFT JOIN " .tablename($this->table_discount_lesson). " b ON a.id=b.lesson_id WHERE {$condition} LIMIT ".($pindex - 1) * $psize . ',' . $psize, $params);
+    $list = pdo_fetchall("SELECT a.id,a.bookname,a.price,b.discount,b.starttime,b.endtime FROM " .tablename($this->table_lesson_parent). " a LEFT JOIN " .tablename($this->table_discount_lesson). " b ON a.id=b.lesson_id WHERE {$condition} LIMIT ".($pindex - 1) * $psize . ',' . $psize, $params);
 
-	$total = pdo_fetchcolumn("SELECT COUNT(*) FROM " .tablename($this->table_lesson_parent). " a LEFT JOIN " .tablename($this->table_discount_lesson). " b ON a.id=b.lesson_id WHERE {$condition}", $params);
-	$pager = pagination($total, $pindex, $psize);
+    $total = pdo_fetchcolumn("SELECT COUNT(*) FROM " .tablename($this->table_lesson_parent). " a LEFT JOIN " .tablename($this->table_discount_lesson). " b ON a.id=b.lesson_id WHERE {$condition}", $params);
+    $pager = pagination($total, $pindex, $psize);
 
-/* 添加课程到折扣活动 */
+    /* 添加课程到折扣活动 */
 }elseif($op=='addDiscountLesson'){
 	$discount_id = intval($_GPC['discount_id']);
 	$discount = pdo_get($this->table_discount, array('uniacid'=>$uniacid, 'discount_id'=>$discount_id));
@@ -512,6 +512,149 @@ if($op=='display'){
 	}else{
 		message("参数错误，系统已自动修复，请重试！", referer, "error");
 	}
+/* 同时购买 */
+}elseif($op=='meanwhile'){
+    $condition = 'uniacid=:uniacid';
+    $params[':uniacid'] = $uniacid;
+
+    $total = pdo_fetchcolumn('SELECT COUNT(id) FROM ' . tablename($this->table_lesson_meanwhile) . ' WHERE ' . $condition, $params);
+    $pager = pagination($total, $pindex, $psize);
+
+    $list = pdo_fetchall('SELECT * FROM ' . tablename($this->table_lesson_meanwhile) . ' WHERE ' . $condition . ' ORDER BY id DESC LIMIT ' . ($pindex - 1) * $psize . ',' . $psize, $params);
+    foreach($list as $key => $item){
+        $bookname = array();
+        $lessons = explode(',', $item['lessorid']);
+        if($lessons){
+            foreach($lessons as $id){
+                $lesson = pdo_fetch('SELECT * FROM ' . tablename($this->table_lesson_parent) . ' WHERE id=:id', array(':id' => $id));
+                $bookname[] = $lesson['bookname'];
+            }
+        }
+        $item['bookname'] = implode(',', $bookname);
+        $list[$key] = $item;
+    }
+/* 添加编辑同时购 */
+}elseif($op == 'addMeanwhile'){
+    $id = intval($_GPC['id']);
+    $while = pdo_fetch('SELECT * FROM ' . tablename($this->table_lesson_meanwhile) . ' WHERE id=:id', array(':id' => $id));
+
+    if(checksubmit('submit')){
+        $data = array(
+            'uniacid' => $uniacid,
+            'price' => 0,
+            'title' => $_GPC['title'],
+            'displayorder' => $_GPC['displayorder'],
+            'addtime' => time()
+        );
+        if(empty($id)){
+            pdo_insert($this->table_lesson_meanwhile, $data);
+        }else{
+            unset($data['addtime']);
+            unset($data['price']);
+            pdo_update($this->table_lesson_meanwhile, $data, array('id' => $id));
+        }
+        message('新增或编辑同时购成功。', $this->createWebUrl('market', array('op' => 'meanwhile'), 'success'));
+    }
+}elseif($op=='meanwhileLesson'){
+    $id = intval($_GPC['id']);
+    $discount = pdo_get($this->table_lesson_meanwhile, array('uniacid'=>$uniacid, 'id'=>$id));
+    if(empty($discount)){
+        message('该限时折扣活动不存在');
+    }
+
+    $condition = " b.uniacid=:uniacid AND b.meanwhileid=:discount_id";
+    $params[':uniacid'] = $uniacid;
+    $params[':discount_id'] = $id;
+
+    $list = pdo_fetchall("SELECT a.id,a.bookname,a.price,s.spec_name,s.spec_day,s.spec_price FROM " .tablename($this->table_lesson_parent). " a LEFT JOIN " .tablename($this->table_meanwhile_lesson). " b ON a.id=b.lesson_id LEFT JOIN " . tablename($this->table_lesson_spec) . " s ON b.spec_id=s.spec_id WHERE {$condition} LIMIT ".($pindex - 1) * $psize . ',' . $psize, $params);
+
+    $total = pdo_fetchcolumn("SELECT COUNT(*) FROM " .tablename($this->table_lesson_parent). " a LEFT JOIN " .tablename($this->table_meanwhile_lesson). " b ON a.id=b.lesson_id WHERE {$condition}", $params);
+    $pager = pagination($total, $pindex, $psize);
+
+    /* 添加课程到折扣活动 */
+}elseif($op == 'addMeanwhileLesson'){
+    $id = intval($_GPC['id']);
+
+    $while = pdo_get($this->table_lesson_meanwhile, array('uniacid'=>$uniacid, 'id'=>$id));
+    if(empty($while)){
+        message('该同时购活动不存在');
+    }
+
+    $lessons = pdo_getall($this->table_meanwhile_lesson, array(), array('lesson_id'));
+    $lesson_ids = array();
+    if(!empty($lessons)){
+        foreach($lessons as $k=>$v){
+            $lesson_ids[$k] = $v['lesson_id'];
+        }
+    }
+
+    $condition = "p.uniacid=:uniacid AND p.status=:status";
+    $params[':uniacid'] = $uniacid;
+    $params[':status'] = 1;
+
+    if(!empty($_GPC['bookname'])){
+        $condition .= " AND p.bookname LIKE :bookname";
+        $params[':bookname'] = '%'.trim($_GPC['bookname']).'%';
+    }
+
+    //$list = pdo_fetchall("SELECT id,bookname,price,addtime FROM " .tablename($this->table_lesson_parent). " WHERE {$condition} LIMIT ".($pindex - 1) * $psize . ',' . $psize, $params);
+    $list = pdo_fetchall("SELECT s.spec_id,s.spec_name,s.spec_day,s.spec_price, p.id,p.bookname,p.price,p.addtime FROM " . tablename($this->table_lesson_spec) . " s LEFT JOIN " . tablename($this->table_lesson_parent) . " p ON s.lessonid=p.id WHERE {$condition} LIMIT ".($pindex - 1) * $psize . ',' . $psize, $params);
+
+    $total = pdo_fetchcolumn("SELECT COUNT(p.*) FROM " . tablename($this->table_lesson_spec) . " s LEFT JOIN " . tablename($this->table_lesson_parent) . " p ON s.lessonid=p.id WHERE {$condition}",$params);
+    $pager = pagination($total, $pindex, $psize);
+}elseif($op == 'meanwhileLessonPost'){
+    $idarr = $_GPC['id'];
+    $id = intval($_GPC['discount_id']);
+    $posttype = trim($_GPC['posttype']);
+    $lesson_discount = $_GPC['discount'];
+
+    pdo_update($this->table_lesson_meanwhile, array('price' => $lesson_discount), array('uniacid'=>$uniacid, 'id'=>$id));
+
+    $data = array(
+        'uniacid'	  => $uniacid,
+        'meanwhileid' => $id,
+        'addtime'	  => time()
+    );
+    if(is_array($idarr) && !empty($idarr)){
+        foreach($idarr as $value){
+            if($posttype=='cancel'){
+                pdo_delete($this->table_meanwhile_lesson, array('uniacid'=>$uniacid, 'meanwhileid'=>$id, 'spec_id'=>$value));
+            }else{
+                $data['lesson_id'] = pdo_fetchcolumn('SELECT lessonid FROM ' . tablename($this->table_lesson_spec) . ' WHERE spec_id=:id', array(':id' => $value));
+                $data['spec_id'] = $value;
+                pdo_insert($this->table_meanwhile_lesson, $data);
+            }
+        }
+
+        if($posttype=='cancel'){
+            $succword = "批量取消成功！";
+        }else{
+            $succword = "批量添加成功！";
+        }
+
+        message($succword, $this->createWebUrl('market', array('op'=>'meanwhileLesson','id'=>$id)), "success");
+
+    }else{
+        message("参数错误，系统已自动修复，请重试！", referer, "error");
+    }
+}elseif($op == 'delMeanwhile'){
+    $id = intval($_GPC['id']);
+    $discount = pdo_get($this->table_lesson_meanwhile, array('uniacid'=>$uniacid, 'id'=>$id));
+    if(empty($discount)){
+        message('该同时购不存在');
+    }
+
+    pdo_begin();
+    try{
+        pdo_delete($this->table_lesson_meanwhile, array('id'=>$id));
+        pdo_delete($this->table_meanwhile_lesson, array('meanwhileid'=>$id));
+        pdo_commit();
+
+        message("删除成功", $this->createWebUrl('market', array('op'=>'meanwhile')), "success");
+    }catch(Exception $e){
+        pdo_rollback();
+        message("删除失败，错误信息:".print_r($e, true), "", "error");
+    }
 }
 
 include $this->template('web/market');

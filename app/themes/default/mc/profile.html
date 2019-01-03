@@ -1,7 +1,22 @@
 {php define('MUI', true);}
 {template 'common/header'}
+
+<style type="text/css">
+	.cbox { display: flex; align-items: center; justify-content: center; display: -webkit-box; -webkit-box-align: center; -webkit-box-pack: center;}
+	.header-2 { font-family: "微软雅黑"; padding: 0 15px; line-height: 46px; font-size: 16px; text-align: center; height: 46px; overflow: hidden; color: #585858; background: #ffffff; border-bottom: solid 1px #e1e1e1;}
+	.header-2 .ico { position: absolute; left: 10px; top: 14px; overflow: hidden; background-size: contain !important;}
+	.header-2 .go-back { display: inline-block; width: 20px; height: 20px; background: url(../app/themes/default/images/ico-go-back.png) no-repeat;}
+	.header-2 .title { max-width: 90%; height: 45px; overflow: hidden;}
+	.flex { display: flex;}
+</style>
+
+<div class="header-2 cbox">
+	<a href="javascript:history.go(-1);" class="ico go-back"></a>
+	<div class="flex title">设置</div>
+</div>
+
 <form class="tab-content clearfix js-ajax-form {if $_W['container'] !== 'wechat'}profile-form{/if}" action="{url 'mc/profile/editprofile'}" method="post" enctype="multipart/form-data">
-<div class="mui-content {if $do == 'index'}mc-profile{/if}">
+<div class="mui-content {if $do == 'index'}mc-profile{/if}" style="margin-top: 46px;">
 {if $do == 'index'}
 	{if !empty($mcFields['avatar'])}
 	{php echo tpl_app_form_field_avatar('avatar', $profile['avatar']);}
@@ -37,7 +52,14 @@
 			{php echo tpl_app_fans_form('reside', array('province' => $profile['resideprovince'], 'city' => $profile['residecity'], 'district' => $profile['residedist']), $mcFields['resideprovince']['title']);}
 		</div>
 		{/if}
+		{if !empty($mcFields['mobile'])}
+		<div class="mui-input-row">
+			<label>{$mcFields['mobile']['title']}</label>
+			{php echo tpl_app_fans_form('mobile', $profile['mobile'], $mcFields['mobile']['title']);}
+		</div>
+		{/if}
 	</div>
+	<!--
 	<ul class="mui-table-view mui-table-view-chevron">
 		{if empty($personal_info_hide)}
 		<li class="mui-table-view-cell">
@@ -60,6 +82,7 @@
 		</li>
 		{/if}
 	</ul>
+	-->
 {/if}
 
 {if $do == 'personal_info'}

@@ -108,34 +108,38 @@
 			var mainDiv = $("#order-list");
 			var chtml = '';
 			for(var j = 0; j < result.length; j++) {
+			    var list = result[j].list;
 				chtml += '<div class="submit_list" onclick="goLesson('+ result[j].id +')">';
-				chtml += '	<div class="item">';
-				chtml += '		<img src="' + attachUrl+result[j].images + '" alt="' + result[j].bookname + '">';
-				chtml += '		<span class="bookname">' + result[j].bookname + '</span>';
-				chtml += '		<div class="info">';
-				chtml += '			<p>订单编号：' + result[j].ordersn + '</p>';
-				chtml += '			<p>订单状态：<i class="red-color">' + result[j].statusname + '</i></p>';
-				chtml += '			<p>下单时间：' + result[j].addtime + '</p>';
-				if(result[j].lesson_type==1){
-					chtml += '			<p>已选：'+result[j].spec_name+'</p>';
-					if(result[j].is_verify==1){
-					chtml += '			<p>核销状态：<i class="red-color">已核销</i></p>';
-					}else{
-					chtml += '			<p>核销状态：<i class="green-color">未核销</i></p>';
-					}
-				}else{
-					if(result[j].spec_day>0){
-						chtml += '			<p>规格：'+result[j].spec_day+'天</p>';
-					}else{
-						chtml += '			<p>规格：长期有效</p>';
-					}
-					if(result[j].validity!=0 && result[j].status>0){
-						chtml += '	<p>有效期：<i class="red-color">'+result[j].validity+'</i></p>';
-					}
+				for(var z = 0; z < list.length; z++){
+                    chtml += '	<div class="item">';
+                    chtml += '		<img src="' + attachUrl+list[z].images + '" alt="' + list[z].bookname + '">';
+                    chtml += '		<span class="bookname">' + list[z].bookname + '</span>';
+                    chtml += '		<div class="info">';
+                    chtml += '			<p>订单编号：' + result[j].ordersn + '</p>';
+                    chtml += '			<p>订单状态：<i class="red-color">' + result[j].statusname + '</i></p>';
+                    chtml += '			<p>下单时间：' + result[j].addtime + '</p>';
+                    if(result[j].lesson_type==1){
+                        chtml += '			<p>已选：'+list[z].spec_name+'</p>';
+                        if(result[j].is_verify==1){
+                            chtml += '			<p>核销状态：<i class="red-color">已核销</i></p>';
+                        }else{
+                            chtml += '			<p>核销状态：<i class="green-color">未核销</i></p>';
+                        }
+                    }else{
+                        if(list[z].spec_day>0){
+                            chtml += '			<p>规格：'+list[z].spec_day+'天</p>';
+                        }else{
+                            chtml += '			<p>规格：长期有效</p>';
+                        }
+                        if(list[z].validity!=0 && result[j].status>0){
+                            chtml += '	<p>有效期：<i class="red-color">'+list[z].validity+'</i></p>';
+                        }
+                    }
+
+                    chtml += '		</div>';
+                    chtml += '	</div>';
 				}
-				
-				chtml += '		</div>';
-				chtml += '	</div>';
+
 				chtml += '	<div class="sum">';
 				chtml += '		订单总额：<em>￥'+result[j].price+'</em>';
 				chtml += '		<span class="fr">';

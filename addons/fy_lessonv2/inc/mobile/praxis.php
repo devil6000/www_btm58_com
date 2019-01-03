@@ -13,6 +13,7 @@ if($op == 'display'){
     $uid = $_W['member']['uid'];
     $id = intval($_GPC['id']);/* 题目ID */
     $pid = intval($_GPC['pid']); /* 课程章节ID */
+    $cid = intval($_GPC['cid']); /* 章节ID */
     $page = max(1,intval($_GPC['page'])); //页码
     $pageSize = 1;
 
@@ -33,18 +34,26 @@ if($op == 'display'){
 
     $title = $lesson['bookname'] . '测试';
 
-    $count = pdo_fetchcolumn('SELECT COUNT(id) FROM ' . tablename($this->table_lesson_praxis) . ' WHERE parentid=:pid AND uniacid=:uniacid', array(':pid' => $pid, ':uniacid' => $uniacid));
+    if($cid > 0){
+        $section = pdo_fetch('SELECT * FROM ' . tablename($this->table_lesson_son) . ' WHERE id=:id AND status=1', array(':id' => $cid));
+        if(empty($section)){
+            message("该章节已下架，您可以看看其他章节~", "", "error");
+        }
+        $title = $section['title'] . '测试';
+    }
+
+    $count = pdo_fetchcolumn('SELECT COUNT(id) FROM ' . tablename($this->table_lesson_praxis) . ' WHERE parentid=:pid AND uniacid=:uniacid AND chapterid=:cid', array(':pid' => $pid, ':uniacid' => $uniacid, ':cid' => $cid));
 
     if($page > $count){ $page = $count;}
 
     if(!empty($id)){
         $praxis = pdo_fetch('SELECT * FROM ' . tablename($this->table_lesson_praxis) . ' WHERE id=:id AND uniacid=:uniacid ', array(':id' => $id, ':uniacid' => $uniacid));
     }else{
-        $praxis = pdo_fetch('SELECT * FROM ' . tablename($this->table_lesson_praxis) . ' WHERE parentid=:pid AND uniacid=:uniacid ORDER BY id ASC LIMIT ' . ($page - 1) * $pageSize . ',' . $pageSize, array(':pid' => $pid, ':uniacid' => $uniacid));
+        $praxis = pdo_fetch('SELECT * FROM ' . tablename($this->table_lesson_praxis) . ' WHERE parentid=:pid AND uniacid=:uniacid AND chapterid=:cid ORDER BY id ASC LIMIT ' . ($page - 1) * $pageSize . ',' . $pageSize, array(':pid' => $pid, ':uniacid' => $uniacid, ':cid' => $cid));
     }
 
     if(empty($praxis)){
-        message('课程没有习题。', referer, 'error');
+        message('课程没有习题。', "", 'error');
         exit;
     }
 
@@ -53,7 +62,7 @@ if($op == 'display'){
     $next = false;
 
     //判断是否已经测试
-    $ceshi = pdo_fetch('SELECT * FROM ' . tablename($this->table_praxis_score) . ' WHERE uid=:uid AND praxisid=:pid', array(':uid' => $uid, ':pid' => $praxis['id']));
+    $ceshi = pdo_fetch('SELECT * FROM ' . tablename($this->table_praxis_score) . ' WHERE uid=:uid AND praxisid=:pid AND chapterid=:cid', array(':uid' => $uid, ':pid' => $praxis['id'], ':cid' => $cid));
     if(!empty($ceshi)){
         $resubmit = true;
     }
@@ -95,13 +104,14 @@ if($op == 'display'){
 
     $uid = intval($_W['member']['uid']);
     $pid = intval($_GPC['pid']);
+    $cid = intval($_GPC['cid']);
 
     $lesson = pdo_fetch("SELECT a.*,b.teacher,b.qq,b.qqgroup,b.qqgroupLink,b.weixin_qrcode,b.teacherphoto,b.teacherdes FROM " .tablename($this->table_lesson_parent). " a LEFT JOIN " .tablename($this->table_teacher). " b ON a.teacherid=b.id WHERE a.uniacid=:uniacid AND a.id=:id AND a.status!=:status LIMIT 1", array(':uniacid'=>$uniacid, ':id'=>$pid, ':status'=>0));
     if(empty($lesson)){
         message("该课程已下架，您可以看看其他课程~", "", "error");
     }
 
-    $scoreList = pdo_fetchall('SELECT * FROM ' . tablename($this->table_praxis_score) . ' WHERE parentid=:pid AND uniacid=:uniacid AND uid=:uid ORDER BY praxisid ASC', array(':pid' => $pid,':uniacid' => $uniacid, ':uid' => $uid));
+    $scoreList = pdo_fetchall('SELECT * FROM ' . tablename($this->table_praxis_score) . ' WHERE parentid=:pid AND chapterid=:cid AND uniacid=:uniacid AND uid=:uid ORDER BY praxisid ASC', array(':pid' => $pid,':uniacid' => $uniacid, ':uid' => $uid, ':cid' => $cid));
 
     $score = 0;
     foreach ($scoreList as $item){

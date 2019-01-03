@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns="http://www.we7.cc" versionCode="0.8,1.0">
 	<application setting="true">
-		<name><![CDATA[微课堂V2]]></name>
+		<name><![CDATA[一幕课堂]]></name>
 		<identifie><![CDATA[fy_lessonv2]]></identifie>
 		<version><![CDATA[2.6.7]]></version>
-		<type><![CDATA[biz]]></type>	<ability><![CDATA[微课堂V2在微课堂基础上进行拓展开发，是一款基于微信客户端的课堂功能模块，该功能支持用户在线单独购买课程或开通VIP会员服务进行观看视频课程进行学习。]]></ability>	<description><![CDATA[微课堂V2支持用户在线单独购买课程或开通会员观看课程视频进行学习，模块内置三级分销，您可以推荐给朋友，朋友从您的推荐链接或二维码进入微课堂V2，您的朋友每次进行购买课程，您都可以获取一定比例的佣金。]]></description>
+		<type><![CDATA[biz]]></type>	<ability><![CDATA[一幕课堂在微课堂基础上进行拓展开发，是一款基于微信客户端的课堂功能模块，该功能支持用户在线单独购买课程或开通VIP会员服务进行观看视频课程进行学习。]]></ability>	<description><![CDATA[一幕课堂支持用户在线单独购买课程或开通会员观看课程视频进行学习，模块内置三级分销，您可以推荐给朋友，朋友从您的推荐链接或二维码进入微课堂V2，您的朋友每次进行购买课程，您都可以获取一定比例的佣金。]]></description>
 		<author><![CDATA[淘宝超人源码 微课堂V2]]></author>
 		<url><![CDATA[http://www.we7.cc]]></url>
 	</application>
@@ -30,7 +30,7 @@
 
 	<bindings>
 		<cover>
-			<entry title="微课堂首页" do="index" state="" direct="false"/>
+			<entry title="一幕课堂首页" do="index" state="" direct="false"/>
 			<entry title="我的课程" do="mylesson" state="" direct="false"/>
 			<entry title="分销中心" do="commission" state="" direct="false"/>
 			<entry title="推广海报" do="qrcode" state="" direct="false"/>
@@ -57,7 +57,7 @@
 			<entry title="VIP服务" do="viporder" state="" direct="false"/>
 		</menu>
 		<page>
-			<entry title="微课堂首页" do="/fy_lessonv2/pages/index/index" state="" direct="false"/>
+			<entry title="一幕课堂首页" do="/fy_lessonv2/pages/index/index" state="" direct="false"/>
 		</page>
 	</bindings>
 

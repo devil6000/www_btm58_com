@@ -23,6 +23,7 @@ if ($op == 'display') {
 	$keyword = trim($_GPC['keyword']);
 	$cat_id = intval($_GPC['cat_id']);
 	$sort = trim($_GPC['sort']);
+	$ico = $_GPC['ico'];
 
 	$condition = " a.uniacid = '{$uniacid}' AND a.status=1 ";
 	$order = " ORDER BY a.displayorder DESC, a.id DESC ";
@@ -38,6 +39,12 @@ if ($op == 'display') {
 		$catname = '全部分类';
 	}
 
+	if($ico == 'new'){
+	    $condition .= " AND a.ico_name='ico-new'";
+    } elseif ($ico == 'hot'){
+	    $condition .= " AND a.ico_name='ico-hot'";
+    }
+
 	if ($sort == 'free') {
 		$condition .= " AND a.price=0";
 		$sortname = '免费课程';
@@ -49,8 +56,8 @@ if ($op == 'display') {
 		$order = " ORDER BY (a.buynum+a.virtual_buynum) DESC, a.displayorder DESC ";
 		$sortname = '人气优先';
 	} elseif ($sort == 'score') {
-		$order = " ORDER BY a.score DESC, a.displayorder DESC ";
-		$sortname = '好评优先';
+        $order = " ORDER BY a.score DESC, a.displayorder DESC ";
+        $sortname = '好评优先';
 	} else {
 		$sortname = '综合排序';
 	}

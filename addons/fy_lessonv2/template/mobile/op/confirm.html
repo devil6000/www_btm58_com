@@ -1,0 +1,67 @@
+<div class="mui-content pay-method">
+    <h5 class="mui-desc-title mui-pl10">订单详情</h5>
+    <ul class="mui-table-view">
+        <ul class="mui-table-view">
+            {if $modal == 'recharge'}
+            <li class="mui-table-view-cell">
+                充值金额<span class="mui-pull-right mui-text-success mui-big mui-rmb">{$params['fee']} 元</span>
+            </li>
+            {else}
+            <li class="mui-table-view-cell">
+                商品名称<span class="mui-pull-right mui-text-muted">{$params['title']}</span>
+            </li>
+            <li class="mui-table-view-cell">
+                订单编号<span class="mui-pull-right mui-text-muted">{$params['ordersn']}</span>
+            </li>
+            <li class="mui-table-view-cell">
+                商家名称<span class="mui-pull-right mui-text-muted">{$_W['account']['name']}</span>
+            </li>
+            {if !empty($mine)}
+            <li class="mui-table-view-cell">
+                优惠信息<span class="mui-pull-right mui-text-muted">{$mine['name']}</span>
+            </li>
+            {/if}
+            <li class="mui-table-view-cell">
+                商品价格<span class="mui-pull-right mui-text-success mui-big mui-rmb">{$params['fee']} 元</span>
+            </li>
+            {/if}
+        </ul>
+    </ul>
+    <h5 class="mui-desc-title mui-pl10">选择支付方式</h5>
+    <ul class="mui-table-view mui-table-view-chevron pay-style">
+        <li class="mui-table-view-cell mui-disabled js-webwxapp-pay hide">
+            <a class="mui-navigate-right mui-media" href="javascript:;">
+
+                <img src="resource/images/wx-icon.png" alt="" class="mui-media-object mui-pull-left"/>
+                <span class="mui-media-body mui-block">
+					<span id="wetitle">微信支付</span>
+					<span class="mui-block mui-text-muted mui-mt5">微信支付,安全快捷</span>
+				</span>
+            </a>
+        </li>
+    </ul>
+</div>
+<script type="text/javascript">
+    document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
+        var miniprogram_environment = false;
+        if(wx && wx.miniProgram && wx.miniProgram.getEnv) {
+            wx.miniProgram.getEnv(function(res) {
+                if (res.miniprogram) {
+                    miniprogram_environment = true;
+                }
+            })
+        }
+        if(window.__wxjs_environment === 'miniprogram' || miniprogram_environment) {
+            $('.js-webwxapp-pay').removeClass('hide');
+            $('.pay-style .js-webwxapp-pay').show();
+            $('.js-webwxapp-pay').click(function(){
+                wx.miniProgram.navigateTo({
+                    url: "/wxapp_web/pages/view/pay?orderid={$params['tid']}&module_name={$params['module']}&title={$params['title']}"
+                })
+            });
+        }
+        $('.js-wechat-pay').removeClass('mui-disabled');
+        $('.js-wechat-pay a').addClass('js-pay');
+        $('#wetitle').html('微信支付');
+    });
+</script>

@@ -1,0 +1,158 @@
+<!-- 
+ * 课程详情页
+ * ============================================================================
+ * 版权所有 2015-2018 微课堂团队，并保留所有权利。
+ * 网站地址: https://wx.haoshu888.com
+ * ----------------------------------------------------------------------------
+ * 这不是一个自由软件！不允许对程序代码以任何形式任何目的的再发布，作者将保留
+ * 追究法律责任的权力和最终解释权。
+-->
+{template '_headerv2'}
+<link href="{MODULE_URL}template/mobile/style/cssv2/qunService.css?v={$versions}" rel="stylesheet" />
+<link href="{MODULE_URL}template/mobile/style/cssv2/lesson.css?v={$versions}" rel="stylesheet" />
+
+<style>
+.fylesson_audio{width:90%; margin:0 auto 0 auto; padding:30px 0;}
+.fylesson_audio p{padding:10px 0}
+</style>
+
+<div class="header-2 cbox">
+	<a href="javascript:history.go(-1);" class="ico go-back"></a>
+	<div class="flex title">{$title}</div>
+</div>
+
+<div class="content-inner" style="min-height:100%;">
+	<!-- 视频区域 S -->
+	<div class="video-wrap">
+			{if $section['sectiontype']==1}
+				{if $section['savetype']==2}
+					<!-- 内嵌代码方式 -->
+					{php echo htmlspecialchars_decode($section['videourl']);}
+				{elseif $section['savetype']==4}
+					<!-- 阿里云点播 -->
+					<link rel="stylesheet" href="//g.alicdn.com/de/prismplayer/2.7.2/skins/default/aliplayer-min.css" />
+					<script type="text/javascript" src="//g.alicdn.com/de/prismplayer/2.7.2/aliplayer-min.js"></script>
+					<div class="prism-player" id="J_prismPlayer"></div>
+					<script>
+						var player = new Aliplayer({
+							id: "J_prismPlayer",
+							autoplay: false,
+							isLive:false,
+							playsinline:true,
+							width:"100%",
+							height:"240px",
+							controlBarVisibility:"click",
+							showBarTime:"3000",
+							useH5Prism:false,
+							useFlashPrism:false,
+							x5_type:"",
+							x5_video_position:"top",
+							vid: "<?php echo $section['videourl']; ?>",
+							playauth: "<?php echo $playAuth; ?>",
+							cover:"",
+							<?php if($audio){ ?>
+								mediaType: "audio",
+							<?php } ?>
+						});
+
+						var timeUpdate = function(){
+							//每隔20秒记录一次播放时间
+							var currentTime = Math.floor(player.getCurrentTime());
+						}
+						player.on('timeupdate', timeUpdate);
+					</script>
+				{elseif $section['savetype']==5}
+					<!-- 腾讯云点播 -->
+					<style type="text/css">
+					.video-js{width:100%;}
+					</style>
+					<link href="//imgcache.qq.com/open/qcloud/video/tcplayer/tcplayer.css" rel="stylesheet">
+					<script src="//imgcache.qq.com/open/qcloud/video/tcplayer/tcplayer.min.js"></script>
+					<video id="player-container-id" width="100%" height="240" preload="auto" playsinline webkit-playsinline></video>
+					<script type="text/javascript">
+						var player = TCPlayer('player-container-id', {
+							fileID: "<?php echo $section['videourl']; ?>",
+							appID : "<?php echo $qcloudvod['appid']; ?>",
+							t	  : "<?php echo $qcloudVodRes['t']; ?>",
+							us	  : "<?php echo $qcloudVodRes['us']; ?>",
+							sign  : "<?php echo $qcloudVodRes['sign']; ?>",
+							exper : "<?php echo $exper; ?>",
+							plugins:{
+								ContinuePlay: {
+								   text:'上次播放至 ',
+								   btnText: '恢复播放'
+								},
+							  }
+						});
+					</script>
+				{else}
+					{if $setting['video_player']=='0'}
+						<video id="video" src="{$section['videourl']}" width="100%" height="auto" controls="controls" autobuffer="autobuffer" x5-playsinline="" playsinline="" webkit-playsinline="" {if !empty($section['images'])}poster="{$_W['attachurl']}{$section['images']}"{/if}></video>
+					{elseif $setting['video_player']=='1'}
+						<script type="text/javascript" src="{MODULE_URL}template/mobile/style/jsv2/ckplayer/ckplayer.js?v={$versions}" charset="UTF-8"></script>
+						<div id="ckplayer-video" style="width:100%;min-height:200px;"></div>
+						<input type="hidden" id="video-time" />
+						<script type="text/javascript">
+							var videoObject = {
+								container: '#ckplayer-video',
+								variable: 'player',
+								loaded: 'loadedHandler',
+								poster: '{if !empty($section[images])}{$_W[attachurl]}{$section[images]}{else}{MODULE_URL}template/mobile/images/ckplayer-ready.jpg{/if}',
+							{if $systemType!='ios'}
+								mobileCkControls:true,
+							{/if}
+								video: '{$section[videourl]}',
+							};
+							var player = new ckplayer(videoObject);
+							function loadedHandler() {
+								player.addListener('duration', durationHandler); //视频总时间
+								player.addListener('time', timeHandler); //监听播放时间
+								player.addListener('ended', endedHandler); //监听播放结束
+							}
+
+							function timeHandler(duration) {
+								//每隔20秒记录一次播放时间
+								var currentTime = Math.floor(duration);
+							}
+							function durationHandler(time) {
+								$("#video-time").val(time);
+							}
+							function endedHandler() {
+								var videoTime = Math.floor($("#video-time").val());
+							}
+						</script>
+					{/if}
+				{/if}
+			{elseif $section['sectiontype']==3}
+			<link rel="stylesheet" href="{MODULE_URL}template/mobile/APlayer/APlayer.min.css?=1">
+			<script src="{MODULE_URL}template/mobile/APlayer/APlayer.min.js?v=2"></script>
+			<div id="main">
+				<div class="fylesson_audio">
+					<div id="player" class="aplayer"></div>
+				</div>
+			</div>
+			<script>
+				var ap1 = new APlayer({
+					element: document.getElementById('player'),
+					narrow: false,
+					autoplay: false,
+					showlrc: false,
+					music: {
+						title: "{$section['title']}",
+						author: "",
+						url: "{$section['videourl']}",
+						pic: "{$_W['attachurl']}{$section['images']}"
+					}
+				});
+				ap1.init();	
+			</script>
+			{/if}
+	</div>
+	<!-- 视频区域 E -->
+
+	<footer>
+	    <a target="_blank" href="{php echo $this->createMobileUrl('index', array('t'=>1));}">{$setting['copyright']}</a>
+	</footer>
+</div>
+
+{template '_footerv2'}

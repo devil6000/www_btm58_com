@@ -76,6 +76,11 @@ class fy_lessonv2ModuleSite extends WeModuleSite {
     public $table_mydiscuss = 'fy_mydiscuss';
     public $table_lesson_share = 'fy_lesson_share';
     public $table_lesson_share_userd = 'fy_lesson_share_userd';
+    public $table_lesson_science = 'fy_lesson_science';
+    public $table_recharge_order = 'fy_recharge_order';
+    public $table_lesson_meanwhile = 'fy_lesson_meanwhile';
+    public $table_meanwhile_lesson = 'fy_lesson_meanwhile_lesson';
+    public $table_lesson_order_parent = 'fy_lesson_order_parent';
 
 /***************************** 初始化 ******************************** */
     function __construct() {
@@ -200,6 +205,21 @@ class fy_lessonv2ModuleSite extends WeModuleSite {
 	/* 讨论管理 */
 	public function doWebDiscuss(){
 	    $this->__Web(__FUNCTION__);
+    }
+
+    /* 科普管理 */
+    public function doWebScience(){
+        $this->__web(__FUNCTION__);
+    }
+
+    /* 会员管理 */
+    public function doWebMember(){
+        $this->__web(__FUNCTION__);
+    }
+
+    /* 章节分类 */
+    public function doWebReclassify(){
+        $this->__web(__FUNCTION__);
     }
 
 /***************************** Mobile方法 ******************************** */
@@ -453,6 +473,20 @@ class fy_lessonv2ModuleSite extends WeModuleSite {
         $this->__mobile(__FUNCTION__);
     }
 
+    /* 科普 */
+    public function doMobileScience(){
+        $this->__mobile(__FUNCTION__);
+    }
+
+    /*  充值 */
+    public function doMobileRecharge(){
+        $this->__mobile(__FUNCTION__);
+    }
+
+    public function doMobileOp(){
+        $this->__mobile(__FUNCTION__);
+    }
+
 /************************************************ 公共方法 ************************************ */
     public function __web($f_name) {
         global $_W, $_GPC;
@@ -579,30 +613,31 @@ class fy_lessonv2ModuleSite extends WeModuleSite {
 					$data['validity'] = time()+86400*$lessonorder['validity'];
 				}
                 if (pdo_update($this->table_order, $data, array('id' => $orderid))) {
+
                     /* 增加课程购买人数和减少库存 */
                     $this->updateLessonNumber($lessonorder, $setting);
-					
+
 					/* 订单金额加入今日销售额汇总表 */
 					$this->staticAmount($uniacid, 2, $lessonorder['price']);
-					
+
 					/* 判断分销员状态变化 */
 					$this->checkAgentStatus($lessonmember, $comsetting, $lessonorder['price']);
-					
+
                     /* 一级佣金 */
                     if ($lessonorder['member1'] > 0 && $lessonorder['commission1'] > 0) {
                     	$this->sendCommissionToUser($uniacid, $lessonorder['member1'], $lessonmember, 2, $setting, $lessonorder, $lessonorder['commission1'], 1);
                     }
-					
+
 					/* 二级佣金 */
                     if ($lessonorder['member2'] > 0 && $lessonorder['commission2'] > 0) {
                         $this->sendCommissionToUser($uniacid, $lessonorder['member2'], $lessonmember, 2, $setting, $lessonorder, $lessonorder['commission2'], 2);
                     }
-					
+
 					/* 三级佣金 */
                     if ($lessonorder['member3'] > 0 && $lessonorder['commission3'] > 0) {
                         $this->sendCommissionToUser($uniacid, $lessonorder['member3'], $lessonmember, 2, $setting, $lessonorder, $lessonorder['commission3'], 3);
                     }
-					
+
                     /* 讲师分成 */
                     if ($lessonorder['price'] > 0 && $lessonorder['teacher_income'] > 0) {
                         $this->sendCommissionToTeacher($uniacid, $lessonorder, $setting);
@@ -612,26 +647,21 @@ class fy_lessonv2ModuleSite extends WeModuleSite {
                     if ($lessonorder['price'] > 0 && $lessonorder['company_uid'] > 0 && $lessonorder['company_income'] > 0) {
                         $this->sendCommissionToCompany($uniacid, $lessonorder, $setting);
                     }
-					
-                    
+
 					/* 购买成功模版消息通知用户 */
-					$this->sendMessageToUser($uniacid, $setting, $lessonorder, 2, $validity="");
+					//$this->sendMessageToUser($uniacid, $setting, $lessonorder, 2, $validity="");
 					/* 新课程订单提醒(管理员) */
-					$this->sendOrderMessageToAdmin($setting, $lessonorder, 2);
-					
+					//$this->sendOrderMessageToAdmin($setting, $lessonorder, 2);
                     /* 赠送积分操作 */
                     if ($lessonorder['integral'] > 0) {
                     	$this->handleUserIntegral($type=2, $lessonorder['ordersn'], $lessonorder['uid'], $lessonorder['integral']);
                     }
-
 					/* 给用户发放优惠券 */
 					$this->sendCouponByBuyLesson($lessonmember, $setting);
-
 					/* 判断是否分享订单 */
                     $this->share_order($uniacid, $lessonorder['uid'], $lessonorder['lessonid']);
                 }
             }
-
             if ($params['from'] == 'return') {
                 message("购买课程成功！", $this->createMobileUrl('lesson', array('id'=>$lessonorder['lessonid'], 'ispay'=>1)), 'success');
             }
@@ -845,6 +875,7 @@ class fy_lessonv2ModuleSite extends WeModuleSite {
 		$tplmessage = pdo_fetch("SELECT buysucc,buysucc_format FROM " .tablename($this->table_tplmessage). " WHERE uniacid=:uniacid", array(':uniacid'=>$uniacid));
 		$buysucc_format = json_decode($tplmessage['buysucc_format'], true);
 
+         $remark = "";
 	 	if($type==1){
 	 		$url = $_W['siteroot'] . "app/index.php?i={$uniacid}&c=entry&do=vip&m=fy_lessonv2";
 			$orderContent = "开通/续费[{$order['level_name']}]服务-{$order['viptime']}天";

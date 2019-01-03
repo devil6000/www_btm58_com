@@ -567,7 +567,6 @@ video::-webkit-media-controls-fullscreen-button {
 	position: fixed;
 	z-index: 111;
 }
-
 .contact-wrap {
 	overflow-x: hidden;
 	overflow-y: scroll;

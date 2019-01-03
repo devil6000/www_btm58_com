@@ -18,26 +18,28 @@
 {if $op == 'display'}
 <div class="confirm-order">
 	<div class="addorder_good ">
-		<div class="good" onclick="location.href = '{php echo $this->createMobileUrl('lesson', array('id'=>$order['lessonid']));}'">
+		{loop $order_parent $parent}
+		<div class="good" onclick="location.href = '{php echo $this->createMobileUrl('lesson', array('id'=>$parent['lessonid']));}'">
 			<div class="img">
-				<img src="{$_W['attachurl']}{$order['images']}">
+				<img src="{$_W['attachurl']}{$parent['images']}">
 			</div>
 			<div class="info">
 				<div class="inner">
-					<div class="name">{$order['bookname']}</div>
+					<div class="name">{$parent['bookname']}</div>
 					<p style="font-size:12px;color:#B3B3B3;">
-						{if $order['lesson_type']=='0'}
-							规格：{php echo $order['spec_day']>0 ? $order['spec_day'].'天' : '长期有效';}
+						{if $parent['lesson_type']=='0'}
+							规格：{php echo $parent['spec_day']>0 ? $parent['spec_day'].'天' : '长期有效';}
 						{else}
-							已选：{$order['spec_name']}
+							已选：{$parent['spec_name']}
 						{/if}
 					</p>
 				</div>
 			</div>
 			<div class="price">
-				<div class="pnum">￥<span class="marketprice">{$order['price']}</span></div>
+				<div class="pnum">￥<span class="marketprice">{$parent['price']}</span></div>
 			</div>
 		</div>
+		{/loop}
 	</div>
 
 	{if $order['status']>=1 && $order['lesson_type']==1}
@@ -91,6 +93,9 @@
 				</span>
 			</div>
 			{/if}
+			<div class="line">
+				订单金额<span>￥{$order['price']}</span>
+			</div>
 		</div>
 	</div>
 	

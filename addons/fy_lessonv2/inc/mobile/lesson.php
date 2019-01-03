@@ -98,7 +98,8 @@ if($uid>0){
 	$collect = pdo_fetch("SELECT * FROM " .tablename($this->table_lesson_collect). " WHERE uniacid=:uniacid AND uid=:uid AND outid=:outid AND ctype=:ctype LIMIT 1", array(':uniacid'=>$uniacid,':uid'=>$uid,':outid'=>$id,':ctype'=>1));
 
 	/* 查询是否购买该课程 */
-	$isbuy = pdo_fetch("SELECT * FROM " .tablename($this->table_order). " WHERE uid=:uid AND lessonid=:lessonid AND status>=:status AND paytime>:paytime AND is_delete=:is_delete ORDER BY id DESC LIMIT 1", array(':uid'=>$uid,':lessonid'=>$id,':status'=>1,':paytime'=>0,':is_delete'=>0));
+	//$isbuy = pdo_fetch("SELECT * FROM " .tablename($this->table_order). " WHERE uid=:uid AND lessonid=:lessonid AND status>=:status AND paytime>:paytime AND is_delete=:is_delete ORDER BY id DESC LIMIT 1", array(':uid'=>$uid,':lessonid'=>$id,':status'=>1,':paytime'=>0,':is_delete'=>0));
+    $isbuy = pdo_fetch("SELECT * FROM " .tablename($this->table_order). " WHERE uid=:uid AND lesson_ids LIKE :lessonid AND status>=:status AND paytime>:paytime AND is_delete=:is_delete ORDER BY id DESC LIMIT 1", array(':uid'=>$uid,':lessonid'=>'%,' . $id . ',%',':status'=>1,':paytime'=>0,':is_delete'=>0));
 
     /* 查看是否已经兑换该课程 */
     $isshare = pdo_fetch('SELECT * FROM ' . tablename($this->table_lesson_share_userd) . ' WHERE uid=:uid AAND lessonid=:lessonid LIMIT 1', array(':uid'=>$uid,':lessonid'=>$id));
@@ -369,6 +370,7 @@ foreach($evaluate_list as $key=>$value){
 	}
 }
 
+
 $total = pdo_fetchcolumn("SELECT COUNT(*) FROM " . tablename($this->table_evaluate) . " WHERE lessonid=:lessonid AND status=:status", array(':lessonid'=>$id,':status'=>1));
 
 /* 下载列表 */
@@ -427,6 +429,22 @@ if($op=='display'){
 			$now_service = $service[$rand];
 		}
 	}
+
+	/* 章节，按照章节分类来 */
+    $section_total = count($section_list);
+    $section_tmp = $section_list;
+    $section_list = array();
+    foreach($section_tmp as $key => $item){
+        if(empty($section_list[$item['rid']])){
+            if($item['rid'] > 0){
+                $name = pdo_fetchcolumn('SELECT name FROM ' . tablename('fy_lesson_reclassify') . ' WHERE id=:id', array(':id' => $item['rid']));
+            }else{
+                $name = '';
+            }
+            $section_list[$item['rid']]['name'] = $name;
+        }
+        $section_list[$item['rid']]['list'][] = $item;
+    }
 
 	if($section['sectiontype']==2 && $sectionid>0){/* 图文章节 */
 		include $this->template('lesson_article');

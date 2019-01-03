@@ -86,7 +86,7 @@ function checkauth() {
 			$GLOBALS['engine']->died("抱歉，您需要先登录才能使用此功能，点击此处 <a href='".__buildSiteUrl(url('auth/login')) ."'>【登录】</a>");
 		}
 	}
-	
+
 	$forward = base64_encode($_SERVER['QUERY_STRING']);
 	if($_W['isajax']) {
 		$result = array();
@@ -96,6 +96,7 @@ function checkauth() {
 	} else {
 		header("location: " . url('auth/login', array('forward' => $forward)), true);
 	}
+
 	exit;
 }
 

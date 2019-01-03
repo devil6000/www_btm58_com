@@ -1,0 +1,181 @@
+{template '_headerv2'}
+
+<link href="{MODULE_URL}template/mobile/style/cssv2/chapter-test.css?v={$versions}" rel="stylesheet" />
+<div class="content-inner" style="min-height:100%;">
+    <div class="question-box">
+        <span class="question-num">第{$page}题/共{$count}题</span>
+        {if $praxis['audiourl']}
+        <label class="read-btn">
+            <img class="notice-image" src="{MODULE_URL}template/mobile/images/notice-white.png">点击读题</label>
+            <audio id="audio" src="{$praxis['audiourl']}">系统不支持 audio</audio>
+        </label>
+        {/if}
+        <span class="question-text">{php echo htmlspecialchars_decode($praxis['subject'])}</span>
+        {if $praxis['voideurl']}
+        <video src="{$praxis['voideurl']}" controls></video>
+        {/if}
+    </div>
+
+    <!-- 答案 -->
+    <div class="answer-select">
+        {if $praxis['answer_a']}
+        <div data-correct="A" class="answer-one">
+            <span>A:</span>
+            <label></label>
+        </div>
+        {/if}
+        {if $praxis['answer_b']}
+        <div data-correct="B" class="answer-one">
+            <span>B:</span>
+            <label></label>
+        </div>
+        {/if}
+        {if $praxis['answer_c']}
+        <div data-correct="C" class="answer-one">
+            <span>C:</span>
+            <label></label>
+        </div>
+        {/if}
+        {if $praxis['answer_d']}
+        <div data-correct="D" class="answer-one">
+            <span>D:</span>
+            <label></label>
+        </div>
+        {/if}
+        <div class="button-box">
+            <button id="submit_btn" class="submit-btn">提交</button>
+            <button id="prev_btn" class="btn-o" style="display: none;">上一题</button>
+            <button id="resubmit_btn" class="btn-o" style="display: none;">重测</button>
+            <button id="next_btn" class="btn-o" style="display: none;">下一题</button>
+            <button id="score_btn" class="btn-o" style="display: none;">查看结果</button>
+        </div>
+        <input type="hidden" id="id" value="{$praxis['id']}" />
+        <input type="hidden" id="page" value="{$page}" data-count="{$count}" />
+    </div>
+</div>
+
+<div id="corrent_dialog" class="bottom-dialog" style="display: none;">
+    <span class="tip-title">{$praxis['correct_mark']}</span>
+    <div class="tip-correct">
+        <img src="{MODULE_URL}template/mobile/images/correct.png" alt="">
+        <span>正确，继续下一节</span>
+    </div>
+</div>
+
+<div id="error_dialog" class="bottom-dialog warn-color" style="display: none;">
+    <span class="tip-title">{$praxis['correct_mark']}</span>
+    <div class="tip-error">
+        <img src="{MODULE_URL}template/mobile/images/error.png" alt="">
+        <span>错误，再试一次</span>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function () {
+    $('.read-btn').click(function (e) {
+        var aduio = $('#audio')[0];
+        if(aduio.paused){
+            aduio.play();
+        }else{
+            aduio.pause();
+        }
+    });
+
+    $('.answer-one').click(function () {
+        var lab = $(this).children('label');
+        $('.answer-one').removeClass('trues').find('label').removeClass('select-circle');
+        lab.addClass('select-circle');
+        $(this).addClass('trues');
+    });
+
+    $('.submit-btn').click(function () {
+        var btn = $(this);
+        if(btn.attr('submit') == 1){
+            return;
+        }
+
+        $(this).attr('submit',1);
+
+        var answer = '';
+        $('.answer-one').each(function () {
+            var lab = $(this).children('label');
+            if(lab.attr('class') == 'select-circle'){
+                answer = $(this).data('correct');
+            }
+        });
+
+        if(answer == ''){
+            alert('请选择答案!');
+            btn.removeAttr('submit');
+            return false;
+        }
+
+        var page = $('#page').val();
+        var count = $('#page').data('count');
+
+        var id = $('#id').val();
+        var url = "{php echo $this->createMobileUrl('praxis', array('op' => 'ajaxpost'))}";
+        $.ajax({
+            url: url,
+            data: {'id': id,'answer': answer},
+            dataType: 'json',
+            success:function (res) {
+                if(res == 1){   //正确
+                    $('#corrent_dialog').show();
+                }else{  //错误
+                    $('#error_dialog').show();
+                }
+
+                btn.removeAttr('submit');
+                btn.hide();
+
+                if(page > count){
+                    page = count;
+                }
+
+                if(page == count){  //最后一题
+                    $('#score_btn').show();
+                    if(count > 1){
+                        $('#prev_btn').show();
+                        $('#next_btn').show();
+                    }
+                    if(res != 1){
+                        $('#resubmit_btn').show();
+                    }
+                }else{
+                   $('#score_btn').hide();
+                   if(res != 1){
+                       $('#resubmit_btn').show();
+                   }
+                   if(page > 1){
+                       $('#prev_btn').show();
+                   }
+                   if(count > 1){
+                       $('#next_btn').show();
+                   }
+                }
+            }
+        });
+    });
+
+    $('.corrent_dialog').click(function () {
+        $(this).hide();
+    });
+
+    $('#prev_btn').click(function () {
+        var page = parseInt($('#page').val()) - 1;
+        window.location.href = "{php echo $this->createMobileUrl('praxis')}&page=" + page;
+    });
+
+    $('#next_btn').click(function () {
+        var page = parseInt($('#page').val()) + 1;
+        window.location.href = "{php echo $this->createMobileUrl('praxis')}&page=" + page;
+    });
+    $('#resubmit_btn').click(function () {
+        var page = $('#page').val();
+        window.location.href = "{php echo $this->createMobileUrl('praxis')}&page=" + page;
+    })
+});
+</script>
+
+{template '_footerv2'}
