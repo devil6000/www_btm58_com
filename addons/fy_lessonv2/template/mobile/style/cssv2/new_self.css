@@ -1,11 +1,11 @@
 @media screen and (max-width:414px) {
 	html {
-		font-size: 100px
+		/*font-size: 100px*/
 	}
 }
 @media screen and (min-width:520px) {
 	html {
-		font-size: 126px
+		/*font-size: 126px*/
 	}
 }
 @keyframes wave-animation-1 {

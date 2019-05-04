@@ -1,0 +1,68 @@
+/**
+没有数据
+ */
+.no-data {
+    display: none;
+}
+
+.no-data img {
+    display: block;
+    width: 11.3125rem;
+    height: 9.375rem;
+    margin: 6.5625rem auto 1rem auto;
+}
+
+.no-data span {
+    display: block;
+    text-align: center;
+    color: #23E29D;
+    font-size: .9375rem;
+}
+
+/**
+底部
+ */
+.nav-content {
+    height: 4.0625rem;
+    border-top: 1px solid #d3d5db;
+    position: fixed;
+    background: #fff;
+    bottom: 0;
+    left: 0;
+    z-index: 5;
+    display: flex;
+    width: 100%;
+    align-items: flex-end;
+    box-shadow: 0 0 12px -5px #999;
+}
+
+.nav-content .label-box {
+    width: calc(100% / 3);
+    height: 100%;
+    font-size: .75rem;
+    color: #B1B1B3;
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.nav-content .label-box i {
+    height: 1.5625rem;
+    width: 1.5625rem;
+    font-size: 1.5625rem;
+}
+
+.nav-content .label-box img {
+    height: 1.5625rem;
+    width: 1.5625rem;
+}
+
+.nav-content .label-box span {
+    display: block;
+    margin: .1875rem 0 0 0;
+}
+
+.tab-color {
+    color: #23E29D !important;
+}

@@ -49,33 +49,49 @@
 body {
   margin: 0;
   overflow-x: hidden;
-  background: #f1f1f1;
+  background: #F7F7F7;
+}
+.discuss-list {
+  margin-top: .9375rem;
+}
+.discuss-list .discuss-one:last-of-type {
+  border: 0 !important;
 }
 .discuss-list .discuss-one {
-  height: 2.375rem;
+  height: 2.8125rem;
   display: flex;
-  margin-bottom: .625rem;
+  /* margin-bottom: .625rem; */
   background: #fff;
-  padding: .84375rem .96875rem;
-  flex-direction: column;
-  justify-content: center;
+  border-bottom: 1px solid #F3F3F3;
+  padding: 0 1.25rem 0 .9375rem;
+  /* flex-direction: column; */
+  justify-content: space-between;
+  align-items: center;
 }
 
 .discuss-list .discuss-one .title-box {
-  font-size: 1rem;
-  font-family: PingFang-SC-Medium;
-  font-weight: 500;
-  color: #333;
-  margin-bottom:.65625rem;
+  font-size: .9375rem;
+  /* font-family: PingFang-SC-Medium;
+  font-weight: 500; */
+  color: #454346;
+  /* margin-bottom:.65625rem; */
 }
-
+.discuss-list .discuss-one .title-box img {
+  width: .9375rem;
+  height: .9375rem;
+  margin-right: .875rem;
+}
 .discuss-list .discuss-one .my-info {
-  font-size: .875rem;
-  font-family: PingFang-SC-Medium;
-  font-weight: 500;
-  color: #666;
+  font-size: .75rem;
+  /* font-family: PingFang-SC-Medium;
+  font-weight: 500; */
+  color: #B1B1B3;
 }
-
-.discuss-list .discuss-one .my-info .time-box {
+.discuss-list .discuss-one .my-info img {
+  width: .75rem;
+  height: .75rem;
+  margin-right: .625rem;
+}
+/* .discuss-list .discuss-one .my-info .time-box {
   margin-left: 1.15625rem;
-}
+} */

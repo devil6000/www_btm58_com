@@ -36,8 +36,8 @@ $(function () {
         var chtml = '';
         for (var j = 0; j < result.length; j++) {
             chtml += '<div class="discuss-one">';
-            chtml += '	<span class="title-box">' + result[j].title + '</span>';
-            chtml += '  <span class="my-info">' + result[j].nickname + '<span class="time-box">' + result[j].addtime + '</span></span>';
+            chtml += '	<span class="title-box"><img src="{MODULE_URL}template/mobile/images/discuss-left.png"> 讨论：' + result[j].title + '</span>';
+            chtml += '  <span class="my-info"><img src="{MODULE_URL}template/mobile/images/time-logo.png">' + result[j].addtime + '</span>';
             chtml += '</div>';
         }
         mainDiv.append(chtml);

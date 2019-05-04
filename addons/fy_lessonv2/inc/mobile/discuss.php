@@ -57,7 +57,10 @@ if($op == 'display'){
             if(!empty($item['imgs'])){
                 $images = unserialize($item['imgs']);
                 if(!empty($images)){
-                    $item['images'] = $images;
+                    foreach ($images as $k => $img){
+                        $item['images'][] = tomedia($img);
+                    }
+                    //$item['images'] = tomedia($images);
                 }
             }
 
@@ -100,7 +103,8 @@ if($op == 'display'){
         $result["url"]      = $file["url"];
         $result["error"]    = 0;
         $result["filename"] = $file["path"];
-        $result["url"]      = '/attachment/' . $result['filename'];
+        //$result["url"]      = '/attachment/' . $result['filename'];
+        $result["url"] = tomedia($result['filename']);
         /*
         pdo_insert("core_attachment", array(
             "uniacid" => $uniacid,
@@ -130,6 +134,12 @@ if($op == 'display'){
     $cid = intval($_GPC['cid']);
     $comments = $_GPC['comments'][0];
 
+    $info = pdo_fetch('SELECT * FROM ' . tablename($this->table_discuss) . ' WHERE id=:id AND status=1', array(':id' => $cid));
+    if(empty($info)){
+        echo 0;
+        exit;
+    }
+
     $insert_data = array(
         'uniacid' => $uniacid,
         'uid' => $uid,
@@ -153,8 +163,29 @@ if($op == 'display'){
     }
 
     //评论获取积分
-    $update['credit1'] = 5;
-    pdo_update($this->table_mc_members, $update,array('uid' => $uid, 'uniacid' => $uniacid));
+    if($info['is_credit'] > 0){
+        $credit = pdo_fetch('SELECT credit1,credit2 FROM ' . tablename($this->table_mc_members) . ' WHERE uid=:uid AND uniacid=:uniacid', array(':uid' => $uid, ':uniacid' => $uniacid));
+        if($info['is_credit'] == 1){
+            $update['credit1'] = $credit['credit1'] + $info['credit'];
+        }elseif ($info['is_credit'] == 2){
+            $update['credit2'] = $credit['credit2'] + $info['credit'];
+        }
+        pdo_update($this->table_mc_members, $update,array('uid' => $uid, 'uniacid' => $uniacid));
+
+        $record = array(
+            'uid'   => $uid,
+            'uniacid'   => $uniacid,
+            'credittype'    => $info['is_credit'] == 1 ? 'credit1' : 'credit2',
+            'num'   => $info['credit'],
+            'operator'  => $_W['uid'],
+            'clerk_id'  => 1,
+            'clerk_type'    => 2,
+            'createtime'    => time(),
+            'remark'    => '讨论话题:' . $info['title'] . ': 添加' . $info['credit'] . ($info['is_credit'] == 1 ? '积分' : '元'),
+            'real_uniacid'  => $uniacid
+        );
+        pdo_insert('mc_credits_record', $record);
+    }
 
     echo 1;
     exit;

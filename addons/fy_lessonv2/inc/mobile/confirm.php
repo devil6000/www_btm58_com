@@ -8,7 +8,7 @@
  * 这不是一个自由软件！不允许对程序代码以任何形式任何目的的再发布，作者将保留
  * 追究法律责任的权力和最终解释权。
  */
- 
+
 checkauth();
 
 $title = "确认下单";
@@ -98,6 +98,7 @@ foreach($lesson_list as $item){
         $user_info = json_decode($setting['user_info']);
         $jumpurl = $this->createMobileUrl('writemsg', array('lessonid'=>$id, 'spec_id'=>$spec_id));
 
+        /*
         if(in_array('mobile',$user_info) && empty($member['mobile'])){
             message("请完善您的个人信息", $jumpurl, "warning");
         }
@@ -122,6 +123,7 @@ foreach($lesson_list as $item){
         if(in_array('address',$user_info) && empty($member['address'])){
             message("请完善您的个人信息", $jumpurl, "warning");
         }
+        */
     }
 
     $lesson_price += $spec['spec_price'];   //课程总金额

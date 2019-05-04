@@ -1218,6 +1218,13 @@ function addclassToRec(obj){
 					</div>
 				</div>
 				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">同时购图片</label>
+					<div class="col-sm-9">
+						{php echo tpl_form_field_image('thumb', $while['thumb'])}
+						<span class="help-block">建议尺寸 200px * 200px，也可根据自己的实际情况做图片尺寸</span>
+					</div>
+				</div>
+				<div class="form-group">
 					<label class="col-xs-12 col-sm-3 col-md-2 control-label">排序</label>
 					<div class="col-sm-9">
 						<input type="text" name="displayorder" value="{$while['displayorder']}" class="form-control" />
@@ -1228,6 +1235,13 @@ function addclassToRec(obj){
 					<label class="col-xs-12 col-sm-3 col-md-2 control-label">价格</label>
 					<div class="col-sm-9">
 						<input type="text" class="form-control" value="{$while['price']}" readonly />
+						<div class="help-block">同时购价格在管理活动中设置</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">原价</label>
+					<div class="col-sm-9">
+						<input type="text" class="form-control" value="{$while['markprice']}" readonly/>
 						<div class="help-block">同时购价格在管理活动中设置</div>
 					</div>
 				</div>
@@ -1417,6 +1431,15 @@ function addclassToRec(obj){
 									<div class="form-controls col-sm-10">
 										<div class="input-group">
 											<input type="text" name="discount" value="" class="form-control ng-pristine ng-untouched ng-valid ng-not-empty" placeholder="请输入价格">
+											<a href="javascript:;" class="input-group-addon">元</a>
+										</div>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="control-label col-sm-2">原价</label>
+									<div class="form-controls col-sm-10">
+										<div class="input-group">
+											<input type="text" name="markprice" value="" class="form-control ng-pristine ng-untouched ng-valid ng-not-empty" placeholder="请输入价格">
 											<a href="javascript:;" class="input-group-addon">元</a>
 										</div>
 									</div>

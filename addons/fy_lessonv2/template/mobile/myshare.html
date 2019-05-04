@@ -11,7 +11,7 @@
     <div class="change-total">
         <span class="explain-box">把课程分享给朋友后，如果朋友成功购买了您分享的课程，您将获得一次免费兑换下列课程的奖励，比如邀请10人就可以获取免费10次选择课程的奖励。</span>
         <div class="label-box">
-            <label class="right-distance">已经兑换{$count}次</label>
+            <label class="right-distance green-color">已经兑换{$count}次</label>
             <label>剩余{$residue}次兑换</label>
         </div>
     </div>
@@ -63,17 +63,18 @@ $(function () {
         for(var j = 0; j < result.length; j++) {
             chtml += '<div class="box-one">';
             chtml += '	<img class="box-left" src="' + attachUrl+result[j].images + '" alt="' + result[j].bookname + '">';
-            chtml += '	<div class="box-right">';
-            chtml += '		<span class="top-text">' + result[j].bookname + '</span>';
-            chtml += '      <span class="middle-text">' + result[j].difficulty + '</span>';
-            chtml += '      <span class="bottom-text">¥ ' + result[j].price + '</span>';
+            chtml += '  <div class="box-right">';
+            chtml += '      <span class="top-text">' + result[j].bookname + '</span>';
+            chtml += '      <div class="bottom-line">';
+            chtml += '          <span class="bottom-text">¥ ' + result[j].price + '</span>';
             if(result[j].share_flag == 0){
-                chtml += '      <label class="btn-box not-exchange" onclick="exchange(' + result[j].id + ')">免费兑换</label>';
+                chtml += '      <label class="not-exchange btn-box" onclick="exchange(' + result[j].id + ')">免费兑换</label>';
             }else if(result[j].share_flag == 1){
-                chtml += '      <label class="have-exchange btn-box ">已兑换</label>';
+                chtml += '      <label class="have-exchange btn-box">已兑换</label>';
             }else if(result[j].share_flag == 2){
-                chtml += '      <label class="have-exchange btn-box ">已购买</label>';
+                chtml += '      <label class="have-exchange btn-box">已购买</label>';
             }
+            chtml += '      </div>';
             chtml += '  </div>';
             chtml += '</div>';
         }

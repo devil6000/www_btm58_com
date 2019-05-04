@@ -80,13 +80,34 @@ if(empty($discount_banner)){
 /* 同时购 */
 $meanwhile_banner = $this->readCommonCache('fy_lesson_' . $uniacid . '_index_meanwhile_banner');
 if(empty($meanwhile_banner)){
-    $meanwhile = pdo_fetchall('SELECT * FROM ' . tablename($this->table_lesson_meanwhile) . ' WHERE uniacid=:uniacid ORDER BY displayorder DESC, id DESC LIMIT 1', array(':uniacid' => $uniacid));
+    $meanwhile = pdo_fetchall('SELECT * FROM ' . tablename($this->table_lesson_meanwhile) . ' WHERE uniacid=:uniacid ORDER BY displayorder DESC, id DESC LIMIT 2', array(':uniacid' => $uniacid));
     if($meanwhile){
         foreach($meanwhile as $key => $item){
             $meanwhile_banner[$key]['meanwhile'] = $item;
-            $meanwhile_banner[$key]['list'] = pdo_fetchall('SELECT p.bookname,p.price,c.name,s.spec_price,m.spec_id FROM ' . tablename($this->table_meanwhile_lesson) . ' m LEFT JOIN ' . tablename($this->table_lesson_parent) . ' p ON m.lesson_id=p.id LEFT JOIN ' . tablename($this->table_category) . ' c ON p.pid=c.id LEFT JOIN ' . tablename($this->table_lesson_spec) . ' s ON m.spec_id=s.spec_id WHERE m.meanwhileid=:id', array(':id' => $item['id']));
+            $meanwhile_banner[$key]['list'] = pdo_fetchall('SELECT p.id,p.bookname,p.price,c.name,s.spec_price,m.spec_id FROM ' . tablename($this->table_meanwhile_lesson) . ' m LEFT JOIN ' . tablename($this->table_lesson_parent) . ' p ON m.lesson_id=p.id LEFT JOIN ' . tablename($this->table_category) . ' c ON p.pid=c.id LEFT JOIN ' . tablename($this->table_lesson_spec) . ' s ON m.spec_id=s.spec_id WHERE m.meanwhileid=:id', array(':id' => $item['id']));
+        	foreach($meanwhile_banner[$key]['list'] as & $meanwhile_banner_list){
+			    $lessonorder = pdo_fetch("SELECT * FROM " . tablename($this->table_order) . " WHERE status>0 and status<2 and uid=:uid and is_delete=0 and lesson_ids like :ids and validity>=:time LIMIT 1", array(':uid'=>$uid,':ids' => '%,' . $meanwhile_banner_list['id'] . ',%', ':time' => time()));
+        		if(!empty($lessonorder)){
+        			$meanwhile_banner[$key]['buystatus'] = 1;
+        			$meanwhile_banner_list['buystatus'] = 1;
+        		}
+        	}
+        	unset($meanwhile_banner_list);
         }
         cache_write('fy_lesson_'.$uniacid.'_index_meanwhile_banner', $meanwhile_banner);
+    }
+}
+else{
+	foreach($meanwhile_banner as $key => $item){
+       	foreach($item['list'] as & $meanwhile_banner_list){
+       		
+		    $lessonorder = pdo_fetch("SELECT * FROM " . tablename($this->table_order) . " WHERE status>0 and status<2 and uid=:uid and is_delete=0 and lesson_ids like :ids and validity>=:time LIMIT 1", array(':uid'=>$uid,':ids' => '%,' . $meanwhile_banner_list['id'] . ',%', ':time' => time()));
+       		if(!empty($lessonorder)){
+       			$meanwhile_banner[$key]['buystatus'] = 1;
+       			$meanwhile_banner_list['buystatus'] = 1;
+       		}
+       	}
+       	unset($meanwhile_banner_list);
     }
 }
 

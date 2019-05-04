@@ -54,6 +54,8 @@ create table `ims_fy_discuss`(
   `addtime` int(6) default 0,
   `status` tinyint(1) null default 0 comment '是否开启',
   `displayorder` int(4) null default 0 comment '排序',
+  `is_credit` tinyint(1) null default 0 comment '是否开启讨论获取积分或余额，1获取积分，2获取余额',
+  `credit` decimal(10,2) null default 0 comment '积分或余额值',
   PRIMARY KEY (`id`)
 );
 
@@ -198,6 +200,8 @@ create table `ims_fy_lesson_meanwhile`(
   `displayorder` int(4) null default 0 comment '排序',
   `status` tinyint(1) null default 0,
   `addtime` int(6) null,
+  `thumb` varchar(255) null,
+  `markprice` decimal(10,2) null default 0,
   primary key(`id`)
 );
 

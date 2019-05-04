@@ -8,63 +8,44 @@
  * 追究法律责任的权力和最终解释权。
 -->
 {template '_headerv2'}
-<style>
-.weui_tab{overflow-y: scroll;}
-.weui_tabbar{position: fixed;}
-.submit_list{margin-top:15px;}
-.submit_list .bookname{position: absolute; bottom: 17px; left: 0; width: 120px; height: 16px; font-size: 12px; color: #fff; background-color: rgba(0, 0, 0, .7); text-align: center;}
-.submit_list .item h3{max-height: 23px;}
-.fr{margin-top: -5px;}
-.mylesson-btn {display: inline-block;width: 80px;height: 30px; border-radius: 5px;text-align: center;line-height: 32px;color: #fff;font-size: 14px;margin-left: 5px;}
-.cancle-btn{background-color:#a0a0a0;}
-.pay-btn{background-color:#f23030;}
-.evaluate-btn{background-color:#326fde;}
-.verify-btn{background-color:#1da167;}
-</style>
+<link href="{MODULE_URL}template/mobile/style/cssv2/my-study.css?v={$versions}" rel="stylesheet" />
 
 <div class="header-2 cbox">
 	<a href="javascript:history.go(-1);" class="ico go-back"></a>
 	<div class="flex title" style="max-width:80%;">{$title}</div>
 </div>
 
-<!-- 顶部导航  -->
-<ul class="tab_wrap">
-	<li class="tab_item {if $_GPC['status']==''}tab_item_on{/if}">
-		<a href="{php echo $this->createMobileUrl('mylesson');}&status=">全部课程</a>
-	</li>
-	<li class="tab_item {if $_GPC['status']=='0'}tab_item_on{/if}">
-		<a href="{php echo $this->createMobileUrl('mylesson', array('status'=>'0'));}">待付款</a>
-	</li>
-	<li class="tab_item {if $_GPC['status']=='1' && $_GPC['is_verify']==''}tab_item_on{/if}">
-		<a href="{php echo $this->createMobileUrl('mylesson', array('status'=>'1'));}">已付款</a>
-	</li>
-	<li class="tab_item {if $_GPC['status']=='1' && $_GPC['is_verify']=='0'}tab_item_on{/if}">
-		<a href="{php echo $this->createMobileUrl('mylesson', array('status'=>'1','is_verify'=>'0'));}">未核销</a>
-	</li>
-</ul>
-<!-- /顶部导航  -->
+<div class="content-inner">
+	<!-- 顶部导航  -->
+	<div class="tab-box">
+		<label class="{if $_GPC['status']==''}select-c{/if}"><a href="{php echo $this->createMobileUrl('mylesson');}&status="><span>全部课程{if $_GPC['status']==''}<img src="{MODULE_URL}template/mobile/images/star.png" alt="">{/if}</span></a></label>
+		<label class="{if $_GPC['status']=='0'}select-c{/if}"><a href="{php echo $this->createMobileUrl('mylesson');}&status=1"><span>待付款{if $_GPC['status']=='0'}<img src="{MODULE_URL}template/mobile/images/star.png" alt="">{/if}</span></a></label>
+		<label class="{if $_GPC['status']=='1' && $_GPC['is_verify']==''}select-c{/if}"><a href="{php echo $this->createMobileUrl('mylesson');}&status=2"><span>已付款{if $_GPC['status']=='1' && $_GPC['is_verify']==''}<img src="{MODULE_URL}template/mobile/images/star.png" alt="">{/if}</span></a></label>
+		<label class="{if $_GPC['status']=='1' && $_GPC['is_verify']=='0'}select-c{/if}"><a href="{php echo $this->createMobileUrl('mylesson', array('status'=>'1','is_verify'=>'0'));}"><span>未核销{if $_GPC['status']=='1' && $_GPC['is_verify']=='0'}<img src="{MODULE_URL}template/mobile/images/star.png" alt="">{/if}</span></a></label>
+	</div>
+	<!-- /顶部导航  -->
 
-<!-- 订单列表  -->
-{if !empty($mylessonlist)}
-<div id="order-list">
-</div>
-{else}
-<div class="my_empty">
-    <div class="empty_bd  my_course_empty">
-        <h3>没有找到任何课程~</h3>
-        <p><a href="{php echo $this->createMobileUrl('index', array('t'=>1));}">到首页去看看</a></p>
-    </div>
-</div>
-{/if}
-<!-- 订单列表  -->
-<div id="loading_div" class="loading_div">
-	<a href="javascript:void(0);" id="btn_Page"><i class="fa fa-arrow-circle-down"></i> 加载更多</a>
-</div>
-<footer>
-    <a href="{php echo $this->createMobileUrl('index', array('t'=>1));}">{$setting['copyright']}</a>
-</footer>
+	<!-- 订单列表  -->
+	{if !empty($mylessonlist)}
+	<div id="list-box" class="list-box"></div>
+	{else}
+	<div class="no-data">
+		<img src="{MODULE_URL}template/mobile/images/no-data.png" alt="">
+		<span>没有找到任何课程</span>
+	</div>
+	{/if}
+	<!-- 订单列表  -->
 
-<div id="loading" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:999999999;"><div class="spinner"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div></div>
+	<div id="loading_div" class="loading_div">
+		<a href="javascript:void(0);" id="btn_Page"><i class="fa fa-arrow-circle-down"></i> 加载更多</a>
+	</div>
+	<footer>
+		<a href="{php echo $this->createMobileUrl('index', array('t'=>1));}">{$setting['copyright']}</a>
+	</footer>
+
+	<div id="loading" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:999999999;"><div class="spinner"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div></div>
+</div>
+
 
 <script type="text/javascript">
 	function GetQueryString(name) {
@@ -109,6 +90,11 @@
 			var chtml = '';
 			for(var j = 0; j < result.length; j++) {
 			    var list = result[j].list;
+				chtml += '<div class="box-one" onclick="goLesson('+ result[j].id +')">';
+				chtml += '	'
+
+
+
 				chtml += '<div class="submit_list" onclick="goLesson('+ result[j].id +')">';
 				for(var z = 0; z < list.length; z++){
                     chtml += '	<div class="item">';

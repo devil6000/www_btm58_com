@@ -72,6 +72,7 @@ foreach($lesson_list as $key => $item){
 
     if ($setting['mustinfo'] && (!$lesson['lesson_type'] || ($lesson['lesson_type'] && $setting['appoint_mustinfo']))) {
         $user_info = json_decode($setting['user_info']);
+        /*
         if(in_array('mobile',$user_info) && empty($member['mobile'])){
             message("请完善您的个人信息", $this->createMobileUrl('writemsg', array('lessonid' => $id)), "warning");
         }
@@ -96,6 +97,7 @@ foreach($lesson_list as $key => $item){
         if(in_array('address',$user_info) && empty($member['address'])){
             message("请完善您的个人信息", $this->createMobileUrl('writemsg', array('lessonid' => $id)), "warning");
         }
+        */
     }
 
     /* 课程规格 */

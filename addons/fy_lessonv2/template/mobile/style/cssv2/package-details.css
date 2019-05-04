@@ -1,0 +1,193 @@
+body {
+margin: 0;
+overflow-x: hidden;
+background: #f1f1f1;
+}
+
+/*说明  */
+/* .title-box {
+height: 3.125rem;
+background: #fff;
+text-align: center;
+line-height: 2.75rem;
+color: #333333;
+font-size: 1.125rem;
+display:block;
+} */
+
+/*分类列表  */
+.classification-list {
+/* padding-left: .9375rem; */
+margin-top: .9375rem;
+/* background: #fff; */
+}
+/* .classification-list .box-one {
+display: flex;
+padding: .75rem 0;
+align-items:center;
+border-bottom: 1px solid #EEEEEE;
+height:5.0625rem;
+position: relative;
+width:100%;
+}
+
+.classification-list .box-one .box-left {
+width: 7.5rem;
+height:5rem;
+border-radius:5px;
+margin-right: .625rem;
+}
+
+.classification-list .box-one .box-right {
+display: flex;
+flex-direction: column;
+justify-content: center;
+width: 60%;
+}
+
+.classification-list .box-one .box-right .top-text {
+font-size: 1rem;
+color: #000000;
+height:2.65625rem;
+overflow:hidden;
+text-overflow:ellipsis;
+display:-webkit-box;
+-webkit-line-clamp:2;
+-webkit-box-orient:vertical;
+}
+
+.classification-list .box-one .box-right  .middle-text {
+color: #999999;
+font-size: .8125rem;
+margin: .21875rem 0;
+}
+
+.classification-list .box-one .box-right .bottom-text {
+font-size: .875rem;
+color: #F43A23;
+}
+.width-small {
+width:3.125rem;
+display:inline-flex;
+
+}
+
+/* 购买按钮 */
+/* .buy-line {
+    display: flex;
+    justify-content: space-between;
+    height: 3.4375rem;
+    padding-right: .9375rem;
+    align-items: center;
+}
+.buy-line .price-box {
+    color: #F7341D;
+    font-size: 1.125rem;
+    font-weight: 500;
+}
+.buy-line .price-box  .original-price {
+    color: #BABABA;
+    font-weight: 500;
+    font-size: 1.0625rem;
+    text-decoration: line-through;
+    margin-left: .59375rem;
+}
+.buy-line .buy-btn {
+    width:4.875rem;
+    height:1.75rem;
+    color: #fff;
+    font-size: .875rem;
+    background:rgba(243,100,83,1);
+    border-radius:5px;
+    text-align: center;
+    line-height: 1.75rem;
+} */
+
+
+.classification-list .box-one {
+    display: flex;
+    padding: 0 .75rem;
+    align-items: center;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow:0px 2px 2px rgba(0,0,0,0.08);
+    height: 7.9375rem;
+    /* width: calc(100% - 1.875rem); */
+    width: calc(100% - 3.375rem);
+   margin: 0 auto .625rem auto;
+  }
+  
+   .classification-list .box-one .box-left {
+    width: 8.75rem;
+    height: 6.0625rem;
+    border-radius: 5px;
+    margin-right: .625rem;
+  }
+  
+   .classification-list .box-one .box-right {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 55%;
+    height: 6.0625rem;
+  }
+  .classification-list .box-one .box-right .top-right_box {
+    display: flex;
+    flex-direction: column;
+  }
+  
+   .classification-list .box-one .box-right .top-right_box .top-text {
+    font-size: .9375rem;
+    color: #454346;
+    /* height: 2.65625rem; */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+  
+   .classification-list .box-one .box-right .bottom-text {
+    color: #FF8353;
+    font-size: 1.125rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .total-price {
+      margin: 1.25rem 4.5rem 4.3125rem 4.5rem;
+      border: 1px solid #FA8D4A;
+      display: flex;
+      border-radius: 50px;
+      align-items: center;
+      justify-content: center;
+      height: 2.375rem;
+      color: #454346;
+      font-size: .9375rem;
+  }
+  .total-price .price-box {
+      color: #FF8353;
+      font-size: 1.125rem;
+      margin-left: .3125rem;
+  }
+  .total-price .original-price {
+    color: #B1B1B3;
+    font-weight: 300;
+    font-size: .75rem;
+    text-decoration: line-through;
+    margin-left: .875rem;
+}
+.buy-btn {
+    /* width:4.875rem; */
+    height:3.0625rem;
+    color: #FFFFFF;
+    font-size: 1.125rem;
+    background:#F55768;
+    border-radius:15px;
+    text-align: center;
+    border-radius: 50px;
+    display: block;
+    margin: 0 1.25rem;
+    line-height: 3.0625rem;
+} 

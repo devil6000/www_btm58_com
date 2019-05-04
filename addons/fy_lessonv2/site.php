@@ -487,6 +487,15 @@ class fy_lessonv2ModuleSite extends WeModuleSite {
         $this->__mobile(__FUNCTION__);
     }
 
+    /* 同时购列表 */
+    public function doMobileMeanwhile(){
+        $this->__mobile(__FUNCTION__);
+    }
+
+    /* 同时购详情 */
+    public function doMobileMeanwhiledetail(){
+        $this->__mobile(__FUNCTION__);
+    }
 /************************************************ 公共方法 ************************************ */
     public function __web($f_name) {
         global $_W, $_GPC;
@@ -503,7 +512,7 @@ class fy_lessonv2ModuleSite extends WeModuleSite {
     public function __mobile($f_name) {
         global $_W, $_GPC;
 		$t = time();
-		$versions = "2.6.70";
+		$versions = "2.7.00";
         $uniacid = $_W['uniacid'];
         $op = $operation = $_GPC['op'] ? $_GPC['op'] : 'display';
 		

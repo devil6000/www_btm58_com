@@ -14,8 +14,142 @@
 <style>
 .fylesson_audio{width:90%; margin:0 auto 0 auto; padding:30px 0;}
 .fylesson_audio p{padding:10px 0}
+
+.tab-box {
+	height: 3.125rem;
+	background: #fff;
+	display: flex;
+	margin-bottom: .9375rem;
+	align-items: center;
+	justify-content: center;
+}
+.tab-box label {
+	width: 100%;
+	font-size: .9375rem;
+	color: #454346;
+	height: 3.125rem;
+	/* line-height: 3.125rem; */
+	display: flex;
+	align-items: center;
+	position: relative;
+	justify-content: center;
+}
+.tab-box label span {
+	position: relative;
+}
+.tab-box label span img {
+	height: .625rem;
+	width: .625rem;
+	position: absolute;
+	right: -.625rem;
+	top: 0;
+}
+.select-c {
+	color: #23E29D !important;
+}
+.select-c::after {
+	content: '';
+	position: absolute;
+	bottom: 0;
+	left: 50%;
+	transform: translateX(-50%);
+	background: #23E29D !important;
+	width: 1.5625rem;
+	height: 2px;
+}
+.download-list {
+	background: #fff;
+	height: calc(100% - 15.875rem);
+	display: flex;
+	padding-left: 1rem;
+	flex-direction: column;
+}
+.download-list  .download-one {
+	display: flex;
+	align-items: center;
+	position: relative;
+	height: 2.75rem;
+	border-bottom: 1px solid #eee;
+	width: 100%;
+}
+.download-list  .download-one .explain-label {
+	width: 2.6875rem;
+	height: 1.5rem;
+	color: #fff;
+	font-size: .8125rem;
+	line-height: 1.5rem;
+	text-align: center;
+	background: #9BAAB9;
+	border-radius:10px;
+	margin-right: .46875rem;
+}
+.download-list  .download-one .download-title {
+	color: #333333;
+	font-size: 1rem;
+}
+.download-list  .download-one .download-btn {
+	width:4.375rem;
+	height:1.5rem;
+	background: #1BB593;
+	border-radius:24px;
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	font-size: .875rem;
+	color: #fff;
+	text-align: center;
+	line-height: 1.5rem;
+	right: .9375rem;
+}
+.bottom-buy {
+	height: 3.0625rem;
+	/* padding: 0 .9375rem; */
+	/* background: #FFFFFF; */
+	display: flex;
+	position: fixed;
+	bottom: 0;
+	width: calc(100%);
+	left: 0;
+	justify-content: center;
+	align-items: center;
+}
+.bottom-buy .btn-other {
+	width: 25%;
+	height: 100%;
+}
+.bottom-buy .btn-other label {
+	display: flex;
+	color: #999999;
+	width: 100%;
+	background: #fff;
+	height: 100%;
+	font-size: .9375rem;
+	justify-content: center;
+	align-items: center;
+}
+.bottom-buy .btn-other label img {
+	width: .9375rem;
+	height: .9375rem;
+	margin-right: .25rem;
+}
+.bottom-buy .buy-btn {
+	width: 50%;
+	height: 100%;
+}
+.bottom-buy .buy-btn label {
+	display: flex;
+	width: 100%;
+	height: 100%;
+	background: #F55768;
+	justify-content: center;
+	color: #fff;
+	font-size: 1.125rem;
+	align-items: center;
+}
 </style>
 
+<div class="mask-box hide" id="mask-box"></div>
+<img src="{MODULE_URL}template/mobile/images/shared-img.png" class="shared-img hide" id="shared-img" alt="">
 <div class="header-2 cbox">
 	<a href="javascript:history.go(-1);" class="ico go-back"></a>
 	<div class="flex title">{$title}</div>
@@ -285,12 +419,11 @@
 	{/if}
 	
 	<!-- 导航目录 S -->
-	<ul class="course-tab">
-		<li {if empty($sectionid) && $setting['lesson_show']==0}class="curr"{/if}>详情</li>
-		<li {if $sectionid>0 || $setting['lesson_show']==1}class="curr"{/if}>章节</li>
-		<!--<li>评价({$total})</li>-->
-		<li>下载</li>
-	</ul>
+	<div class="tab-box">
+		<label {if empty($sectionid) && $setting['lesson_show']==0}class="select-c"{/if}><span>详情{if empty($sectionid) && $setting['lesson_show']==0}<img src="{MODULE_URL}template/mobile/images/star.png" alt="">{/if}</span></label>
+		<label {if $sectionid>0 || $setting['lesson_show']==1}class="select-c"{/if}><span>章节{if $sectionid>0 || $setting['lesson_show']==1}<img src="{MODULE_URL}template/mobile/images/star.png" alt="">{/if}</span></label>
+		<label><span>下载</span></label>
+	</div>
 	<!-- 导航目录 E -->
 
 	<div class="course-container">
@@ -347,7 +480,7 @@
 		<div class="js-tab" style="transform-origin:0px 0px 0px;opacity:1;transform:scale(1,1); {if empty($sectionid) && $setting['lesson_show']==0}display:none;{/if}">
 			<ul class="course-chapter">
 				<li>
-					<h2 class="chapter-title" onclick="location.href='{php echo $this->createMobileUrl('lesson', array('id'=>$lesson['id']));}'"><i></i>{$lesson['bookname']}[共{$section_total}节课]</h2>
+					<h2 class="chapter-title" onclick="location.href='{php echo $this->createMobileUrl('lesson', array('id'=>$lesson['id']));}'"><i></i>{$lesson['bookname']}[共{php echo count($section_list);}节课]</h2>
 					{if $setting['stock_config']==1 && empty($isbuy) && $lesson['price']>0 && $buybtn !='close'}
 					<div>
 						<div class="stock-info">
@@ -402,43 +535,19 @@
 		</div>
 		<!-- 章节目录 E -->
 
-		<!-- 评价列表 S -->
-		<!--
-		<div class="js-tab" style="transform-origin: 0px 0px 0px; opacity: 1; transform: scale(1, 1); display: none;">
-			<div class="swiper-slide swiper-slide-active" style="height:auto;">
-                <div class="details-con shadow" id="comments_box">
-					<ul class="comment" id="evaluate">
-						{if $allow_evaluate}
-						<li class="item" style="padding:.1rem .05rem;text-align:center;">
-							<div class="reply-div">
-								有什么想要说的呢？赶紧
-								<a class="btn btn-default btn-sm" href="{$evaluate_url}">去评价</a>
-								吧~
-							</div>
-						</li>
-						{/if}
-					</ul>
-				</div>
-			</div>
-			<div id="loading_div" class="loading_div">
-				<a href="javascript:void(0);" id="btn_Page"><i class="fa fa-arrow-circle-down"></i> 加载更多</a>
-			</div>
-		</div>
-		-->
-		<!-- 评价列表 E -->
-
 		<!-- 下载列表 S -->
 		<div class="js-tab" style="transform-origin: 0px 0px 0px; opacity: 1; transform: scale(1, 1); display: none;">
-			<ul class="course-sections">
+			<div class="download-list">
 				{if !empty($material)}
 				{loop $material $row}
-				<li>
-					{$row['title']}
-					<i class="section-state-icon"><a href="{php echo $this->createMobileUrl('lesson', array('op'=>'download', 'did'=>$row['id'], 'id' => $lesson['id']));}">下载</a></i>
-				</li>
+				<div class="download-one">
+					<a href="{php echo $this->createMobileUrl('lesson', array('op'=>'download', 'did'=>$row['id'], 'id' => $lesson['id']));}" class="explain-label"><label>视频</label></a>
+					<span class="download-title">{$row['title']}</span>
+					<a href="{php echo $this->createMobileUrl('lesson', array('op'=>'download', 'did'=>$row['id'], 'id' => $lesson['id']));}"><label class="download-btn">下载</label></a>
+				</div>
 				{/loop}
 				{/if}
-			</ul>
+			</div>
 		</div>
 		<!-- 下载列表 E -->
 	</div>
@@ -571,24 +680,28 @@
 </div>
 <!--课程规格end-->
 
-<ul class="d-buynow">
-	<li class="btn-qq"><a href="{php echo $config['service_url'] ? $config['service_url'] : 'javascript:;';}" id="{php echo $config['service_url'] ? 'all-consult' : 'btn-qq';}"><i class="ico ico-lessonqq"></i>分享</a></li>
-	<li class="btn-collect" id="btn-collect"><a href="javascript:;" {if !empty($collect)}class="cur"{/if}><i class="ico ico-collect"></i>收藏</a></li>
-	<li class="btn-phone" id="btn-lxb" style="display: none;"><a href="javascript:;"><i class="ico ico-phone"></i>分享</a></li>
+<div class="bottom-buy">
+	<a id="{php echo $config['service_url'] ? 'all-consult' : 'btn-qq';}" href="{php echo $config['service_url'] ? $config['service_url'] : 'javascript:;';}" class="btn-other">
+		<label><img src="{MODULE_URL}template/mobile/images/shared.png" alt="">分享</label>
+	</a>
+	<a id="btn-collect" href="javascript:;" class="btn-other">
+		<label><img src="{MODULE_URL}template/mobile/images/collection.png" alt="">收藏</label>
+	</a>
 	{if empty($section_list)}
-		<li class="btn-buy"><a href="javascript:;" class="buy buy_now gray"><p class="num"><em class="money"></em>未完善</p></a></li>
+	<a href="javascript:;" class="buy-btn"><label>未更新</label></a>
 	{else}
 		{if $show_isbuy}
-		<li class="btn-buy"><a href="{php echo $study_link ? $study_link : $this->createMobileUrl('lesson', array('id'=>$lesson['id'],'sectionid'=>$section_list[0]['id']));}" class="buy buy_now blue"><p class="num"><em class="money"></em>{php echo $study_name ? $study_name : '开始学习';}</p></a></li>
+			<a href="{php echo $study_link ? $study_link : $this->createMobileUrl('lesson', array('id'=>$lesson['id'],'sectionid'=>$section_list[0]['id']));}" class="buy-btn"><label>{php echo $study_name ? $study_name : '开始学习';}</label></a>
 		{else}
 			{if $setting['stock_config']==1 && $lesson['stock']==0}
-				<li class="btn-buy"><a href="javascript:;" class="buy buy_now gray" style="background-color:#7D7D7D;"><p class="num"><em class="money"></em>已售罄</p></a></li>
+				<a href="javascript:;" class="buy-btn"><label>已售罄</label></a>
 			{else}
-				<li class="btn-buy" {if empty($buynow_link)}id="buy-now"{/if}><a href="{if !empty($buynow_link)}{$buynow_link}{else}javascript:;{/if}" class="buy buy_now red"><p class="num">{php echo $buynow_name ? $buynow_name : '立即购买';}</p></a></li>
+				<a href="{if !empty($buynow_link)}{$buynow_link}{else}javascript:;{/if}" class="buy-btn" {if empty($buynow_link)}id="buy-now"{/if}><label>{php echo $buynow_name ? $buynow_name : '立即购买';}</label></a>
 			{/if}
 		{/if}
 	{/if}
-</ul>
+</div>
+
 {if $setting['isfollow']==2 && $member['follow']==0 && $userAgent}
 <div class="force-contact-main follow_qrcode">
 	<div class="force-contact-content_new">
@@ -794,20 +907,27 @@ $(document).ready(function(){
 
 <script type="text/javascript">
 // “章节”、“课程详情”tab切换
-$(".course-tab").on("click", 'li', function() {
+$(".tab-box").on("click", 'label', function() {
 	var $currItem = $(this),
 	index = $currItem.index();
 
-	$currItem.addClass('curr').siblings().removeClass('curr');
+	$currItem.addClass('select-c').siblings().removeClass('select-c');
+	$currItem.find('span').append('<img src="{MODULE_URL}template/mobile/images/star.png" alt="">');
+	$currItem.siblings().find('img').attr('src','');
 	$(".js-tab").hide().eq(index).show();
 
 });
 
 //展开QQ咨询
 $("#btn-qq").click(function() {
-	// $("#bottom-contact").removeClass("hide");
-	// $("#layer-bg").removeClass("hide");
-	alert("点击右上角的“...”分享");
+	$("#mask-box").removeClass("hide");
+	$("#shared-img").removeClass("hide");
+	// alert("点击右上角的“...”分享");
+});
+$("#mask-box").click(function() {
+	$("#mask-box").addClass("hide");
+	$("#shared-img").addClass("hide");
+	// alert("点击右上角的“...”分享");
 });
 //关闭QQ咨询
 $(".layer-close").click(function() {

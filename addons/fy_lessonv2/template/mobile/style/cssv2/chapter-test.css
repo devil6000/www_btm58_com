@@ -43,7 +43,7 @@
   padding-bottom: 4.46875rem;
 }
 .answer-select .answer-one {
-  height: 6.25rem;
+  height: 4.25rem;
   display: flex;
   margin-top: .625rem;
   align-items: center;
@@ -54,9 +54,9 @@
 }
 
 .answer-select .answer-one .answer-text {
-  height: 5rem;
-  width: 8.75rem;
-  padding: 0 1.25rem;
+  height: 3rem;
+  width: auto;
+  padding: 0 3.5rem;
   font-size: .875rem;
   display: flex;
   color: #333333;
@@ -72,8 +72,8 @@
   height:1.4375rem;
 }
 .answer-select img {
-  width: 8.75rem;
-  height: 5rem;
+  width: 6.75rem;
+  height: 3rem;
 }
 .answer-select label {
   width:1.4375rem;

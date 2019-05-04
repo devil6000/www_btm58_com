@@ -9,10 +9,9 @@
  * ============================================================================
 -->
 {template '_headerv2'}
-<link href="{MODULE_URL}template/mobile/style/cssv2/evaluate.css?v={$versions}" rel="stylesheet" />
+<link href="{MODULE_URL}template/mobile/style/cssv2/evaludate.css?v={$versions}" rel="stylesheet" />
 <link href="{MODULE_URL}template/mobile/style/sweetalert/sweetalert.css?v={$versions}" rel="stylesheet" />
 <script type="text/javascript" src="{MODULE_URL}template/mobile/style/sweetalert/sweetalert.min.js?v={$versions}"></script>
-
 
 <div class="header-2 cbox">
 	<a href="javascript:history.go(-1);" class="ico go-back"></a>
@@ -20,41 +19,27 @@
 </div>
 
 <div class="contaniner fixed-cont">
-	<section class="go-order" style="padding:1% 5%;">
-		<div class="order-shop">
-			<form id="submit_form" method="post" onsubmit="return checksubmit();">
-				<ul style="border:#EFEFEF solid 1px;">
-					<li>
-						<div class="oc-info">
-							<div class="oc-info-l">
-								<img src="{$_W[attachurl]}{$order['images']}">
-							</div>
-							<div class="oc-info-r">
-								<h2>课程:《{$order['bookname']}》</h2>
-								<div>价格:<strong style="color:red;">{$order['price']}</strong> 元</div>
-							</div>
-						</div>
-						<div class="oc-comm">
-							<ul class="oc-comm-ul">
-								<li class="c-f-sku ocm-h" id="ocm-h" onclick="selectedgrade(1);">好评<span></span></li>
-								<li class="c-f-sku ocm-z" id="ocm-z" onclick="selectedgrade(2);">中评<span></span></li>
-								<li class="c-f-sku ocm-c" id="ocm-c" onclick="selectedgrade(3);">差评<span></span></li>
-								<input type="hidden" name="grade" id="grade" value="">
-							</ul>
-						</div>
-						<div class="oc-text">
-							<span class="c-f-textarea"><textarea name="content" placeholder="请输入评论内容，最多300字" maxlength="300"></textarea></span>
-						</div>
-					</li>
-					<li>						
-						<input type="submit" name="submit" value="提交评价" class="allsubmit-btn">
-						<input type="hidden" name="orderid" value="{$orderid}">
-						<input type="hidden" name="token" value="{$_W['token']}">
-					</li>
-				</ul>
-			</form>
+	<form id="submit_form" method="post" onsubmit="return checksubmit();">
+		<div class="discuss-box">
+			<div class="box-one">
+				<img class="box-left" src="{$_W[attachurl]}{$order['images']}">
+				<div class="box-right">
+					<div class="top-right_box"><span class="top-text">{$order['bookname']}</span></div>
+					<span class="bottom-text">价格：<span class="width-small">¥ {$order['price']}</span></span>
+				</div>
+			</div>
+			<div class="label-boxs">
+				<label id="ocm-h" onclick="selectedgrade(1)"><img src="{MODULE_URL}template/mobile/images/good-discuss.png" alt=""> 好评</label>
+				<label id="ocm-z" onclick="selectedgrade(2)"><img src="{MODULE_URL}template/mobile/images/medium-discuss.png" alt=""> 中评</label>
+				<label id="ocm-c" onclick="selectedgrade(3)"><img src="{MODULE_URL}template/mobile/images/bad-discuss.png" alt=""> 差评</label>
+				<input type="hidden" name="grade" id="grade" value="">
+			</div>
+			<textarea type="text" placeholder="请输入评价内容" name="content"></textarea>
+			<input type="submit" name="submit" value="提交评论" class="comment-box" />
+			<input type="hidden" name="orderid" value="{$orderid}">
+			<input type="hidden" name="token" value="{$_W['token']}">
 		</div>
-	</section>
+	</form>
 </div>
 
 <footer>

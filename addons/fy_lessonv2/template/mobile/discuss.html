@@ -42,7 +42,7 @@
                 <div class="images-list">
                     {if $row['images']}
                     {loop $row['images'] $img}
-                    <img src="../attachment/{$img}">
+                    <img src="{$img}">
                     {/if}
                     {/loop}
                 </div>
@@ -219,6 +219,12 @@ $(document).ready(function () {
         });
     });
     */
+
+    $('#content').keypress(function () {
+        if(event.keyCode == 13){
+            $('#submit-btn').click();
+        }
+    });
 
     $('#submit-btn').click(function () {
         if ($(this).attr('saving') == '1') {

@@ -9,31 +9,32 @@
 -->
 {template '_headerv2'}
 
-<link href="{MODULE_URL}template/mobile/style/cssv2/search.css?v={$versions}" rel="stylesheet" />
-
-
-
+<link href="{MODULE_URL}template/mobile/style/cssv2/lession-list.css?v={$versions}" rel="stylesheet" />
 
 <!-- 课程列表 -->
-<div class="section">
+<div class="content-inner" style="margin-bottom: 60px;">
 	<div class="header-2 cbox">
 		<a href="javascript:history.go(-1);" class="ico go-back"></a>
 		<div class="flex title">{$title}</div>
 	</div>
 
-	<div style="margin:0px auto 10px;">
-		<ul id="js-course-list" class="course-list list-view" style="min-height:1px;">
-		</ul>
-		<div id="loading_div" class="loading_div">
-			<a href="javascript:void(0);" id="btn_Page"><i class="fa fa-arrow-circle-down"></i> 加载更多</a>
+	<div class="classification-list">
+		<div id="list-box"></div>
+		<div class="my_empty" style="height:40%;display: none;">
+			<div class="empty_bd  my_course_empty">
+				<h3>没有找到任何优惠券~</h3>
+			</div>
 		</div>
 	</div>
+
+	<div id="loading_div" class="loading_div">
+		<a href="javascript:void(0);" id="btn_Page"><i class="fa fa-arrow-circle-down"></i> 加载更多</a>
+	</div>
+
 	<footer>
 		<a href="{php echo $this->createMobileUrl('index', array('t'=>1));}">{$setting['copyright']}</a>
 	</footer>
 </div>
-<!-- /课程列表 -->
-
 <div id="loading" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:999999999;"><div class="spinner"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div></div>
 
 <script type="text/javascript">
@@ -48,7 +49,11 @@
                 if (data.length > 0) {
                     loading.style.display = 'none';
                     var jsonObj = JSON.parse(data);
-                    insertDiv(jsonObj);
+                    if(jsonObj.length == 0 && page == 1){
+                        $('.my_empty').show();
+					}else{
+                        insertDiv(jsonObj);
+					}
                 }
             });
         }
@@ -57,26 +62,19 @@
 
         //生成数据html,append到div中
         function insertDiv(result) {
-            var mainDiv =$("#js-course-list");
+            var mainDiv =$("#list-box");
             var chtml = '';
             for (var j = 0; j < result.length; j++) {
-                chtml += '<li class="lesson_list">';
-                chtml += '	<a href="' + lessonUrl + '&id=' + result[j].id + '" class="package">';
-                chtml += '		<div class="package__cover-wrap">';
-                chtml += '			<div class="package__cover" style="background-image: url(' + attachUrl + result[j].images + ');">';
-                chtml += '				<span class="package__cover-tips package__cover-tips--status"></span>';
+                chtml += '<a href="' + lessonUrl + '&id=' + result[j].id + '">';
+                chtml += '	<div class="box-one">';
+                chtml += '		<img class="box-left" src="' + attachUrl + result[j].images + '">';
+                chtml += '		<div class="box-right">';
+                chtml += '			<div class="top-right_box">';
+                chtml += '				<span class="top-text">' + result[j].title + '</span>';
                 chtml += '			</div>';
                 chtml += '		</div>';
-                chtml += '		<div class="package__content">';
-                chtml += '			<h3 class="package__name">' + result[j].title + '</h3>';
-                chtml += '			<div class="package__info">';
-                chtml += '				<span class="u-price"></span>';
-                chtml += '			</div>';
-                chtml += '			<div class="package__info">';
-                chtml += '			</div>';
-                chtml += '		</div>';
-                chtml += '	</a>';
-                chtml += '</li>';
+                chtml += '	</div>';
+                chtml += '</a>';
             }
             mainDiv.append(chtml);
             if(result.length==0){
@@ -86,13 +84,13 @@
 
         //==============核心代码=============
         var msg_list_loading = false;
-        $('.section').on('scroll', function(){
+        $('.content-inner').on('scroll', function(){
             if (!msg_list_loading){
                 load_more_msg();
             }
         })
         function load_more_msg(){
-            var msg_list = $('.section');
+            var msg_list = $('.content-inner');
             if (msg_list.height() + msg_list[0].scrollTop >= msg_list[0].scrollHeight) {
                 msg_list_loading = true;
                 $("#btn_Page").hide();

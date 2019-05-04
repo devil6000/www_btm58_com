@@ -136,27 +136,6 @@ function gohome(){
 var ajaxurl   = "{php echo $this->createMobileUrl('vip', array('op'=>'ajaxgetlist'));}";
 var loading = document.getElementById("loading");
 $(function () {
-	/*
-	var notice = document.getElementById("notice");
-	var popup = document.getElementById("popup");
-	var bak = document.getElementById("bak");
-	notice.onclick = function() {
-		var height = $(window).height();
-		var scrollTop = document.body.scrollTop;
-		var top = (height / 2) + scrollTop;
-		bak.style.display = 'block';
-		popup.style.display = 'block';
-		popup.style.height = height / 100 * 60 + 'px';
-		popup.style.top = (height - height / 100 * 60) / 4 + 'px';
-	}
-
-	bak.onclick = function() {
-		popup.style.display = 'none';
-		this.style.display = 'none';
-	}
-	*/
-
-
     var nowPage = 1; //设置当前页数，全局变量
     function getData(page) {  
         nowPage++; //页码自动增加，保证下次调用时为新的一页。  

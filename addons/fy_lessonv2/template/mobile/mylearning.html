@@ -8,24 +8,14 @@
 
 <div class="content-inner" style="min-height:100%;">
     <div class="tab-box">
-        <div class="tab-label">
-            <label class="{if $_GPC['status']==''}select-c{/if}"><a href="{php echo $this->createMobileUrl('mylearning');}&status=">学习中</a></label>
-            <label class="{if $_GPC['status']=='1'}select-c{/if}"><a href="{php echo $this->createMobileUrl('mylearning');}&status=1">已学完</a></label>
-        </div>
+        <label class="{if $_GPC['status']==''}select-c{/if}"><a href="{php echo $this->createMobileUrl('mylearning');}&status="><span>学习中{if $_GPC['status']==''}<img src="{MODULE_URL}template/mobile/images/star.png" alt="">{/if}</span></a></label>
+        <label class="{if $_GPC['status']=='1'}select-c{/if}"><a href="{php echo $this->createMobileUrl('mylearning');}&status=1"><span>已学完{if $_GPC['status']=='1'}<img src="{MODULE_URL}template/mobile/images/star.png" alt="">{/if}</span></a></label>
     </div>
-    <!-- 订单列表  -->
-    {if !empty($mylearninglist)}
-    <div id="study-list" class="study-list"></div>
-    {else}
-    <div class="study-list" style="padding-top: .9375rem;">
-        <div class="my_empty">
-            <div class="empty_bd  my_course_empty" style="position: inherit; top: 0px; margin-top: 0px;">
-                <h3>没有找到任何课程~</h3>
-                <p><a href="{php echo $this->createMobileUrl('index', array('t'=>1));}">到首页去看看</a></p>
-            </div>
-        </div>
+    <div class="list-box" id="study-list"></div>
+    <div class="no-data">
+        <img src="{MODULE_URL}template/mobile/images/no-data.png" alt="">
+        <span>没有找到任何课程</span>
     </div>
-    {/if}
     <div id="loading_div" class="loading_div">
         <a href="javascript:void(0);" id="btn_Page"><i class="fa fa-arrow-circle-down"></i> 加载更多</a>
     </div>
@@ -65,6 +55,10 @@
                     var jsonObj = JSON.parse(data);
                     insertDiv(jsonObj);
                 }
+                if(data.length <= 0 && page == 1){
+                    $('.no-data').show();
+                    $('#loading_div').hide();
+                }
             });
 
         }
@@ -79,14 +73,12 @@
                 chtml += '<div class="box-one" onclick="goLesson('+ result[j].lessonid +')">';
                 chtml += '	<img class="box-left" src="' + attachUrl+result[j].images + '" alt="' + result[j].bookname + '">';
                 chtml += '	<div class="box-right">';
-                chtml += '		<span class="top-text">' + result[j].bookname + '</span>';
-                chtml += '      <span class="middle-text">' + result[j].difficulty + '  ' + result[j].virtual_buynum + '</span>';
+                chtml += '      <div class="top-right_box">';
+                chtml += '		    <span class="top-text">' + result[j].bookname + '</span>';
+                chtml += '          <label class="middle-label">共' + result[j].count +'节课程</label>';
+                chtml += '      </div>';
                 if(result[j].status == 0){
-                    chtml += '      <span class="bottom-text text-learning">已学习' + result[j].rate + '%</span>';
-                    chtml += '      <label class="btn-box btn-learning">继续学习</label>';
-                }else{
-                    chtml += '      <span class="bottom-text text-learning">' + 已学完 + '</span>';
-                    chtml += '      <label class="btn-box btn-learning">复习</label>';
+                    chtml += '  <span class="bottom-span">已学习' + result[j].learn + '节</span>';
                 }
                 chtml += '  </div>';
                 chtml += '</div>';

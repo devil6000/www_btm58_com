@@ -35,6 +35,8 @@ foreach ($mylearninglist as $key => $item){
         $rate = $learn / $scount * 100;
     }
     $item['rate'] = round($rate,2);
+    $item['count'] = $scount;
+    $item['learn'] = $learn;
     $mylearninglist[$key] = $item;
 }
 

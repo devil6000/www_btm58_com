@@ -66,7 +66,7 @@ if($op == 'display'){
     $discuss = pdo_fetch('SELECT * FROM ' . tablename($this->table_discuss) . ' WHERE uniacid=:uniacid AND parentid=:pid AND chapterid=:cid AND id=:id LIMIT 1', array(':pid' => $pid, ':cid' => $cid, ':id' => $id, ':uniacid' => $uniacid));
 
     if(checksubmit('submit')){
-        $data = array('uniacid' => $uniacid, 'parentid' => $pid, 'chapterid' => $cid, 'content' => $_GPC['content'], 'videourl' => $_GPC['videourl'], 'title' => $_GPC['title'], 'status' => intval($_GPC['status']), 'addtime' => time(), 'displayorder' => intval($_GPC['']));
+        $data = array('uniacid' => $uniacid, 'parentid' => $pid, 'chapterid' => $cid, 'content' => $_GPC['content'], 'videourl' => $_GPC['videourl'], 'title' => $_GPC['title'], 'status' => intval($_GPC['status']), 'addtime' => time(), 'displayorder' => intval($_GPC['displayorder']), 'is_credit' => intval($_GPC['is_credit']), 'credit' => $_GPC['credit']);
         if($data['status'] == 1){
             $tmp = pdo_fetch('SELECT * FROM ' . tablename($this->table_discuss) . ' WHERE uniacid=:uniacid AND parentid=:pid AND chapterid=:cid AND status=1', array(':pid' => $pid, ':cid' => $cid, ':uniacid' => $uniacid));
             if(!empty($tmp)){

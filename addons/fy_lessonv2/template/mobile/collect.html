@@ -9,6 +9,7 @@
 -->
 {template '_headerv2'}
 <link href="{MODULE_URL}template/mobile/style/cssv2/search.css?v={$versions}" rel="stylesheet" />
+<link href="{MODULE_URL}template/mobile/style/cssv2/lession-list.css?v={$versions}" rel="stylesheet" />
 
 <div class="header-2 cbox">
 	<a href="javascript:history.go(-1);" class="ico go-back"></a>
@@ -18,17 +19,14 @@
 {if $ctype==1}
 <div style="margin:10px auto;">
 	{if !empty($lessonlist)}
-	<ul id="course-list" class="course-list list-view" style="min-height:1px;">
-	</ul>
+	<div class="classification-list" id="course-list"></div>
 	<div id="loading_div" class="loading_div">
 		<a href="javascript:void(0);" id="btn_Page"><i class="fa fa-arrow-circle-down"></i> 加载更多</a>
 	</div>
 	{else}
-	<div class="my_empty" style="position: inherit;">
-	    <div class="empty_bd  my_course_empty">
-	        <h3>您还没有收藏任何课程~</h3>
-	        <p><a href="{php echo $this->createMobileUrl('index');}">到首页去看看</a></p>
-	    </div>
+	<div class="no-data" style="display: block;">
+		<img src="{MODULE_URL}template/mobile/images/no-data.png" alt="">
+		<span>您还没有收藏任何课程</span>
 	</div>
 	{/if}
 </div>
@@ -61,29 +59,18 @@ $(function () {
     function insertDiv(result) {  
         var mainDiv =$("#course-list");
         var chtml = '';  
-        for (var j = 0; j < result.length; j++) {  
-            chtml += '<li class="lesson_list">';  
-            chtml += '	<a href="' + lessonUrl + '&id=' + result[j].id + '" class="package">'; 
-            chtml += '		<div class="package__cover-wrap">';
-            chtml += '			<div class="package__cover" style="background-image:url('+attachUrl+result[j].images + ');" alt="'+result[j].bookname+'">';
-            chtml += '				<span class="package__cover-tips package__cover-tips--status">'+result[j].buynum_total+'人已学习</span>';
-            chtml += '			</div>';
-            chtml += '		</div>';
-            chtml += '		<div class="package__content">';
-            chtml += '			<h3 class="package__name">'+result[j].bookname+'</h3>';
-            chtml += '			<div class="package__info">';
-            chtml += '				<span class="u-price">'+result[j].price+'</span>';
-            chtml += '			</div>';
-            chtml += '			<div class="package__info">';
-			if(result[j].section_status==0){
-				chtml += '<span class="section-status-btn">已完结</span>';
-			}else{
-				chtml += '				<span>共<i class="blue-color">' + result[j].seccount + '</i>节课程</span>';
-            }
-            chtml += '			</div>';
-            chtml += '		</div>';
-            chtml += '	</a>';
-            chtml += '</li>';			
+        for (var j = 0; j < result.length; j++) {
+        	chtml += '<a href="' + lessonUrl + '&id=' + result[j].id + '">';
+        	chtml += '	<div class="box-one">';
+        	chtml += '		<img class="box-left" src="' + attachUrl+result[j].images + '" alt="' + result[j].bookname + '">';
+        	chtml += '		<div class="box-right">';
+        	chtml += '			<div class="top-right_box">';
+        	chtml += '		    	<span class="top-text">' + result[j].bookname + '</span>';
+        	chtml += '         	 	<label class="middle-label">共' + result[j].seccount +'节课程</label>';
+        	chtml += '			</div>';
+        	chtml += '		</div>';
+        	chtml += '	</div>';
+        	chtml += '</a>';
         }
 		mainDiv.append(chtml);
 		if(result.length==0){

@@ -48,74 +48,95 @@ body {
   background: #f1f1f1;
 }
 .change-total {
-  height: 9.46875rem;
-  /* margin-top: 128rpx; */
-  padding: .84375rem 1.125rem 0 .96875rem;
+  height: 9.9375rem;
+  margin-top: .9375rem;
+  padding: .75rem 0 0 0;
+  position: relative;
   background: #fff;
+}
+.change-total .tip-line {
+  color: #454346;
+  font-size: .9375rem;
+  display: block;
+  text-align: center;
 }
 
 .change-total .explain-box {
-  margin-bottom: 1rem;
-  color: #333;
-  font-size: 1rem;
+  color: #B1B1B3;
+  margin-top: 1.25rem;
+  padding: 0 .9375rem;
+  font-size: .75rem;
   display:block;
 }
 
 .change-total .label-box {
   display: flex;
+  height: 3.5625rem;
   justify-content:center;
   align-items: center;
+  border-top: 1px solid #F3F3F3;
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  left: 0;
 }
 
 .change-total .label-box label {
-  width: 7.34375rem;
-  height: 2rem;
-  font-size: .875rem;
-  color: #ef9816;
+  width: 7.125rem;
+  height: 1.6875rem;
+  font-size: .75rem;
+  color: #FA8D4A;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(239, 158, 37, 1);
-  border-radius: 1rem;
+  border: 1px solid;
+  border-radius: 15px;
+}
+.green-color {
+  color: #23E29D !important;
 }
 
 .right-distance {
-  margin-right: 1.03125rem;
+  margin-right: 3.5625rem;
 }
 /*兑换列表  */
 .exchange-list {
-  padding-left: .9375rem;
-  margin-top: .625rem;
-  background: #fff;
+  /* padding-left: .9375rem; */
+  margin-top: .9375rem;
 }
 .exchange-list .box-one {
   display: flex;
-  padding: .75rem 0;
+  padding: .9375rem;
+  background: #fff;
   align-items:center;
-  border-bottom: 1px solid #EEEEEE;
-  height:5.0625rem;
+  /* border-bottom: 1px solid #EEEEEE; */
+  height:6.0625rem;
   position: relative;
-  width:100%;
+  margin: 0 .9375rem .625rem .9375rem;
+  border-radius: 10px;
+  box-shadow:0px 2px 2px rgba(0,0,0,0.08);
+  /* width:100%; */
 }
 
 .exchange-list .box-one .box-left {
-  width: 7.5rem;
-height:5rem;
-border-radius:5px;
-margin-right: .625rem;
+  width: 8.75rem;
+  height:6.0625rem;
+  border-radius:10px;
+  margin-right: .9375rem;
 }
 
 .exchange-list .box-one .box-right {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  width: 55%;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
 }
 
 .exchange-list .box-one .box-right .top-text {
-  font-size: 1rem;
-  color: #000000;
-  height:2.65625rem;
+  font-size: .9375rem;
+  color: #454346;
+  /* height:2.65625rem; */
   overflow:hidden;
 text-overflow:ellipsis;
   display:-webkit-box;
@@ -123,19 +144,34 @@ text-overflow:ellipsis;
 -webkit-box-orient:vertical;
 }
 
-.exchange-list .box-one .box-right  .middle-text {
+/* .exchange-list .box-one .box-right  .middle-text {
   color: #999999;
   font-size: .8125rem;
   margin: .21875rem 0;
+} */
+
+.exchange-list .box-one .box-right .bottom-line {
+  display: flex;
+  justify-content: space-between;
+}
+.exchange-list .box-one .box-right .bottom-line .bottom-text {
+  font-size: 1.125rem;
+  color: #FF8353;
+  font-family:PingFang SC;
+  font-weight:400;
 }
 
-.exchange-list .box-one .box-right .bottom-text {
-  font-size: .875rem;
-  color: #F43A23;
-}
-
-.exchange-list .box-one .box-right .btn-box {
-  position: absolute;
+.exchange-list .box-one .box-right .bottom-line .btn-box {
+  color: #FFFFFF;
+  font-size: .75rem;
+  width: 4.3125rem;
+  height: 1.5625rem;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.5625rem;
+  /* position: absolute;
   bottom: 1.03125rem;
   right: .9375rem;
   width: 4.6875rem;
@@ -146,10 +182,10 @@ text-overflow:ellipsis;
   height: 1.75rem;
   font-size: .875rem;
   font-weight:500;
-  border-radius:3px;
+  border-radius:3px; */
 }
 .not-exchange {
-  background: #0287C9;
+  background: #4AA9EF;
 }
 .have-exchange {
   background: #CCCCCC;

@@ -24,8 +24,10 @@
 	<div class="confirm-order">
 		{loop $lessons $item}
 		<div class="addorder_good ">
+			<!--
 			<div class="ico"><img src="{$item['teacherphoto']}" /></div>
-			<div class="shop">{$item['teacher']}讲师</div>
+			div class="shop">{$item['teacher']}讲师</div>
+			-->
 			<div class="good">
 				<div class="img" onclick="location.href = '{$item['lessonurl']}'">
 					<img src="{$_W['attachurl']}{$item['images']}" alt=""/>

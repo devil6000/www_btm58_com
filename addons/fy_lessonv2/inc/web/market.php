@@ -544,7 +544,9 @@ if($op=='display'){
             'price' => 0,
             'title' => $_GPC['title'],
             'displayorder' => $_GPC['displayorder'],
-            'addtime' => time()
+            'addtime' => time(),
+            'thumb' => $_GPC['thumb'],
+            'markprice' => $_GPC['markprice']
         );
         if(empty($id)){
             pdo_insert($this->table_lesson_meanwhile, $data);
@@ -580,7 +582,7 @@ if($op=='display'){
         message('该同时购活动不存在');
     }
 
-    $lessons = pdo_getall($this->table_meanwhile_lesson, array(), array('lesson_id'));
+    $lessons = pdo_getall($this->table_meanwhile_lesson, array('meanwhileid' => $id), array('lesson_id'));
     $lesson_ids = array();
     if(!empty($lessons)){
         foreach($lessons as $k=>$v){
@@ -606,9 +608,12 @@ if($op=='display'){
     $idarr = $_GPC['id'];
     $id = intval($_GPC['discount_id']);
     $posttype = trim($_GPC['posttype']);
-    $lesson_discount = $_GPC['discount'];
+    $lesson_discount = floatval($_GPC['discount']);
+    $lesson_markpprice = floatval($_GPC['markprice']);
 
-    pdo_update($this->table_lesson_meanwhile, array('price' => $lesson_discount), array('uniacid'=>$uniacid, 'id'=>$id));
+    $meanwhile_data = array('price' => $lesson_discount, 'markprice' => $lesson_markpprice);
+
+    pdo_update($this->table_lesson_meanwhile, $meanwhile_data, array('uniacid'=>$uniacid, 'id'=>$id));
 
     $data = array(
         'uniacid'	  => $uniacid,

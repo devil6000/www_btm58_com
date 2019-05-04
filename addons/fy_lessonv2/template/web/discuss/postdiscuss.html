@@ -38,6 +38,19 @@
                     </div>
                 </div>
                 <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">开启奖励</label>
+                    <div class="col-sm-9">
+                        <label class="radio-inline"><input type="radio" name="is_credit" value="1" {if $discuss['is_credit'] == 1}checked{/if} /> 获取积分</label>
+                        <label class="radio-inline"><input type="radio" name="is_credit" value="2" {if $discuss['is_credit'] == 2}checked{/if} /> 获取余额</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">奖励值</label>
+                    <div class="col-sm-9">
+                        <input type="text" name="credit" class="form-control" value="{$discuss['credit']}" />
+                    </div>
+                </div>
+                <div class="form-group">
                     <label class="col-xs-12 col-sm-3 col-md-2 control-label">状态</label>
                     <div class="col-sm-9" style="margin-top: -3px;">
                         <label class="radio-inline"><input type="radio" name="status" value="0" {if empty($discuss['status'])}checked{/if} /> 关闭</label>

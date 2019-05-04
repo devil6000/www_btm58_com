@@ -87,7 +87,7 @@
 					</script>
 				{else}
 					{if $setting['video_player']=='0'}
-						<video id="video" src="{$section['videourl']}" width="100%" height="auto" controls="controls" autobuffer="autobuffer" x5-playsinline="" playsinline="" webkit-playsinline="" {if !empty($section['images'])}poster="{$_W['attachurl']}{$section['images']}"{/if}></video>
+						<video id="video" src="{$section['videourl']}" width="100%" height="auto" controls="controls" autobuffer="autobuffer" style="object-fit: fill;" x5-playsinline="" playsinline="" webkit-playsinline="" {if !empty($section['images'])}poster="{$_W['attachurl']}{$section['images']}"{/if}></video>
 					{elseif $setting['video_player']=='1'}
 						<script type="text/javascript" src="{MODULE_URL}template/mobile/style/jsv2/ckplayer/ckplayer.js?v={$versions}" charset="UTF-8"></script>
 						<div id="ckplayer-video" style="width:100%;min-height:200px;"></div>

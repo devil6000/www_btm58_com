@@ -64,7 +64,7 @@ if($setting['stock_config']==1){
 
 /* 普通课程检查用户是否完善个人信息 */
 $member = pdo_fetch("SELECT a.*,b.avatar,b.mobile,b.realname,b.msn,b.occupation,b.company,b.graduateschool,b.grade,b.address,b.credit1 FROM " .tablename($this->table_member). " a LEFT JOIN " .tablename($this->table_mc_members). " b ON a.uid=b.uid WHERE a.uid=:uid", array(':uid'=>$uid));
-
+/*
 if ($setting['mustinfo'] && (!$lesson['lesson_type'] || ($lesson['lesson_type'] && $setting['appoint_mustinfo']))) {
 	$user_info = json_decode($setting['user_info']);
 	$jumpurl = $this->createMobileUrl('writemsg', array('lessonid'=>$id, 'spec_id'=>$spec_id));
@@ -94,6 +94,7 @@ if ($setting['mustinfo'] && (!$lesson['lesson_type'] || ($lesson['lesson_type'] 
 		 message("请完善您的个人信息", $jumpurl, "warning");
 	}
 }
+*/
 
 /*检查积分抵扣开关和课程是否支持积分抵扣*/
 $market = pdo_fetch("SELECT * FROM " .tablename($this->table_market). " WHERE uniacid=:uniacid", array(':uniacid'=>$uniacid));
